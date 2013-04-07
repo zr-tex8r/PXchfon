@@ -1,0 +1,586 @@
+% 文字コードは UTF-8
+% uplatex で組版する
+\documentclass[a4paper,uplatex]{jsarticle}
+\usepackage{metalogo}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\newcommand{\PkgVersion}{0.6a}
+\newcommand{\Pkg}[1]{\textsf{#1}}
+\newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
+\newcommand{\Note}{\par\noindent ※}
+\newcommand{\Means}{：\ }
+\providecommand{\pTeX}{p\TeX}
+\providecommand{\pLaTeX}{p\LaTeX}
+\providecommand{\upTeX}{u\pTeX}
+\providecommand{\upLaTeX}{u\pLaTeX}
+%-----------------------------------------------------------
+\begin{document}
+\title{\Pkg{pxchfon} パッケージ（v\PkgVersion）}
+\author{八登崇之\ （Takayuki YATO; aka.~``ZR''）}
+\date{2013/04/07}
+\maketitle
+
+%===========================================================
+\section{概要}
+
+{\pLaTeX}／{\upLaTeX}の文書の標準のフォント（明朝・ゴシック）
+をユーザ指定のものに置き換える。
+dvipdfmx 専用である。
+他のフォント追加パッケージと異なり、
+追加するフォントを{\LaTeX}文書中で指定するので、
+一度パッケージをインストールするだけで、
+任意の日本語フォント（ただし等幅に限る）を使うことができる。
+欧文部分を同じ日本語フォントで置き換えることも可能である。
+\Pkg{UTF}／\Pkg{OTF} パッケージにも対応している。
+
+0.5 版での拡張で、{\pTeX}において広く行われているフォント設定
+（IPA フォントの使用等）をパッケージオプション一つで
+行う機能を追加した。
+（この機能は元々、別の \Pkg{PXjafont} パッケージとして
+提供されていたものである。）
+
+%===========================================================
+\section{前提環境}
+
+\begin{itemize}
+\item {\TeX}フォーマット： {\pLaTeX}／{\upLaTeX}
+\item DVIウェア： dvipdfmx
+\item 前提パッケージ：
+  \begin{itemize}
+  \item \Pkg{atbegshi} パッケージ（|everypage| オプション使用時）
+  \end{itemize}
+\end{itemize}
+
+%===========================================================
+\section{読込}
+
+プレアンブルにおいて、|\usepackage| を用いて読み込む。
+\begin{quote}\small\begin{verbatim}                                      
+\usepackage[<オプション>,...]{pxchfon}
+\end{verbatim}\end{quote}
+
+オプションは次のものが用意されている。
+
+\begin{itemize}
+\item |alphabet|\Means
+  欧文フォントも指定されたフォントの英数字部分で置き換える。
+  （明朝が |\rmfamily|、ゴシックが |\sffamily| に適用される。）
+  プリセット指定オプション未使用の場合は既定で有効である。
+\item |noalphabet|\Means
+  |alphabet| の否定。
+  欧文フォントは変更しない。
+  インストール時に欧文用の設定をしていない場合は必ずこれを
+  指定する必要がある。
+  プリセット指定オプション使用の場合はこちらが既定で有効になる。
+\item プリセット指定オプション（|ipa|、|hiragino| 等）
+  名前に対応するプリセット指定を有効にする。
+  詳細については「プリセット指定」節を参照。
+\item |otf|（既定）\Means
+  \Pkg{OTF}および\Pkg{UTF}パッケージの使用時に、
+  そのフォントも置き換えの対象とする。
+\item |nootf|\Means
+  |otf| の否定。
+  \Pkg{OTF}／\Pkg{UTF}パッケージのフォントは置き換えない。
+  この場合、\Pkg{OTF}パッケージで |noreplace| を指定しない限り、
+  標準の和文フォントは変化しない。
+\item |everypage|\Means
+  DVIの全ページにマップ設定を書き込む。
+  詳細は「dvipdfmx のページ抜粋処理への対応」を参照。
+\item |noeverypage|\Means
+  |everypage|の否定。
+  DVIの先頭ページにのみマップ設定を書き込む。
+\item |prefer2004jis|\Means
+  {\pTeX}／{\upTeX}の標準和文フォントのCMapを2004JIS字形指定のものに
+  変更する。
+  Adobe-Japan1に対応したOpenTypeフォント使用の場合は、
+  所謂「2004JIS字形」が使われることになる。
+\item |noprefer2004jis|\Means
+  |prefer2004jis| の否定。
+\end{itemize}
+
+%===========================================================
+\section{機能}
+
+以下に該当する和文フォントを、以降で述べるユーザ命令で指定したものに
+置き換える。
+\begin{itemize}
+\item {\pTeX}の標準のフォント --- |rml*|/|gbm*|
+\item {\upTeX}の日本語フォント --- |urml*|/|ugbm*|/|uprml*|/|upgbm*|
+\item \Pkg{UTF}パッケージのフォント --- |hmr*|/|hkb*|/|unij*|/|cid*|
+\item \Pkg{OTF}パッケージの日本語フォント --- |hmin*|/|hgoth*|/|otf-{u,c}j*|
+%\item \Pkg{PXfontspec}パッケージの日本語フォント --- |nja{r,s}-*|
+\end{itemize}
+
+和文フォント置換は、dvipdfmxのマップ設定を文書内で
+（一時的に）変更するという方法で実現している。
+欧文フォントについては実現方法が少し異なる
+（「欧文フォントの置換の原理」節を参照）。
+
+\Pkg{OTF}パッケージを |deluxe| オプション付きで用いている
+場合\textgt{以外}、すなわち明朝・ゴシックとも単ウェイトの場合、
+以下の命令を用いる。
+
+\begin{itemize}
+\item |\setminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+  「明朝」のフォントを置き換えるフォントをファイル名で指定する。
+  TTC形式の場合の該当のフォントの番号を\Meta{番号}に指定する。
+\item |\setgothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+  「ゴシック」のフォントを置き換えるフォントをファイル名で指定する。
+\end{itemize}
+\begin{quote}\small
+  例:
+\begin{verbatim}
+\setminchofont{ipam.ttf}        % IPA明朝
+\setgothicfont[0]{msgothic.ttc} % ＭＳ ゴシック
+\end{verbatim}
+\end{quote}
+
+\Pkg{OTF}パッケージを |deluxe| 付きで用いている場合は、
+明朝・ゴシックともに3ウェイトを使う。
+この時は、各ウェイト毎にフォント指定ができる。
+またこの場合、丸ゴシック（|\mgfamily|）が使用可能になるが、
+これに対して置き換えるフォントを指定することができる。
+
+\begin{itemize}
+\item |\setlightminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      明朝・細ウェイト（|\mcfamily\ltseries|）
+\item |\setmediumminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      明朝・中ウェイト（|\mcfamily\mdseries|）
+\item |\setboldminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      明朝・太ウェイト（|\mcfamily\bfseries|）
+\item |\setmediumgothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      ゴシック・中ウェイト（|\gtfamily\mdseries|）
+\item |\setboldgothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      ゴシック・太ウェイト（|\gtfamily\bfseries|）
+\item |\setxboldgothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      ゴシック・極太ウェイト（|\gtfamily\ebseries|）
+\item |\setmarugothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      丸ゴシック（|\mgfamily|）
+\end{itemize}
+
+さらに、この場合、|\setminchofont| と |\setgothicfont| は各々のファミリの
+3ウェイト全てを指定のフォントで置き換える。
+実質的に単ウェイトになってしまうようで無意味に思えるが、
+例えば明朝を実際には 2ウェイトしか使わないという時に、
+\begin{quote}\small\begin{verbatim}
+\setminchofont{minchoW3.otf}      %まず3ウェイト指定して
+\setboldminchofont{minchoW6.otf}  %太だけ再指定する
+\end{verbatim}\end{quote}
+とする使い方が考えられる。
+特に、欧文フォントも置き換えたい場合は3ウェイトが
+全て指定されていないと有効にならないので、
+\begin{quote}\small\begin{verbatim}
+\setmediumminchofont{minchoW3.otf}
+\setboldminchofont{minchoW6.otf}
+\end{verbatim}\end{quote}
+では思い通りにならないことになる。
+また、この仕様のため、|deluxe| 以外の場合
+（既定、|bold|、|noreplace|）は |\setgothicfont| で指定した
+ものが確実にゴシック（単ウェイト）に反映される。
+
+%===========================================================
+\section{プリセット指定}
+
+このパッケージの元々の意図は、標準のフォントを
+普段使っているものと全く別の書体に変えることであったが、
+例えば「普段使う設定が複数ありそれを簡単に切り替えたい」という
+場合にも有用である。
+そこで、{\pTeX}において広く行われている設定をパッケージ内に
+組み込んで、パッケージオプションでそれを呼び出すという機能を追加した。
+元々は\Pkg{PXjafont}という別のパッケージで提供されていた機能であるが、
+0.5版からこのパッケージに組み入れることにした。
+
+パッケージオプションにプリセット名を指定すると予め決められたフォント
+ファイル名が |\setminchofont| 等の命令で設定される。
+例えば、
+\begin{quote}\small\begin{verbatim}
+\usepackage[ipa]{pxchfon}
+\end{verbatim}\end{quote}
+は以下の記述と同等になる。
+\begin{quote}\small\begin{verbatim}
+\usepackage[noalphabet]{pxchfon}
+\setminchofont{ipam.ttf}
+\setgothicfont{ipag.ttf}
+\end{verbatim}\end{quote}
+
+注意として、プリセット指定を用いた場合は、
+欧文フォントの置換について |noalphabet|（無効）が既定になる。
+プリセット指定の場合は和文が「普通の」明朝・ゴシックのフォントと
+なるので欧文フォントを変更しない場合が多いと考えられるためである。
+
+%-------------------
+\subsection{単ウェイト用の設定}
+
+後述の「多ウェイト用の設定」で述べられた設定以外で使う場合に使用する。
+
+\begin{itemize}
+\item |noembed|\Means
+  フォントを埋め込まない。
+  （この指定だけは直接対応する |\setminchofont| 等の命令列がない。）
+\item |ms|\Means
+  MSフォント。
+\begin{quote}\small\begin{verbatim}
+\setminchofont[0]{msmincho.ttc} % ＭＳ 明朝
+\setgothicfont[0]{msgothic.ttc} % ＭＳ ゴシック
+\end{verbatim}\end{quote}
+
+\item |ipa|\Means
+  IPAフォント。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{ipam.ttf} % IPA明朝
+\setgothicfont{ipag.ttf} % IPAゴシック
+\end{verbatim}\end{quote}
+
+\item |ipaex|\Means
+  IPAexフォント。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{ipaexm.ttf} % IPAex明朝
+\setgothicfont{ipaexg.ttf} % IPAexゴシック
+\end{verbatim}\end{quote}
+\end{itemize}
+
+%-------------------
+\subsection{多ウェイト用の設定}
+
+\Pkg{OTF}パッケージの |deluxe| オプション使用時に有効になる。
+明朝3ウェイト、ゴシック3ウェイト、丸ゴシック1ウェイトを設定する。
+
+\begin{itemize}
+\item |ms-hg|\Means
+  MSフォント + HGフォント。
+  \Note HGフォント = Microsoft Office 付属の日本語フォント
+\begin{quote}\small\begin{verbatim}
+\setminchofont[0]{msmincho.ttc}    % ＭＳ 明朝
+\setboldminchofont[0]{hgrme.ttc}   % HG明朝E
+\setgothicfont[0]{msgothic.ttc}    % ＭＳ ゴシック
+\setmediumgothicfont[0]{hgrgm.ttc} % HGｺﾞｼｯｸM
+\setboldgothicfont[0]{hgrge.ttc}   % HGｺﾞｼｯｸE
+\setxboldgothicfont[0]{hgrsgu.ttc} % HG創英角ｺﾞｼｯｸUB
+\setmarugothic{hgrsmp.ttf}         % HG丸ｺﾞｼｯｸM-PRO 
+\end{verbatim}\end{quote}
+
+\item |ipa-hg|\Means
+   IPAフォント + HGフォント。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{ipam.ttf}           % IPA明朝
+\setboldminchofont[0]{hgrme.ttc}   % HG明朝E
+\setgothicfont{ipag.ttf}           % IPAゴシック
+\setmediumgothicfont[0]{hgrgm.ttc} % HGｺﾞｼｯｸM
+\setboldgothicfont[0]{hgrge.ttc}   % HGｺﾞｼｯｸE
+\setxboldgothicfont[0]{hgrsgu.ttc} % HG創英角ｺﾞｼｯｸUB
+\setmarugothic{hgrsmp.ttf}         % HG丸ｺﾞｼｯｸM-PRO 
+\end{verbatim}\end{quote}
+
+\item |moga-mobo|\Means
+   Mogaフォント + Moboフォント。
+   \Note 「丸ゴシック」ファミリに Mobogothic を充てている。
+   \Note Moga/MoboフォントはCIDアクセス非対応であるが、
+   フォント実体を変えることで |prefer2004jis| オプションに
+   対応させている。
+   \par\medskip
+   \textgt{|prefer2004jis| 非指定時}
+\begin{quote}\small\begin{verbatim}
+\setminchofont[3]{mogam.ttc}       % Moga90Mincho
+\setboldminchofont[3]{mogamb.ttc}  % Moga90Mincho Bold
+\setgothicfont[3]{mogag.ttc}       % Moga90Gothic
+\setboldgothicfont[3]{mogagb.ttc}  % Moga90Gothic Bold
+\setxboldgothicfont[3]{mogagb.ttc} % Moga90Gothic Bold
+\setmarugothic[3]{mobog.ttc}       % Mobo90Gothic
+\end{verbatim}\end{quote}
+   \par\medskip
+   \textgt{|prefer2004jis| 指定時}
+\begin{quote}\small\begin{verbatim}
+\setminchofont[0]{mogam.ttc}       % MogaMincho
+\setboldminchofont[0]{mogamb.ttc}  % MogaMincho Bold
+\setgothicfont[0]{mogag.ttc}       % MogaGothic
+\setboldgothicfont[0]{mogagb.ttc}  % MogaGothic Bold
+\setxboldgothicfont[0]{mogagb.ttc} % MogaGothic Bold
+\setmarugothic[0]{mobog.ttc}       % MoboGothic
+\end{verbatim}\end{quote}
+
+\item |moga-maruberi|\Means
+   Mogaフォント + モトヤLマルベリ3等幅。
+   \Note |moga-mobo| と以下を除いて同じ。
+\begin{quote}\small\begin{verbatim}
+\setmarugothic{MTLmr3m.ttf}        % モトヤLマルベリ3等幅
+\end{verbatim}\end{quote}
+
+\item |kozuka-pro|\Means
+  小塚フォント（Pro版）。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{KozMinPro-Regular.otf}      % 小塚明朝 Pro R
+\setlightminchofont{KozMinPro-Light.otf}   % 小塚明朝 Pro L
+\setboldminchofont{KozMinPro-Bold.otf}     % 小塚明朝 Pro B
+\setgothicfont{KozGoPro-Medium.otf}        % 小塚ゴシック Pro M
+\setmediumgothicfont{KozGoPro-Regular.otf} % 小塚ゴシック Pro R
+\setboldgothicfont{KozGoPro-Bold.otf}      % 小塚ゴシック Pro B
+\setxboldgothicfont{KozGoPro-Heavy.otf}    % 小塚ゴシック Pro H
+\setmarugothicfont{KozGoPro-Heavy.otf}     % 小塚ゴシック Pro H
+\end{verbatim}\end{quote}
+
+\item |kozuka-pr6|\Means
+  小塚フォント（Pr6版）。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{KozMinProVI-Regular.otf}      % 小塚明朝 Pro-VI R
+\setlightminchofont{KozMinProVI-Light.otf}   % 小塚明朝 Pro-VI L
+\setboldminchofont{KozMinProVI-Bold.otf}     % 小塚明朝 Pro-VI B
+\setgothicfont{KozGoProVI-Medium.otf}        % 小塚ゴシック Pro-VI M
+\setmediumgothicfont{KozGoProVI-Regular.otf} % 小塚ゴシック Pro-VI R
+\setboldgothicfont{KozGoProVI-Bold.otf}      % 小塚ゴシック Pro-VI B
+\setxboldgothicfont{KozGoProVI-Heavy.otf}    % 小塚ゴシック Pro-VI H
+\setmarugothicfont{KozGoProVI-Heavy.otf}     % 小塚ゴシック Pro-VI H
+\end{verbatim}\end{quote}
+
+\item |kozuka-pr6n|\Means
+  小塚フォント（Pr6n版）。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{KozMinPr6N-Regular.otf}      % 小塚明朝 Pr6N R
+\setlightminchofont{KozMinPr6N-Light.otf}   % 小塚明朝 Pr6N L
+\setboldminchofont{KozMinPr6N-Bold.otf}     % 小塚明朝 Pr6N B
+\setgothicfont{KozGoPr6N-Medium.otf}        % 小塚ゴシック Pr6N M
+\setmediumgothicfont{KozGoPr6N-Regular.otf} % 小塚ゴシック Pr6N R
+\setboldgothicfont{KozGoPr6N-Bold.otf}      % 小塚ゴシック Pr6N B
+\setxboldgothicfont{KozGoPr6N-Heavy.otf}    % 小塚ゴシック Pr6N H
+\setmarugothicfont{KozGoPr6N-Heavy.otf}     % 小塚ゴシック Pr6N H
+\end{verbatim}\end{quote}
+
+\item |hiragino-pro|\Means
+  ヒラギノフォント基本6書体セット（Pro/Std版） + 明朝W2。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{HiraMinPro-W3.otf}       % ヒラギノ明朝 Pro W3
+\setlightminchofont{HiraMinPro-W2.otf}  % ヒラギノ明朝 Pro W2
+\setboldminchofont{HiraMinPro-W6.otf}   % ヒラギノ明朝 Pro W6
+\setgothicfont{HiraKakuPro-W3.otf}      % ヒラギノ角ゴ Pro W3
+\setboldgothicfont{HiraKakuPro-W6.otf}  % ヒラギノ角ゴ Pro W6
+\setxboldgothicfont{HiraKakuStd-W8.otf} % ヒラギノ角ゴ Std W8
+\setmarugothicfont{HiraMaruPro-W4.otf}  % ヒラギノ丸ゴ Pro W4
+\end{verbatim}\end{quote}
+
+\item |hiragino-pron|\Means
+  ヒラギノフォント基本6書体セット（ProN/StdN版） + 明朝W2。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{HiraMinProN-W3.otf}       % ヒラギノ明朝 ProN W3
+\setlightminchofont{HiraMinProN-W2.otf}  % ヒラギノ明朝 ProN W2
+\setboldminchofont{HiraMinProN-W6.otf}   % ヒラギノ明朝 ProN W6
+\setgothicfont{HiraKakuProN-W3.otf}      % ヒラギノ角ゴ ProN W3
+\setboldgothicfont{HiraKakuProN-W6.otf}  % ヒラギノ角ゴ ProN W6
+\setxboldgothicfont{HiraKakuStdN-W8.otf} % ヒラギノ角ゴ StdN W8
+\setmarugothicfont{HiraMaruProN-W4.otf}  % ヒラギノ丸ゴ ProN W4
+\end{verbatim}\end{quote}
+
+\item |morisawa-pro|\Means
+  モリサワフォント基本7書体（Pro版）。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{A-OTF-RyuminPro-Light.otf}         % A-OTF リュウミン Pro L-KL
+\setboldminchofont{A-OTF-FutoMinA101Pro-Bold.otf} % A-OTF 太ミンA101 Pro
+\setgothicfont{A-OTF-GothicBBBPro-Medium.otf}     % A-OTF 中ゴシックBBB Pro
+\setboldgothicfont{A-OTF-FutoGoB101Pro-Bold.otf}  % A-OTF 太ゴB101 Pro
+\setxboldgothicfont{A-OTF-MidashiGoPro-MB31.otf}  % A-OTF 見出ゴMB31 Pro
+\setmarugothicfont{A-OTFJun101Pro-Light.otf}      % A-OTF じゅん Pro 101
+\end{verbatim}\end{quote}
+
+\item |morisawa-pr6n|\Means
+  モリサワフォント基本7書体（Pr6N版）。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{A-OTF-RyuminPr6N-Light.otf}         % A-OTF リュウミン Pr6N L-KL
+\setboldminchofont{A-OTF-FutoMinA101Pr6N-Bold.otf} % A-OTF 太ミンA101 Pr6N
+\setgothicfont{A-OTF-GothicBBBPr6N-Medium.otf}     % A-OTF 中ゴシックBBB Pr6N
+\setboldgothicfont{A-OTF-FutoGoB101Pr6N-Bold.otf}  % A-OTF 太ゴB101 Pr6N
+\setxboldgothicfont{A-OTF-MidashiGoPr6N-MB31.otf}  % A-OTF 見出ゴMB31 Pr6N
+\setmarugothicfont{A-OTFJun101Pr6N-Light.otf}      % A-OTF じゅん Pr6N 101
+\end{verbatim}\end{quote}
+\end{itemize}
+
+なお、以上の設定で登場したフォントのうち、
+「HG丸ｺﾞｼｯｸM-PRO」
+は欧文が等幅でないので |alphabet| オプション指定と
+ともに使うことができない。
+
+%-------------------
+\subsection{旧版のオプション}
+
+v0.5版以前で用意されていたプリセット設定。
+現在の版でも使用は可能であるが非推奨である。
+
+\begin{itemize}
+\item |ipa-otf|\Means
+  「拡張子が |.otf| の」IPAフォントを使用する。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{ipam.otf} % IPA明朝
+\setgothicfont{ipag.otf} % IPAゴシック
+\end{verbatim}\end{quote}
+
+\item |ipa-dx|\Means
+  「拡張子が |.otf| の」IPAフォント + HGフォント。
+  \Note |ipa-hg| とIPAフォントの拡張子を除いて同じ。
+
+\item |kozuka4|\Means
+  小塚フォント（Pro版）の単ウェイト使用。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{KozMinPro-Regular-Acro.otf} % 小塚明朝 Pro R
+\setgothicfont{KozGoPro-Medium-Acro.otf}   % 小塚ゴシック Pro M
+\end{verbatim}\end{quote}
+
+\item |kozuka6|\Means
+  小塚フォント（Pr6版）の単ウェイト使用。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{KozMinProVI-Regular.otf} % 小塚明朝 Pro-VI R
+\setgothicfont{KozGoProVI-Medium.otf}   % 小塚ゴシック Pro-VI M
+\end{verbatim}\end{quote}
+
+\item |kozuka6n|\Means
+  小塚フォント（Pr6n版）の単ウェイト使用。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{KozMinPr6N-Regular.otf} % 小塚明朝 Pr6N R
+\setgothicfont{KozGoPr6N-Medium.otf}   % 小塚ゴシック Pr6N M
+\end{verbatim}\end{quote}
+
+\item |hiragino|\Means
+  ヒラギノフォントの単ウェイト使用。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{HiraMinPro-W3.otf}  % ヒラギノ明朝 Pro W3
+\setgothicfont{HiraKakuPro-W6.otf} % ヒラギノ角ゴ Pro W6
+\end{verbatim}\end{quote}
+
+\item |ms-dx|\Means |ms-hg| の別名。
+\item |ipa-ttf|\Means |ipa| の別名。
+\item |ipa-ttf-dx|\Means |ipa-hg| の別名。
+\item |ipav2|\Means |ipa| の別名。
+\item |ipav2-dx|\Means |ipa-hg| の別名。
+\item |ipa-dx|\Means |ipa-hg| の別名。
+\item |hiragino-dx|\Means |hiragino-pro| の別名。
+\end{itemize}
+
+%===========================================================
+\section{dvipdfmxのページ抜粋処理への対応}
+
+dvipdfmxには元のDVI文書の一部のページだけを抜粋してPDF文書に変換する
+機能がある（|-s| オプション）。
+ところが、本パッケージでは、ユーザ命令で指定されたフォントマップ情報を、
+DVIの先頭ページに書き出すという処理方法をとっている
+（すなわち「ページ独立性」を保っていない）ため、
+先頭ページを含まない抜粋を行った場合は、
+フォント置換が効かないという現象が発生する。
+
+この問題を解決するのが |everypage| パッケージオプションである。
+このオプションが指定された場合は、
+DVI文書の全てのページにフォントマップ情報を書き出すので、
+ページ抜粋を行っても確実にフォント置換が有効になる。
+ただし、このオプションを指定する場合は\Pkg{atbegshi}パッケージが
+必要である。
+
+%===========================================================
+\section{欧文フォントの置換の原理}
+
+指定された和文フォントの半角部分からなる欧文フォントファミリとして
+OT1/cfjar（明朝）とOT1/cfjas（ゴシック）を定義し、
+既定の欧文ファミリに設定している
+（明朝→|\rmdefault|；ゴシック→|\sfdefault|）。
+その上で、この欧文ファミリに対するマップ指定を和文と同じ方法で行っている。
+
+従って、例えば一時的に従来の CM フォントに切り替えたい場合はファミリ
+を cmr に変更すればよい。なお、この cfjar と cfjas フォントは内部では
+OT1 として扱われるが、実際には OT1 の一部のグリフしか持っていない。
+
+%===========================================================
+\section{注意事項}
+
+\begin{itemize}
+\item 指定できるフォントは等幅のものに限られる。
+  実際に使われるメトリックは置換前と変わらない。
+  （例えば jsarticle の標準設定ならJISメトリック）
+\item 欧文部分を置き換えた場合、残念ながら欧文も等幅になってしまう。
+\item さらに、アクセント付きの文字（\'e 等）や非英語文字
+  （{\ss} 等）も使えない。
+  大抵の日本語用フォントにはその文字を出力するためのグリフがそもそも
+  ないのであるが、例えあったとしても使えない。
+\item \Pkg{OTF}／\Pkg{UTF}パッケージ使用時に |\UTF| や |\CID| で
+  指定した文字が出力されるかは、
+  指定したフォントがその文字を持っているかに依存する。
+\item |deluxe| 付きの\Pkg{OTF}パッケージと |alphabet| 付きの
+  \Pkg{pxchfon}を同時に使う場合には、
+  \Pkg{OTF}パッケージを先に読み込む必要がある。
+  （これに反した場合はエラーになる。）
+\item 単ウェイトの場合は、明朝の太字はゴシックになるという一般的な
+  設定に欧文フォントの置換の際にも従っているが、
+  明朝のみが置換されている場合は、
+  明朝の置換フォントが太字にも適用される。
+\item 既述のように、0.3版以降では\Pkg{OTF}パッケージで |deluxe|、
+  |bold|、|noreplace| のいずれも指定されてない場合でも |\setgothicfont|
+  が有効になる。
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+%===========================================================
+\section{}
+
+本パッケージの核心の機能である
+「使用フォントを文書中で指定する」
+ことの実現にはdvipdfmxの拡張機能を利用している。
+従って、dvipdfmxの利用が必須となるのだが、
+（プレビュー等の目的で）
+文書中で指定したフォントが反映されなくてもよいのなら、
+他のDVIウェアでも本パッケージを利用した
+DVI文書を扱える可能性がある。
+
+%-------------------
+\subsection{和文フォントだけを置き換えた場合（\texttt{noalphabet} 指定時）}
+
+この設定で生成されるDVIファイルを
+dvipdfmx以外のDVIウェアに読ませた場合、
+フォント置換が無視され、
+そのソフトウェアで設定されたフォントで出力されるはずである。
+ただ、ソフトウェアによっては、警告やエラーが出る可能性もある。
+
+%-------------------
+\subsection{欧文フォントも置き換えた場合（\texttt{alphabet} 指定時）}
+
+欧文フォントを置き換えたDVIファイルは、
+独自の欧文フォント（|r-cfja?-?-l0j| という形式の名前）
+を含んでいるので、
+少なくともそれに関する設定をしない限りはdvipdfmx以外の
+DVIウェアで処理することができない。
+さらに、このフォントを扱うためにはDVIウェアが
+サブフォント（sfd）に対応している必要がある。
+文書中での設定をdvipdfmx以外のDVIウェアで活かすことはできない。
+しかし、「独自部分の欧文フォントを常に特定の代替フォントで表示させる」
+ということは、sfd対応のDVIウェアであれば可能である。
+
+以下に、ttf2pkについて、「常にIPAフォントで代替する」
+ための設定を掲げておく。
+この記述をttf2pkのマップファイル（ttfonts.map）に加えると、
+例えば、dvioutで本パッケージ使用のDVIファイルを閲覧できるようになる。
+
+\begin{quote}\small\begin{verbatim}
+r-cfjar-l-@PXcjk0@     msmincho.ttc FontIndex=0
+r-cfjar-r-@PXcjk0@     msmincho.ttc FontIndex=0
+r-cfjar-b-@PXcjk0@     msmincho.ttc FontIndex=0
+r-cfjas-r-@PXcjk0@     msgothic.ttc FontIndex=0
+r-cfjas-b-@PXcjk0@     msgothic.ttc FontIndex=0
+r-cfjas-x-@PXcjk0@     msgothic.ttc FontIndex=0
+\end{verbatim}\end{quote}
+
+%===========================================================
+\section{pxjafontパッケージの更新}
+
+{\sffamily
+\Pkg{PXjafont}バンドル0.2版をインストールしている場合の注意。}
+
+現在の版の\Pkg{pxchfon}パッケージは\Pkg{pxjafont}の機能を
+取り込んでいるため、\Pkg{pxjafont}は不要となり、
+そのため現在の版は\Pkg{pxjafont}と一緒に使えない。
+何らかの理由で引き続き\Pkg{pxjafont}パッケージを使いたい場合は、
+既にインストールされている |pxjafont.sty| を
+本バンドルの\Pkg{PXjafont}ディレクトリにある %
+|pxjafont.sty|（\Pkg{pxjafont}パッケージ 0.5 版）
+で置き換えればよい。
+
+この新しい\Pkg{pxjafont}パッケージは処理を全て\Pkg{pxchfon}に
+渡すという動作をする。
+|ipa| オプションの意味が異なる（「プリセット指定」節参照）
+のを除けば\Pkg{pxjafont} 0.2版と同じ動作である。
+
+%===========================================================
+\end{document}
+%% EOF

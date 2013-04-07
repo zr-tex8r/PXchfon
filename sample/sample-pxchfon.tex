@@ -1,0 +1,56 @@
+% 文字コードはUTF-8 (platex -kanji=utf8)
+\documentclass[a4paper]{jsarticle}
+\usepackage{pxchfon}
+\setminchofont[0]{hgrgy.ttc}  % HG行書体
+\setgothicfont[0]{hgrpp1.ttc} % HG創英角ポップ体
+\usepackage{otf}
+ % 箇条書きの番号を丸数字と小文字ローマ数字に
+\renewcommand{\theenumi}{\ajLabel\ajMaru{enumi}}
+\renewcommand{\labelenumi}{\theenumi}
+\renewcommand{\theenumii}{\ajLabel\ajroman{enumii}}
+\renewcommand{\labelenumii}{\theenumii}
+\begin{document}
+\title{pxchfon パッケージ}
+\author{ZR}
+\date{2009 年 3 月 29 日}
+\maketitle
+
+\section{はじめに}
+この文書は pxchfon パッケージの使用例を示したものである。
+このパッケージでは「明朝」「ゴシック」に対応するフォントを
+ユーザ指定の日本語フォントに置き換えられる。
+一度インストールしてしまえば、あとは {\LaTeX} 文書内で
+フォントファイル名を直接指定することで任意のフォントが使える。
+この文書では明朝を「HG行書体」(hgrgy.ttc)、ゴシックを
+\textsf{「HG創英角\aj半角{ホ゜ッフ゜}体」(hgrppl.ttc)}に置き換えている。
+
+\section{特徴}
+\begin{enumerate}
+\item 既定の和文のフォント（明朝・ゴシック）を指定のものに
+  置き換える。
+  \begin{enumerate}
+  \item 既定の欧文ファミリ（rmfamily・sffamily）を和文フォントの
+    従属欧文に置き換える設定も可能。
+  \item 数式フォントは置換されない。
+  \end{enumerate}
+\item 一度インストールすると、それだけで任意の日本語フォントに
+  適用できる。
+  \begin{enumerate}
+  \item しかも和文のみを置き換える場合なら、インストールも簡単。
+  \item 置き換えるフォントは、{\LaTeX} 文書内でファイル名で
+    指定する。
+  \end{enumerate}
+\item ただし、等幅のフォントしか利用できない。
+  \begin{enumerate}
+  \item 欧文も等幅（半角）になってしまう。
+  \item しかもアクセント付文字・非英語文字（
+    {\fontfamily{cmr}\selectfont \'e, \ss} 等）が使えない。
+  \item 残念。
+  \end{enumerate}
+\item dvipdfmx 専用。
+  \begin{enumerate}
+  \item 非常に残念。
+  \end{enumerate}
+\end{enumerate}
+
+\end{document}
