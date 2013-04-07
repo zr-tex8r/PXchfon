@@ -4,7 +4,7 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2010/05/12 v0.5]
+\ProvidesPackage{pxchfon}[2013/03/17 v0.6]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
@@ -50,9 +50,17 @@
 \DeclareOption{noeverypage}{\pxcz@everypagefalse}
 % preset spec options
 \def\pxcz@all@main@preset{%
-  noembed,ms,ms-dx,ipa,ipa-dx,ipa-otf,ipa-otf-dx,%
-  kozuka4,kozuka6,kozuka6n,hiragino,hiragino-dx,%
-  ipa2,ipa2-dx,ipa-ttf,ipa-ttf-dx}
+  noembed,ms,ms-hg-dx,ipa,ipa-hg-dx,ipaex,%
+  moga-mobo-dx,moga-maru-dx,%
+  kozuka-pro,kozuka-pr6,kozuka-pr6n,%
+  hiragino-pro,hiragino-pro-dx,%
+  hiragino-pron,hiragino-pron-dx,%
+  %(obsolete)
+  ipa-otf,ipa-otf-dx,%
+  %(alias)
+  ms-dx,ipa-ttf,ipa-ttf-dx,ipav2,ipav2-dx,ipa-dx,%
+  kozuka4,kozuka6,kozuka6n,%
+  hiragino,hiragino-dx}
 \let\pxcz@main@preset\relax
 \def\pxcz@do#1{\DeclareOption{#1}{\def\pxcz@main@preset{#1}}}
 \@for\pxcz@x:=\pxcz@all@main@preset\do{%
@@ -111,6 +119,10 @@
 
 %% \pxcz@unijis
 \edef\pxcz@unijis{UniJIS\ifpxcz@mmivjis 2004\fi}
+%% \pxcz@jis
+\edef\pxcz@jis{\ifpxcz@mmivjis JISX0213-2004-\fi}
+%% \pxcz@MI
+\edef\pxcz@MI{\ifpxcz@mmivjis:0:\else:3:\fi}
 
 %% \pxcz@mapentry{<id>}{<text>}
 \def\pxcz@mapentry#1{%
@@ -119,10 +131,10 @@
 
 %%%% map entries
 \pxcz@mapentry{STD}{%
-\Entry{mnr}{rml        H              \FONT}%
-\Entry{mnr}{rmlv       V              \FONT}%
-\Entry{gtr}{gbm        H              \FONT}%
-\Entry{gtr}{gbmv       V              \FONT}%
+\Entry{mnr}{rml        \*H            \FONT}%
+\Entry{mnr}{rmlv       \*V            \FONT}%
+\Entry{gtr}{gbm        \*H            \FONT}%
+\Entry{gtr}{gbmv       \*V            \FONT}%
 }
 \pxcz@mapentry{ALPHA}{%
 \Entry{mnl}{r-cfjar-l-@PXcjk0@ \UniCMap\ \FONT}%
@@ -200,20 +212,20 @@
 \Entry{gtr}{ugbmv      \UniJIS-UTF16-V \FONT}%
 }
 \pxcz@mapentry{UPOTF}{%
-\Entry{mnl}{uphminl-h   UniJIS-UTF16-H \FONT}%
-\Entry{mnl}{uphminl-v   UniJIS-UTF16-V \FONT}%
-\Entry{mnr}{uphminr-h   UniJIS-UTF16-H \FONT}%
-\Entry{mnr}{uphminr-v   UniJIS-UTF16-V \FONT}%
-\Entry{mnb}{uphminb-h   UniJIS-UTF16-H \FONT}%
-\Entry{mnb}{uphminb-v   UniJIS-UTF16-V \FONT}%
-\Entry{gtr}{uphgothr-h  UniJIS-UTF16-H \FONT}%
-\Entry{gtr}{uphgothr-v  UniJIS-UTF16-V \FONT}%
-\Entry{gtb}{uphgothb-h  UniJIS-UTF16-H \FONT}%
-\Entry{gtb}{uphgothb-v  UniJIS-UTF16-V \FONT}%
-\Entry{gtx}{uphgotheb-h UniJIS-UTF16-H \FONT}%
-\Entry{gtx}{uphgotheb-v UniJIS-UTF16-V \FONT}%
-\Entry{mgr}{uphmgothr-h UniJIS-UTF16-H \FONT}%
-\Entry{mgr}{uphmgothr-v UniJIS-UTF16-V \FONT}%
+\Entry{mnl}{uphminl-h   \UniJIS-UTF16-H \FONT}%
+\Entry{mnl}{uphminl-v   \UniJIS-UTF16-V \FONT}%
+\Entry{mnr}{uphminr-h   \UniJIS-UTF16-H \FONT}%
+\Entry{mnr}{uphminr-v   \UniJIS-UTF16-V \FONT}%
+\Entry{mnb}{uphminb-h   \UniJIS-UTF16-H \FONT}%
+\Entry{mnb}{uphminb-v   \UniJIS-UTF16-V \FONT}%
+\Entry{gtr}{uphgothr-h  \UniJIS-UTF16-H \FONT}%
+\Entry{gtr}{uphgothr-v  \UniJIS-UTF16-V \FONT}%
+\Entry{gtb}{uphgothb-h  \UniJIS-UTF16-H \FONT}%
+\Entry{gtb}{uphgothb-v  \UniJIS-UTF16-V \FONT}%
+\Entry{gtx}{uphgotheb-h \UniJIS-UTF16-H \FONT}%
+\Entry{gtx}{uphgotheb-v \UniJIS-UTF16-V \FONT}%
+\Entry{mgr}{uphmgothr-h \UniJIS-UTF16-H \FONT}%
+\Entry{mgr}{uphmgothr-v \UniJIS-UTF16-V \FONT}%
 }
 % for 'PXOTF'
 \@onlypreamble\pxcz@entry@pxotf
@@ -245,6 +257,7 @@
 \def\pxcz@addtospec#1{%
   \bgroup \let\Entry\pxcz@Entry
     \let\ \space \let\UniCMap\pxcz@unicmap
+    \let\*\pxcz@jis
     \let\UniJIS\pxcz@unijis
     \@nameuse{pxcz@ME/#1}\egroup}
 \def\pxcz@Entry#1{%
@@ -401,38 +414,68 @@
   \pxcz@uniweight{Ryumin-Light}{GothicBBB-Medium}}
 \pxcz@declare@preset{ms}{%
   \pxcz@uniweight{:0:msmincho.ttc}{:0:msgothic.ttc}}
-\pxcz@declare@preset{ms-dx}{%
+\pxcz@declare@preset{ms-hg-dx}{%
   \pxcz@multiweight{:0:msmincho.ttc}{:0:hgrme.ttc}%
   {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{hgrsmp.ttf}}
+\pxcz@declare@preset{ipa}{%
+  \pxcz@uniweight{ipam.ttf}{ipag.ttf}}
+\pxcz@declare@preset{ipa-hg-dx}{%
+  \pxcz@multiweight{ipam.ttf}{:0:hgrme.ttc}%
+  {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{hgrsmp.ttf}}
+\pxcz@declare@preset{ipaex}{%
+  \pxcz@uniweight{ipaexm.ttf}{ipaexg.ttf}}
+\pxcz@declare@preset{moga-mobo-dx}{%
+  \pxcz@multiweight{\pxcz@MI mogam.ttc}{\pxcz@MI mogamb.ttc}%
+  {\pxcz@MI mogag.ttc}{\pxcz@MI mogagb.ttc}%
+  {\pxcz@MI mogagb.ttc}{\pxcz@MI mobog.ttc}}
+\pxcz@declare@preset{moga-maru-dx}{%
+  \pxcz@multiweight{\pxcz@MI mogam.ttc}{\pxcz@MI mogamb.ttc}%
+  {\pxcz@MI mogag.ttc}{\pxcz@MI mogagb.ttc}%
+  {\pxcz@MI mogagb.ttc}{MTLmr3m.ttf}}
+\pxcz@declare@preset{kozuka-pro}{%
+  \usecmapforalphabet
+  \pxcz@uniweight{KozMinPro-Regular-Acro.otf}{KozGoPro-Medium-Acro.otf}}
+\pxcz@declare@preset{kozuka-pr6}{%
+  \usecmapforalphabet
+  \pxcz@uniweight{KozMinProVI-Regular.otf}{KozGoProVI-Medium.otf}}
+\pxcz@declare@preset{kozuka-pr6n}{%
+  \usecmapforalphabet
+  \pxcz@uniweight{KozMinPr6N-Regular.otf}{KozGoPr6N-Medium.otf}}
+\pxcz@declare@preset{hiragino-pro}{%
+  \usecmapforalphabet
+  \pxcz@uniweight{HiraMinPro-W3.otf}{HiraKakuPro-W6.otf}}
+\pxcz@declare@preset{hiragino-pro-dx}{%
+  \usecmapforalphabet
+  \pxcz@multiweight{HiraMinPro-W3.otf}{HiraMinPro-W6.otf}%
+   {HiraKakuPro-W3.otf}{HiraKakuPro-W6.otf}{HiraKakuStd-W8.otf}%
+   {HiraMaruPro-W4.otf}}
+\pxcz@declare@preset{hiragino-pron}{%
+  \usecmapforalphabet
+  \pxcz@uniweight{HiraMinProN-W3.otf}{HiraKakuProN-W6.otf}}
+\pxcz@declare@preset{hiragino-pron-dx}{%
+  \usecmapforalphabet
+  \pxcz@multiweight{HiraMinProN-W3.otf}{HiraMinProN-W6.otf}%
+   {HiraKakuProN-W3.otf}{HiraKakuProN-W6.otf}{HiraKakuStd-W8.otf}%
+   {HiraMaruProN-W4.otf}}
 \pxcz@declare@preset{ipa-otf}{%
   \pxcz@uniweight{ipam.otf}{ipag.otf}}
 \pxcz@declare@preset{ipa-otf-dx}{%
   \pxcz@multiweight{ipam.otf}{:0:hgrme.ttc}%
   {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{hgrsmp.ttf}}
-\pxcz@declare@preset{ipa-ttf}{%
-  \pxcz@uniweight{ipam.ttf}{ipag.ttf}}
-\pxcz@declare@preset{ipa-ttf-dx}{%
-  \pxcz@multiweight{ipam.ttf}{:0:hgrme.ttc}%
-  {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{hgrsmp.ttf}}
-\pxcz@declare@preset@alias{ipa}{ipa-ttf}
-\pxcz@declare@preset@alias{ipav2}{ipa-ttf}
-\pxcz@declare@preset{kozuka4}{%
-  \usecmapforalphabet
-  \pxcz@uniweight{KozMinPro-Regular-Acro.otf}{KozGoPro-Medium-Acro.otf}}
-\pxcz@declare@preset{kozuka6}{%
-  \usecmapforalphabet
-  \pxcz@uniweight{KozMinProVI-Regular.otf}{KozGoProVI-Medium.otf}}
-\pxcz@declare@preset{kozuka6n}{%
-  \usecmapforalphabet
-  \pxcz@uniweight{KozMinPr6N-Regular.otf}{KozGoPr6N-Medium.otf}}
-\pxcz@declare@preset{hiragino}{%
-  \usecmapforalphabet
-  \pxcz@uniweight{HiraMinPro-W3.otf}{HiraKakuPro-W6.otf}}
-\pxcz@declare@preset{hiragino-dx}{%
-  \usecmapforalphabet
-  \pxcz@multiweight{HiraMinPro-W3.otf}{HiraMinPro-W6.otf}%
-   {HiraKakuPro-W3.otf}{HiraKakuPro-W6.otf}{HiraKakuStd-W8.otf}%
-   {HiraMaruPro-W4.otf}}
+\pxcz@declare@preset@alias{ms-dx}{ms-hg-dx}
+\pxcz@declare@preset@alias{ipa-ttf}{ipa}
+\pxcz@declare@preset@alias{ipa-ttf-dx}{ipa-hg-dx}
+\pxcz@declare@preset@alias{ipav2}{ipa}
+\pxcz@declare@preset@alias{ipav2-dx}{ipa-hg-dx}
+\pxcz@declare@preset@alias{ipa-dx}{ipa-hg-dx}
+\pxcz@declare@preset@alias{kozuka4}{kozuka-pro}
+\pxcz@declare@preset@alias{kozuka6}{kozuka-pr6}
+\pxcz@declare@preset@alias{kozuka6n}{kozuka-pr6n}
+\pxcz@declare@preset@alias{kozuka4-dx}{kozuka-pro-dx}
+\pxcz@declare@preset@alias{kozuka6-dx}{kozuka-pr6-dx}
+\pxcz@declare@preset@alias{kozuka6n-dx}{kozuka-pr6n-dx}
+\pxcz@declare@preset@alias{hiragino}{hiragino-pro}
+\pxcz@declare@preset@alias{hiragino-dx}{hiragino-pro-dx}
 
 %%%% ... and invokes the specified one!
 \if\pxcz@main@preset\relax\else
