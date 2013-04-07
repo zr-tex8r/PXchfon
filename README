@@ -1,0 +1,385 @@
+==================================================
+== PXchfon バンドル v0.5  <2010/05/12>          ==
+==           by「ZR」（八登 崇之/Takayuki YATO）==
+==                      <zrbabbler@yahoo.co.jp> ==
+==================================================
+(This file is encoded in UTF-8.)
+
+pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）をユーザ指定の
+ものに置き換える。dvipdfmx 専用である。他のフォント追加パッケージと
+異なり、追加するフォントを LaTeX 文書中で指定するので、一度パッケージ
+をインストールするだけで、任意の日本語フォント（ただし等幅に限る）を
+使うことができる。欧文部分を同じ日本語フォントで置き換えることも可能で
+ある。UTF / OTF パッケージにも対応している。
+
+0.5 版での拡張で、pTeX において広く行われているフォント設定(IPA フォント
+の使用等)をパッケージオプション一つで行う機能を追加した。この機能は元々、
+別の PXjafont パッケージとして提供されていたものである。
+
+■ 対応環境
+
+    ・TeX 処理系：pLaTeX2e / upLaTeX2e
+    ・DVI ウェア：dvipdfmx
+    ・前提パッケージ：
+        atbegshi パッケージ(everypage オプション使用時)
+
+■ 本ソフトウェアの一次配布サイト(作者のサイト)
+
+    En toi Pythmeni tes TeXnopoleos ～電脳世界の奥底にて～
+    http://zrbabbler.hp.infoseek.co.jp/
+
+■ インストール
+
+* 和文のみを置き換えればよい場合
+
+  # Lite 版はこちらの設定のみ使用可能となっている。(実質 pxchfon.sty のみ
+  # を含む構成にしている。)
+
+    つまり、常に noalphabet オプション付きで用いる場合。この場合は以下の
+    設定だけで済む。
+
+    TDS 1.1 に従ったシステムでは、次のファイルを移動する。
+    ・pxchfon.sty → $TEXMF/tex/platex/PXchfon/
+
+    W32TeX を C:\usr\local にインストールした場合の例。
+    ・pxchfon.sty → C:\usr\local\share\texmf-local\tex\platex\PXchfon
+
+    ※ もっと簡単に、TeX システムのディレクトリには手を加えずに、単に
+    文書ファイルと同じディレクトリに pxchfon.sty を置くだけでも使える。
+
+    この設定で生成さえる DVI ファイルを dvipdfmx 以外の DVI ウェアに読ま
+    せた場合、フォント置換が無視され、そのソフトウェアで設定されたフォント
+    で出力される。プレビュー用には有用かもしれない。ただ、ソフトウェアに
+    よっては、警告やエラーが出る可能性もある。
+
+* 欧文部分の置き換えも利用したい場合
+
+    つまり、noalphabet なしでも用いたい場合。この場合は上に加えて以下の
+    設定を行う。
+
+    TDS 1.1 に従ったシステムでは、各ファイルを次の場所に移動する。
+    ・*.tfm      → $TEXMF/fonts/tfm/public/PXchfon/
+    ・*.vf       → $TEXMF/fonts/vf/public/PXchfon/
+    ・PXcjk0.sfd → $TEXMF/fonts/sfd/PXchfon
+    ・*.def      → $TEXMF/tex/platex/PXchfon/
+
+    W32TeX を C:\usr\local にインストールした場合の例。
+    ・*.tfm  → C:\usr\local\share\texmf-local\fonts\tfm\public\PXchfon
+    ・*.vf   → C:\usr\local\share\texmf-local\fonts\vf\public\PXchfon
+    ・PXcjk0.sfd → C:\usr\local\share\texmf-local\fonts\sfd\PXchfon 
+    ・*.def  → C:\usr\local\share\texmf-local\tex\platex\PXchfon
+
+    欧文部分を置き換えた DVI ファイルは独自の欧文フォント(r-cfja?-?-l0j
+    という形式の名前)を含んでいるので、少なくともそれに関する設定をしない
+    限りは dvipdfmx 以外の DVI ウェアで処理することができない。さらに、
+    このフォントを扱うためには DVI ウェアがサブフォント(sfd)に対応して
+    いる必要がある。
+
+    和文の項に書いたのと同様、文書中での設定を dvipdfmx 以外の DVI ウェア
+    で活かすことはできない。しかし、プレビュー用に、独自部分の欧文フォント
+    を常に MS フォントで表示させるための設定を以下に掲げておく。この記述を
+    ttf2pk のマップファイル(ttfonts.map)に加えると、例えば、dviout でプレ
+    ビューできるようになる。
+@----
+r-cfjar-l-@PXcjk0@     msmincho.ttc FontIndex=0
+r-cfjar-r-@PXcjk0@     msmincho.ttc FontIndex=0
+r-cfjar-b-@PXcjk0@     msmincho.ttc FontIndex=0
+r-cfjas-r-@PXcjk0@     msgothic.ttc FontIndex=0
+r-cfjas-b-@PXcjk0@     msgothic.ttc FontIndex=0
+r-cfjas-x-@PXcjk0@     msgothic.ttc FontIndex=0
+@----
+
+* pxjafont パッケージの更新
+
+    PXjafont バンドル 0.2 版をインストールしている場合の注意。現在の版の
+    pxchfon パッケージは pxjafont の機能を取り込んでいるため、pxjafont
+    は不要となり、そのため現在の版は pxjafont と一緒に使えない。何らかの
+    理由で引き続き pxjafont パッケージを使いたい場合は、既にインストール
+    されている pxjafont.sty を本バンドルの PXjafont ディレクトリにある
+    pxjafont.sty (pxjafont パッケージ 0.5 版)で置き換えればよい。
+
+    この新しい pxjafont パッケージは処理を全て pxchfon に渡すという動作
+    をする。"ipa" オプションの意味が異なる(「プリセット指定」節参照)の
+    を除けば pxjafont 0.2 版と同じ動作である。
+
+
+-------------------------------------
+  pxchfon パッケージ (v0.5) -- 本体
+-------------------------------------
+
+■ 読込
+
+    プレアンブルにおいて、\usepackage を用いて読み込む。
+                                      
+      \usepackage[<オプション>,...]{pxchfon}
+
+    オプションは次のものが用意されている。
+
+    alphabet
+      欧文フォントも指定されたフォントの英数字部分で置き換える。(明朝が
+      \rmfamily、ゴシックが \sffamily に適用される。)
+      プリセット指定オプション未使用の場合は既定で有効である。
+    noalphabet
+      alphabet の否定。欧文フォントは変更しない。インストール時に欧文用
+      の設定をしていない場合は必ずこれを指定する必要がある。
+      プリセット指定オプション使用の場合はこちらが既定で有効になる。
+    プリセット指定オプション (ipa, hiragino 等)
+      名前に対応するプリセット指定を有効にする。詳細については「プリセット
+      指定」節を参照。
+    otf  (既定)
+      OTF および UTF パッケージの使用時に、そのフォントも置き換えの対象
+      とする。
+    nootf
+      otf の否定。OTF / UTF パッケージのフォントは置き換えない。この場合、
+      OTF パッケージで noreplace を指定しない限り、標準の和文フォントは
+      変化しない。
+    everypage
+      DVI の全ページにマップ設定を書き込む。詳細は「dvipdfmx のページ抜粋
+      処理への対応」を参照。
+    noeverypage
+      DVI の先頭ページにのみマップ設定を書き込む。everypage の否定。
+    prefer2004jis
+      upTeX の標準和文フォント(および他の JY2/JT2 エンコーディングをもつ
+      フォント)の CMap を UniJIS2004 系のものに変更する。Adobe-Japan1 に
+      対応した OpenType フォント使用の場合は、所謂「2004JIS 字形」が使わ
+      れることになる。
+    noprefer2004jis
+      prefer2004jis の否定。
+
+■ 機能
+
+    以下に該当する和文フォントを、以降で述べるユーザ命令で指定したものに
+    置き換える。
+      - pTeX の標準のフォント - rml*/gbm*
+      - upTeX の日本語フォント - urml*/ugbm*/uprml*/upbgm*
+      - UTF パッケージのフォント - hmr*/hkb*/unij*/cid*
+      - OTF パッケージの日本語フォント - hmin*/hgoth*/otf-{u,c}j*
+      - PXfontspec パッケージの日本語フォント - nja{r,s}-*
+    和文フォント置換は、dvipdfmx のマップ設定を文書内で(一時的に)変更する
+    という方法で実現している。欧文フォントについては実現方法が少し異なる
+    (「欧文フォントの置換の原理」節を参照)。
+
+    OTF パッケージを deluxe オプション付きで用いている場合以外、すなわち
+    明朝・ゴシックとも単ウェイトの場合、以下の命令を用いる。
+
+    \setminchofont[<番号>]{<フォントファイル名>}
+      「明朝」のフォントを置き換えるフォントをファイル名で指定する。TTC
+      形式の場合の該当のフォントの番号を <番号> に指定する。
+    \setgothicfont[<番号>]{<フォントファイル名>}
+      「ゴシック」のフォントを置き換えるフォントをファイル名で指定する。
+        例: \setminchofont{ipam.ttf}        % IPA明朝
+            \setgothicfont[0]{msgothic.ttc} % ＭＳ ゴシック
+
+    OTF パッケージを deluxe 付きで用いている場合は、明朝・ゴシックとも
+    に 3 ウェイトを使う。この時は、各ウェイト毎にフォント指定ができる。
+    またこの場合、丸ゴシック(\mgfamily)が使用可能になるが、これに対して
+    置き換えるフォントを指定することができる。
+
+    \setlightminchofont[<番号>]{<フォントファイル名>}
+      明朝・細ウェイト(\mcfamily\ltseries)
+    \setmediumminchofont[<番号>]{<フォントファイル名>}
+      明朝・中ウェイト(\mcfamily\mdseries)
+    \setboldminchofont[<番号>]{<フォントファイル名>}
+      明朝・太ウェイト(\mcfamily\bfseries)
+    \setlightminchofont[<番号>]{<フォントファイル名>}
+      ゴシック・中ウェイト(\gtfamily\mdseries)
+    \setmediumminchofont[<番号>]{<フォントファイル名>}
+      ゴシック・太ウェイト(\gtfamily\bfseries)
+    \setboldminchofont[<番号>]{<フォントファイル名>}
+      ゴシック・極太ウェイト(\gtfamily\ebseries)
+    \setmarugothicfont[<番号>]{<フォントファイル名>}
+      丸ゴシック(\mgfamily)
+
+    さらに、この場合、\setminchofont と \setgothicfont は各々のファミリ
+    の 3 ウェイト全てを指定のフォントで置き換える。実質的に単ウェイトに
+    なってしまうようで無意味に思えるが、例えば明朝を実際には 2 ウェイト
+    しか使わないという時に、
+       \setminchofont{minchoW3.otf}      %まず3ウェイト指定して
+       \setboldminchofont{minchoW6.otf}  %太だけ再指定する
+    とする使い方が考えられる。特に、欧文フォントも置き換えたい場合は 3
+    ウェイトが全て指定されていないと有効にならないので、
+       \setmediumminchofont{minchoW3.otf}
+       \setboldminchofont{minchoW6.otf}
+    では思い通りにならないことになる。また、この仕様のため、deluxe 以外
+    の場合(既定、bold、noreplace)は \setgothicfont で指定したものが確実
+    にゴシック(単ウェイト)に反映される。
+
+■ プリセット指定
+
+    このパッケージの元々の意図は、標準のフォントを普段使っているものと全く
+    別の書体に変えることであったが、例えば「普段使う設定が複数ありそれを
+    簡単に切り替えたい」という場合にも有用である。そこで、pTeX において
+    広く行われている設定をパッケージ内に組み込んで、パッケージオプション
+    でそれを呼び出すという機能を追加した。元々は PXjafont という別のパッ
+    ケージで提供されていた機能であるが、0.5 版からこのパッケージに組み
+    入れることにした。
+
+    パッケージオプションにプリセット名を指定すると予め決められたフォント
+    ファイル名が \setminchofont 等の命令で設定される。例えば、
+
+      \usepackage[ipa]{pxchfon}
+
+    は以下の記述と同等になる。
+
+      \usepackage[noalphabet]{pxchfon}
+      \setminchofont{ipam.ttf}
+      \setgothicfont{ipag.ttf}
+
+    注意として、プリセット指定を用いた場合は、欧文フォントの置換について
+    noalphabet(無効)が既定になる。プリセット指定の場合は和文が「普通の」
+    明朝・ゴシックのフォントとなるので欧文フォントを変更しない場合が多い
+    と考えられるためである。
+
+  ・ 単ウェイト用の設定
+
+    後述の「多ウェイト用の設定」で述べられた設定以外で使う場合に使用する。
+
+    noembed ： フォントを埋め込まない。
+      (この指定だけは直接対応する \setminchofont 等の命令列がない。)
+
+    ms ： MS フォントを使用する。
+      \setminchofont[0]{msmincho.ttc} % ＭＳ 明朝
+      \setgothicfont[0]{msgothic.ttc} % ＭＳ ゴシック
+
+    ipa / ipa-ttf： IPA フォント(拡張子が .ttf)を使用する。
+      \setminchofont{ipam.ttf} % IPA明朝
+      \setgothicfont{ipag.ttf} % IPAゴシック
+
+    ipa-otf ： IPA フォント(拡張子が .otf)を使用する。
+      \setminchofont{ipam.otf} % IPA明朝
+      \setgothicfont{ipag.otf} % IPAゴシック
+
+    ※ IPA フォントのファイル拡張子は、最新の版(ver003.02)は .ttf である
+    が、ver003.00 のものは .otf である。(ファイル形式はどの版も同じで、
+    TrueType グリフの OpenType 形式である。) 最新版が .ttf を採用している
+    ため、PXjafont 0.2 版と異なり、単なる「ipa」は拡張子 .ttf のファイル
+    名が指定される。
+
+    kozuka4 ： 小塚フォント(Pro 仕様)を使用する。
+      \setminchofont{KozMinPro-Regular-Acro.otf} % 小塚明朝 Pro R
+      \setgothicfont{KozGoPro-Medium-Acro.otf}   % 小塚ゴシック Pro M
+
+    kozuka6 ： 小塚フォント(Pr6 仕様)を使用する。
+      \setminchofont{KozMinProVI-Regular.otf} % 小塚明朝 Pro-VI R
+      \setgothicfont{KozGoProVI-Medium.otf}   % 小塚ゴシック Pro-VI M
+
+    kozuka6n ： 小塚フォント(Pr6N 仕様)を使用する。
+      \setminchofont{KozMinPr6N-Regular.otf} % 小塚明朝 Pr6N R
+      \setgothicfont{KozGoPr6N-Medium.otf}   % 小塚ゴシック Pr6N M
+
+    hiragino ： ヒラギノフォントを使用する。
+      \setminchofont{HiraMinPro-W3.otf}  % ヒラギノ明朝 Pro W3
+      \setgothicfont{HiraKakuPro-W6.otf} % ヒラギノ角ゴ Pro W6
+
+  ・ 多ウェイト用の設定
+
+    OTF パッケージの deluxe オプション使用時に有効になる。明朝 2 ウェイト、
+    ゴシック 3 ウェイト、丸ゴシック 1 ウェイトを設定する。結果的に、
+    \setlightminchofont の設定値は \setminchofont と同じになる。
+
+    ms-dx ： MS フォントおよび Microsoft Office 付属の日本語フォントを使用
+      する。
+      \setminchofont[0]{msmincho.ttc}    % ＭＳ 明朝
+      \setboldminchofont[0]{hgrme.ttc}   % HG明朝E
+      \setgothicfont[0]{hgrgm.ttc}       % HGｺﾞｼｯｸM
+      \setboldgothicfont[0]{hgrge.ttc}   % HGｺﾞｼｯｸE
+      \setxboldgothicfont[0]{hgrsgu.ttc} % HG創英角ｺﾞｼｯｸUB
+      \setmarugothic{hgrsmp.ttf}         % HG丸ｺﾞｼｯｸM-PRO 
+
+    ipa-dx / ipa-ttf-dx： IPA フォント(拡張子 .ttf)および Microsoft Office
+      付属の日本語フォントを使用する。
+      (ms-dx と以下を除いて同じ)
+      \setminchofont{ipam.otf} % IPA明朝
+
+    ipa-otf-dx ： IPA フォント(拡張子 .otf)および Microsoft Office 付属の
+      日本語フォントを使用する。
+      (ms-dx と以下を除いて同じ)
+      \setminchofont{ipam.ttf} % IPA明朝
+
+    hiragino-dx ： ヒラギノフォントを使用する。
+      \setminchofont{HiraMinPro-W3.otf}       % ヒラギノ明朝 Pro W3
+      \setboldminchofont{HiraMinPro-W6.otf}   % ヒラギノ明朝 Pro W6
+      \setgothicfont{HiraKakuPro-W3.otf}      % ヒラギノ角ゴ Pro W3
+      \setboldgothicfont{HiraKakuPro-W6.otf}  % ヒラギノ角ゴ Pro W6
+      \setxboldgothicfont{HiraKakuStd-W8.otf} % ヒラギノ角ゴ Std W8
+      \setmarugothicfont{HiraMaruPro-W4.otf}  % ヒラギノ丸ゴ Pro W4
+
+    なお、以上の設定で登場したフォントのうち、「HG丸ｺﾞｼｯｸM-PRO」および
+    「小塚フォント」「ヒラギノフォント」は欧文が等幅でない(小塚とヒラギノ
+    は半角幅のグリフを持っているのだが pxchfon で使えない)ので alphabet
+    オプション指定とともに使うことができない。
+
+■ dvipdfmx のページ抜粋処理への対応
+
+    dvipdfmx には元の DVI 文書の一部のページだけを抜粋して PDF 文書に変換
+    する機能がある(-s オプション)。ところが、本パッケージでは、ユーザ命令
+    で指定されたフォントマップ情報を、DVI の先頭ページに書き出すという
+    処理方法をとっている(すなわち「ページ独立性」を保っていない)ため、
+    先頭ページを含まない抜粋を行った場合は、フォント置換が効かないという
+    現象が発生する。
+
+    この問題を解決するのが everypage パッケージオプションである。この
+    オプションが指定された場合は、DVI 文書の全てのページにフォントマップ
+    情報を書き出すので、ページ抜粋を行っても確実にフォント置換が有効に
+    なる。ただし、このオプションを指定する場合は atbegshi パッケージが
+    必要である。
+
+■ 欧文フォントの置換の原理
+
+    指定された和文フォントの半角部分からなる欧文フォントファミリとして
+    OT1/cfjar(明朝)と OT1/cfjas(ゴシック)を定義し、既定の欧文ファミリに
+    設定している(明朝→\rmdefault; ゴシック→\sfdefault)。その上で、この
+    欧文ファミリに対するマップ指定を和文と同じ方法で行っている。
+
+    従って、例えば一時的に従来の CM フォントに切り替えたい場合はファミリ
+    を cmr に変更すればよい。なお、この cfjar と cfjas フォントは内部では
+    OT1 として扱われるが、実際には OT1 の一部のグリフしか持っていない。
+
+■ 注意事項
+
+  - 指定できるフォントは等幅のものに限られる。実際に使われるメトリックは
+    置換前と変わらない。(例えば jsarticle の標準設定なら JIS メトリック)
+  - 欧文部分を置き換えた場合、残念ながら欧文も等幅になってしまう。
+  - さらに、アクセント付きの文字(\'e 等)や非英語文字(\ss 等)も使えない。
+    大抵の日本語用フォントにはその文字を出力するためのグリフがそもそも
+    ないのであるが、例えあったとしても使えない。
+  - OTF / UTF パッケージ使用時に \UTF や \CID で指定した文字が出力される
+    かは、指定したフォントがその文字を持っているかに依存する。
+  - deluxe 付きの OTF パッケージと alphabet 付きの pxchfon を同時に使う
+    場合には OTF パッケージを先に読み込む必要がある。(これに反した場合は
+    エラーになる。)
+  - 単ウェイトの場合は、明朝の太字はゴシックになるという一般的な設定に
+    欧文フォントの置換の際にも従っているが、明朝のみが置換されている場合
+    は、明朝の置換フォントが太字にも適用される。
+  - 既述のように v0.3 以降では OTF パッケージで deluxe、bold、noreplace
+    のいずれも指定されてない場合でも \setgothicfont が有効になる。
+
+
+----------------------------------------
+
+■ 更新履歴
+
+Version 0.5  <2010/05/12>
+  - PXfontspec パッケージのフォントへの対応を追加。
+  - PXjafont パッケージの機能を組み入れた。
+  - [no]prefer2004jis オプションを追加。
+  - 欧文のマップ指定について v0.4 で混入したバグを修正。
+  - [no]everypage オプションを追加。
+Version 0.4a <2010/04/12>
+  - 縦書きの文書クラスで必ずエラーになるというバグを修正。
+Version 0.4  <2009/12/20>
+  - なぜか \setmarugothicfont の説明が抜けてたので補った。
+  - \[no]usecmapforalphabet を実験的に追加。
+Version 0.3a <2009/11/23>
+  - README 中に掲げた ttfonts.map の記述の間違いを訂正。
+Version 0.3  <2009/07/13>
+  - OTF パッケージの多ウェイト機能(deluxe オプション)に対応。
+  - UTF パッケージへの対応が全く機能していなかったのを修正。
+  - 明朝だけ指定した場合の欧文の取り扱いの問題を解決。
+Version 0.2a <2009/05/31>
+  - noalphabet 指定時には PXcjk0.sfd を読む必要はなかったので、説明を訂正
+    した。
+Version 0.2  <2009/03/29>
+  - 最初の公開版。
+
+W# EOF
