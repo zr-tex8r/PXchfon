@@ -64,6 +64,12 @@ pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）を
 更新履歴
 --------
 
+  * Version 0.6b <2013/04/20>
+      - `(no)oneweight` オプションを追加。
+      - 非 CID フォントに関する `prefer2004jis` の実現方法を変更。
+        2000JIS と 2004JIS の TFM で別の実フォントがマップされる。
+      - 3 つのパッケージレベル命令 `\JaFontReplacementFor`,
+        `\JaFontReplacementHook`, `\JaFontUserDefinedMap` を追加。
   * Version 0.6a <2013/04/07>
       - プリセットの設定を全面的に見直し。
       - OTF パッケージの `jis2004` オプション設定時に使用されるフォント
