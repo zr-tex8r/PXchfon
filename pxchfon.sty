@@ -4,7 +4,7 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2013/04/20 v0.6b]
+\ProvidesPackage{pxchfon}[2013/04/20 v0.6c]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
@@ -51,6 +51,9 @@
 \newif\ifpxcz@oneweight
 \DeclareOption{oneweight}{\pxcz@oneweighttrue}
 \DeclareOption{nooneweight}{\pxcz@oneweightfalse}
+\newif\ifpxcz@directunicode
+\DeclareOption{directunicode}{\pxcz@directunicodetrue}
+\DeclareOption{nodirectunicode}{\pxcz@directunicodefalse}
 % preset spec options
 \def\pxcz@all@main@preset{%
   noembed,%
@@ -145,8 +148,8 @@
   \edef\pxcz@pfx@jis{\ifpxcz@mmivjis#1\fi}}
 \setnewglyphcmapprefix{\pxcz@pfx@jis@dflt}
 
-%% \pxcz@ofx@unijis
-\edef\pxcz@ofx@unijis{UniJIS\ifpxcz@mmivjis 2004\fi}
+%% \pxcz@pfx@unijis
+\edef\pxcz@pfx@unijis{UniJIS\ifpxcz@mmivjis 2004\fi}
 
 %% \pxcz@enable@switch@realfont
 \def\pxcz@enable@switch@realfont{%
@@ -169,12 +172,18 @@
 % NB: not \edef
 \def\pxcz@MI{\ifpxcz@mmivjis:0:\else:3:\fi}
 
+%% \pxcz@unidirect
+\let\pxcz@unidirect\@empty
+\ifpxcz@directunicode
+\def\pxcz@unidirect#1-H{unicode}
+\fi
+
 %% \pxcz@addtospec{<id>}
 \def\pxcz@addtospec#1{%
   \bgroup \let\Entry\pxcz@Entry
     \let\ \space \let\UniCMap\pxcz@unicmap
-    \let\*\pxcz@pfx@jis
-    \let\UniJIS\pxcz@ofx@unijis
+    \let\*\pxcz@pfx@jis \let\+\pxcz@unidirect
+    \let\UniJIS\pxcz@pfx@unijis
     \@nameuse{pxcz@ME/#1}\egroup}
 \def\pxcz@Entry#1{%
   \expandafter\let\expandafter\FONT\csname pxcz@FS/#1\endcsname
@@ -225,74 +234,74 @@
 \Entry{gtu}{hkbv       \*V            \FONTs}%
 }
 \pxcz@mapentry{OTF}{%
-\Entry{mnl}{otf-ujml-h UniJIS-UTF16-H \FONTo}%
-\Entry{mnl}{otf-ujml-v UniJIS-UTF16-V \FONTo}%
+\Entry{mnl}{otf-ujml-h \+UniJIS-UTF16-H \FONTo}%
+\Entry{mnl}{otf-ujml-v   UniJIS-UTF16-V \FONTo}%
 \Entry{mnl}{otf-cjml-h Identity-H     \FONT/AJ16}%
 \Entry{mnl}{otf-cjml-v Identity-V     \FONT/AJ16}%
 \Entry{mnl}{hminl-h    H              \FONTo}%
 \Entry{mnl}{hminl-v    V              \FONTo}%
-\Entry{mnl}{otf-ujmln-h UniJIS2004-UTF16-H \FONT}%
-\Entry{mnl}{otf-ujmln-v UniJIS2004-UTF16-V \FONT}%
+\Entry{mnl}{otf-ujmln-h   UniJIS2004-UTF16-H \FONT}%
+\Entry{mnl}{otf-ujmln-v   UniJIS2004-UTF16-V \FONT}%
 \Entry{mnl}{hminln-h   H              \FONT}%
 \Entry{mnl}{hminln-v   V              \FONT}%
-\Entry{mnr}{otf-ujmr-h UniJIS-UTF16-H \FONTo}%
-\Entry{mnr}{otf-ujmr-v UniJIS-UTF16-V \FONTo}%
+\Entry{mnr}{otf-ujmr-h \+UniJIS-UTF16-H \FONTo}%
+\Entry{mnr}{otf-ujmr-v   UniJIS-UTF16-V \FONTo}%
 \Entry{mnr}{otf-cjmr-h Identity-H     \FONT/AJ16}%
 \Entry{mnr}{otf-cjmr-v Identity-V     \FONT/AJ16}%
 \Entry{mnr}{hminr-h    H              \FONTo}%
 \Entry{mnr}{hminr-v    V              \FONTo}%
-\Entry{mnr}{otf-ujmrn-h UniJIS2004-UTF16-H \FONT}%
-\Entry{mnr}{otf-ujmrn-v UniJIS2004-UTF16-V \FONT}%
+\Entry{mnr}{otf-ujmrn-h   UniJIS2004-UTF16-H \FONT}%
+\Entry{mnr}{otf-ujmrn-v   UniJIS2004-UTF16-V \FONT}%
 \Entry{mnr}{hminrn-h   H              \FONT}%
 \Entry{mnr}{hminrn-v   V              \FONT}%
-\Entry{mnb}{otf-ujmb-h UniJIS-UTF16-H \FONTo}%
-\Entry{mnb}{otf-ujmb-v UniJIS-UTF16-V \FONTo}%
+\Entry{mnb}{otf-ujmb-h \+UniJIS-UTF16-H \FONTo}%
+\Entry{mnb}{otf-ujmb-v   UniJIS-UTF16-V \FONTo}%
 \Entry{mnb}{otf-cjmb-h Identity-H     \FONT/AJ16}%
 \Entry{mnb}{otf-cjmb-v Identity-V     \FONT/AJ16}%
 \Entry{mnb}{hminb-h    H              \FONTo}%
 \Entry{mnb}{hminb-v    V              \FONTo}%
-\Entry{mnb}{otf-ujmbn-h UniJIS2004-UTF16-H \FONT}%
-\Entry{mnb}{otf-ujmbn-v UniJIS2004-UTF16-V \FONT}%
+\Entry{mnb}{otf-ujmbn-h   UniJIS2004-UTF16-H \FONT}%
+\Entry{mnb}{otf-ujmbn-v   UniJIS2004-UTF16-V \FONT}%
 \Entry{mnb}{hminbn-h   H              \FONT}%
 \Entry{mnb}{hminbn-v   V              \FONT}%
-\Entry{gtr}{otf-ujgr-h UniJIS-UTF16-H \FONTo}%
-\Entry{gtr}{otf-ujgr-v UniJIS-UTF16-V \FONTo}%
+\Entry{gtr}{otf-ujgr-h \+UniJIS-UTF16-H \FONTo}%
+\Entry{gtr}{otf-ujgr-v   UniJIS-UTF16-V \FONTo}%
 \Entry{gtr}{otf-cjgr-h Identity-H     \FONT/AJ16}%
 \Entry{gtr}{otf-cjgr-v Identity-V     \FONT/AJ16}%
 \Entry{gtr}{hgothr-h   H              \FONTo}%
 \Entry{gtr}{hgothr-v   V              \FONTo}%
-\Entry{gtr}{otf-ujgrn-h UniJIS2004-UTF16-H \FONT}%
-\Entry{gtr}{otf-ujgrn-v UniJIS2004-UTF16-V \FONT}%
+\Entry{gtr}{otf-ujgrn-h   UniJIS2004-UTF16-H \FONT}%
+\Entry{gtr}{otf-ujgrn-v   UniJIS2004-UTF16-V \FONT}%
 \Entry{gtr}{hgothrn-h  H              \FONT}%
 \Entry{gtr}{hgothrn-v  V              \FONT}%
-\Entry{gtb}{otf-ujgb-h UniJIS-UTF16-H \FONTo}%
-\Entry{gtb}{otf-ujgb-v UniJIS-UTF16-V \FONTo}%
+\Entry{gtb}{otf-ujgb-h \+UniJIS-UTF16-H \FONTo}%
+\Entry{gtb}{otf-ujgb-v   UniJIS-UTF16-V \FONTo}%
 \Entry{gtb}{otf-cjgb-h Identity-H     \FONT/AJ16}%
 \Entry{gtb}{otf-cjgb-v Identity-V     \FONT/AJ16}%
 \Entry{gtb}{hgothb-h   H              \FONTo}%
 \Entry{gtb}{hgothb-v   V              \FONTo}%
-\Entry{gtb}{otf-ujgbn-h UniJIS2004-UTF16-H \FONT}%
-\Entry{gtb}{otf-ujgbn-v UniJIS2004-UTF16-V \FONT}%
+\Entry{gtb}{otf-ujgbn-h   UniJIS2004-UTF16-H \FONT}%
+\Entry{gtb}{otf-ujgbn-v   UniJIS2004-UTF16-V \FONT}%
 \Entry{gtb}{hgothbn-h  H              \FONT}%
 \Entry{gtb}{hgothbn-v  V              \FONT}%
-\Entry{gtx}{otf-ujge-h UniJIS-UTF16-H \FONTo}%
-\Entry{gtx}{otf-ujge-v UniJIS-UTF16-V \FONTo}%
+\Entry{gtx}{otf-ujge-h \+UniJIS-UTF16-H \FONTo}%
+\Entry{gtx}{otf-ujge-v   UniJIS-UTF16-V \FONTo}%
 \Entry{gtx}{otf-cjge-h Identity-H     \FONT/AJ16}%
 \Entry{gtx}{otf-cjge-v Identity-V     \FONT/AJ16}%
 \Entry{gtx}{hgotheb-h  H              \FONTo}%
 \Entry{gtx}{hgotheb-v  V              \FONTo}%
-\Entry{gtx}{otf-ujgen-h UniJIS2004-UTF16-H \FONT}%
-\Entry{gtx}{otf-ujgen-v UniJIS2004-UTF16-V \FONT}%
+\Entry{gtx}{otf-ujgen-h   UniJIS2004-UTF16-H \FONT}%
+\Entry{gtx}{otf-ujgen-v   UniJIS2004-UTF16-V \FONT}%
 \Entry{gtx}{hgothebn-h H              \FONT}%
 \Entry{gtx}{hgothebn-v V              \FONT}%
-\Entry{mgr}{otf-ujmgr-h UniJIS-UTF16-H \FONTo}%
-\Entry{mgr}{otf-ujmgr-v UniJIS-UTF16-V \FONTo}%
+\Entry{mgr}{otf-ujmgr-h \+UniJIS-UTF16-H \FONTo}%
+\Entry{mgr}{otf-ujmgr-v   UniJIS-UTF16-V \FONTo}%
 \Entry{mgr}{otf-cjmgr-h Identity-H     \FONT/AJ16}%
 \Entry{mgr}{otf-cjmgr-v Identity-V     \FONT/AJ16}%
 \Entry{mgr}{hmgothr-h   H              \FONTo}%
 \Entry{mgr}{hmgothr-v   V              \FONTo}%
-\Entry{mgr}{otf-ujmgrn-h UniJIS2004-UTF16-H \FONT}%
-\Entry{mgr}{otf-ujmgrn-v UniJIS2004-UTF16-V \FONT}%
+\Entry{mgr}{otf-ujmgrn-h   UniJIS2004-UTF16-H \FONT}%
+\Entry{mgr}{otf-ujmgrn-v   UniJIS2004-UTF16-V \FONT}%
 \Entry{mgr}{hmgothrn-h  H              \FONT}%
 \Entry{mgr}{hmgothrn-v  V              \FONT}%
 }
