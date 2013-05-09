@@ -64,6 +64,9 @@ pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）を
 更新履歴
 --------
 
+  * Version 0.7  [2013/05/08]
+      - (試験的) `(no)directunicode` を縦書きに対応。
+      - `relfont` オプションを追加。
   * Version 0.6c [2013/04/20]
       - (試験的) `(no)directunicode` オプションを追加。
   * Version 0.6b [2013/04/20]

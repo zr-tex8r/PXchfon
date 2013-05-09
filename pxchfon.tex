@@ -4,7 +4,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{0.6c}
+\newcommand{\PkgVersion}{0.7}
+\newcommand{\PkgDate}{2013/05/08}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -17,7 +18,7 @@
 \begin{document}
 \title{\Pkg{pxchfon} パッケージ（v\PkgVersion）}
 \author{八登崇之\ （Takayuki YATO; aka.~``ZR''）}
-\date{2013/04/20}
+\date{\PkgDate}
 \maketitle
 
 %===========================================================
@@ -53,6 +54,7 @@ dvipdfmx 専用である。
 
 %===========================================================
 \section{読込}
+\label{sec:Loading}
 
 プレアンブルにおいて、|\usepackage| を用いて読み込む。
 \begin{quote}\small\begin{verbatim}                                      
@@ -62,6 +64,9 @@ dvipdfmx 専用である。
 オプションは次のものが用意されている。
 
 \begin{itemize}
+\item \textbf{プリセット指定オプション}（|ipa|、|hiragino| 等）
+  名前に対応するプリセット指定を有効にする。
+  詳細については「プリセット指定」節を参照。
 \item |alphabet|\Means
   欧文フォントも指定されたフォントの英数字部分で置き換える。
   （明朝が |\rmfamily|、ゴシックが |\sffamily| に適用される。）
@@ -72,9 +77,6 @@ dvipdfmx 専用である。
   インストール時に欧文用の設定をしていない場合は必ずこれを
   指定する必要がある。
   プリセット指定オプション使用の場合はこちらが既定で有効になる。
-\item プリセット指定オプション（|ipa|、|hiragino| 等）
-  名前に対応するプリセット指定を有効にする。
-  詳細については「プリセット指定」節を参照。
 \item |otf|（既定）\Means
   \Pkg{OTF}および\Pkg{UTF}パッケージの使用時に、
   そのフォントも置き換えの対象とする。
@@ -83,18 +85,12 @@ dvipdfmx 専用である。
   \Pkg{OTF}／\Pkg{UTF}パッケージのフォントは置き換えない。
   この場合、\Pkg{OTF}パッケージで |noreplace| を指定しない限り、
   標準の和文フォントは変化しない。
-\item |everypage|\Means
-  DVIの全ページにマップ設定を書き込む。
-  詳細は「dvipdfmx のページ抜粋処理への対応」を参照。
-\item |noeverypage|\Means
-  |everypage|の否定。
-  DVIの先頭ページにのみマップ設定を書き込む。
 \item |prefer2004jis|\Means
   {\pTeX}／{\upTeX}の標準和文フォントのCMapを2004JIS字形指定のものに
   変更する。
   Adobe-Japan1に対応したOpenTypeフォント使用の場合は、
   所謂「2004JIS字形」が使われることになる。
-\item |noprefer2004jis|\Means
+\item |noprefer2004jis|（既定）\Means
   |prefer2004jis| の否定。
 \item |oneweight|\Means
   \Pkg{OTF}パッケージを単ウェイトで使用する場合に、
@@ -107,8 +103,57 @@ dvipdfmx 専用である。
   場合には \texttt{oneweight} オプションを指定すればよい。
   現状では、小塚フォント以外のプリセットではこのオプションを
   用いる必要はない。}
-\item |nooneweight|\Means
+\item |nooneweight|（既定）\Means
   |oneweight| の否定。
+\end{itemize}
+
+\paragraph{上級者向けオプション}
+\begin{itemize}
+\item |relfont|\Means
+  指定された和文フォントの英数字部分を（{\pLaTeX}の標準機能の）
+  従属欧文フォントとして設定する。
+  すなわち、既定の欧文フォントは置き換えないが、|\selectfont| で
+  和文フォントを選択する際に予め |\userelfont| を実行しておくと
+  欧文も和文と同じ書体になる。
+  \inhibitglue\footnote{特に
+  「\texttt{\symbol{`\\}userelfont\symbol{`\\}selectfont}」
+  だけ実行すると、欧文が現在の和文と同じ書体になる。}
+  （ただし置き換えていない総称ファミリについては無効。）
+  \Note |alphabet|、|noalphabet|、|relfont| の3つのオプションは
+  排他である。
+\item |everypage|\Means
+  DVIの全ページにマップ設定を書き込む。
+  詳細は「dvipdfmx のページ抜粋処理への対応」を参照。
+\item |noeverypage|（既定）\Means
+  |everypage|の否定。
+  DVIの先頭ページにのみマップ設定を書き込む。
+\item |directunicode|\Means
+  \Pkg{OTF}パッケージのUnicode出力用フォント（|\UTF{}| の出力）
+  について、Unicodeを用いてフォントのグリフにアクセスするように
+  設定する。
+  この設定を用いると、当該のフォントのもつ任意のUnicode文字
+  （ただし全角幅に限る）が利用可能になる。
+  \footnote{通常は、Unicodeを一旦Adobe-Japan1のCIDに変換して、
+  CIDでフォントのグリフにアクセスするという処理になる。
+  このため、Adobe-Japan1のグリフと対応しないUnicode文字は
+  普通は使えない。なお、\texttt{directunicode} は0.6c版では
+  横書きのみの対応であったが、0.7版で縦書きにも対応した。
+  ただし、dvipdfmxの仕様の都合で、縦書き用グリフにはならない。}
+\item |nodirectunicode|（既定）\Means
+  |directunicode| の否定。
+\item |usecmapforalphabet|\Means
+  |alphabet|（または |relfont|）を指定して日本語フォントの英数字部分を
+  欧文フォントとして使う際に、グリフのアクセスを「Unicode直接」でなく
+  半角英数字用のCMap（\texttt{UniJIS-UCS2-HW-H}）を用いたCIDでの
+  アクセスで行う。
+  Adobe-Japan1のCIDアクセス対応のOpenTypeフォントの場合、「Unicode直接」
+  を使うと英数字がプロポーショナル幅のものになってしまうので、
+  このオプションを指定して半角幅のものを使う必要がある。
+  \inhibitglue\footnote{%
+  念のため補足すると、フォントを「後から置き換える」ということを可能に
+  するためには、TFMは固定幅でなければならない。}
+\item |nousecmapforalphabet|（既定）\Means
+  |usecmapforalphabet| の否定。
 \end{itemize}
 
 %===========================================================
@@ -191,6 +236,31 @@ dvipdfmx 専用である。
 また、この仕様のため、|deluxe| 以外の場合
 （既定、|bold|、|noreplace|）は |\setgothicfont| で指定した
 ものが確実にゴシック（単ウェイト）に反映される。
+
+\paragraph{上級者向け機能}
+\begin{itemize}
+\item |\usecmapforalphabet|\Means
+  |usecmapforalphabet| オプションの設定に切り替える。
+  （\ref{sec:Loading}節を参照。）
+\item |\nousecmapforalphabet|\Means
+  |nousecmapforalphabet| オプションの設定に切り替える。
+\item |\setnewglyphcmapprefix{|\Meta{文字列}|}|\Means
+  2004JIS用のJISコード系のCMapの名前の接頭辞を指定する。
+  そのようなCMapは、{\pTeX}の標準和文フォントについて2004JIS字形を
+  選択（|prefer2004jis| 指定）した時に必要となるが、
+  Adobeが配布しているCMapファイルには該当するものがないので、
+  それを適宜用意してそのファイル名をこの命令で指定する必要がある。
+  引数に与えるのは最後の1文字（書字方向の「|H|」「|V|」）を除いた
+  部分の文字列である。\par
+  CMap名接頭辞の既定値は「|2004-|」で、これは最近のTeX Liveに
+  含まれている「|2004-H|」等のCMapファイルを用いることを意味する。
+  W32TeXに以前から含まれているCMapファイルの「\texttt{JISX0213-2004-H}」
+  等を利用したい場合は、
+  |\setnewglyphcmapprefix|\linebreak[0]|{JISX0213-2004-}|
+  を実行すればよいが、この値を指定する場合には特別に %
+  |\setnewglyphcmapprefix{*}|
+  とも書ける。
+\end{itemize}
 
 %===========================================================
 \section{プリセット指定}
