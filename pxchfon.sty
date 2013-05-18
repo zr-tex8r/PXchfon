@@ -4,7 +4,7 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2013/05/08 v0.7]
+\ProvidesPackage{pxchfon}[2013/05/18 v0.7a]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
@@ -204,7 +204,7 @@
 \let\pxcz@unidirect@wopt\@empty
 \ifpxcz@directunicode
 \def\pxcz@unidirect#116-#2{unicode}
-\def\pxxz@unidirect@wopt{ -w 1}
+\def\pxcz@unidirect@wopt{ -w 1}
 \fi
 
 %% \pxcz@addtospec{<id>}
@@ -212,7 +212,7 @@
   \bgroup \let\Entry\pxcz@Entry
     \let\ \space \let\UniCMap\pxcz@unicmap
     \let\*\pxcz@pfx@jis \let\+\pxcz@unidirect
-    \let\w\pxxz@unidirect@wopt
+    \let\w\pxcz@unidirect@wopt
     \let\UniJIS\pxcz@pfx@unijis
     \@nameuse{pxcz@ME/#1}\egroup}
 \def\pxcz@Entry#1{%
@@ -513,7 +513,7 @@
 %% \pxcz@decl@relfont
 \def\pxcz@decl@relfont#1#2#3{%
   \DeclareRelationFont{\k@encoding}{#1}{m}{}{OT1}{#2}{m}{}%
-  \DeclareRelationFont{\k@encoding}{#1}{m}{}{OT1}{#2}{m}{}%
+  \DeclareRelationFont{\k@encoding}{#1}{bx}{}{OT1}{#2}{bx}{}%
   \ifpxcz@otf@deluxe
     \DeclareRelationFont{\k@encoding}{#1}{#3}{}{OT1}{#2}{#3}{}%
   \fi
