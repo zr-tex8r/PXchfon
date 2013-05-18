@@ -36,10 +36,10 @@ pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）を
 設定だけで済む。
 
   - TDS 1.1 に従ったシステムでは、次のファイルを移動する。
-      * `pxchfon.sty` → $TEXMF/tex/platex/PXchfon/
+      * `pxchfon.sty` → $TEXMF/tex/platex/pxchfon/
 
   - W32TeX を `C:\usr\local` にインストールした場合の例。
-      * `pxchfon.sty` → `C:\usr\local\share\texmf-local\tex\platex\PXchfon`
+      * `pxchfon.sty` → `C:\usr\local\share\texmf-local\tex\platex\pxchfon`
 
   - もっと簡単に、TeX システムのディレクトリには手を加えずに、単に
     文書ファイルと同じディレクトリに pxchfon.sty を置くだけでも使える。
@@ -50,20 +50,22 @@ pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）を
 設定を行う。
 
   * TDS 1.1 に従ったシステムでは、各ファイルを次の場所に移動する。
-      - `*.tfm`      → $TEXMF/fonts/tfm/public/PXchfon/
-      - `*.vf`       → $TEXMF/fonts/vf/public/PXchfon/
-      - `PXcjk0.sfd` → $TEXMF/fonts/sfd/PXchfon
-      - `*.def`      → $TEXMF/tex/platex/PXchfon/
+      - `*.tfm`      → $TEXMF/fonts/tfm/public/pxchfon/
+      - `*.vf`       → $TEXMF/fonts/vf/public/pxchfon/
+      - `pxcjk0.sfd` → $TEXMF/fonts/sfd/pxchfon
+      - `*.def`      → $TEXMF/tex/platex/pxchfon/
 
   * W32TeX を C:\usr\local にインストールした場合の例。
-      - `*.tfm`  → `C:\usr\local\share\texmf-local\fonts\tfm\public\PXchfon`
-      - `*.vf`   → `C:\usr\local\share\texmf-local\fonts\vf\public\PXchfon`
-      - `PXcjk0.sfd` → `C:\usr\local\share\texmf-local\fonts\sfd\PXchfon`
-      - `*.def`  → `C:\usr\local\share\texmf-local\tex\platex\PXchfon`
+      - `*.tfm`  → `C:\usr\local\share\texmf-local\fonts\tfm\public\pxchfon`
+      - `*.vf`   → `C:\usr\local\share\texmf-local\fonts\vf\public\pxchfon`
+      - `pxcjk0.sfd` → `C:\usr\local\share\texmf-local\fonts\sfd\pxchfon`
+      - `*.def`  → `C:\usr\local\share\texmf-local\tex\platex\pxchfon`
 
 更新履歴
 --------
 
+  * Version 0.7a [2013/05/18]
+      - バグ修正。
   * Version 0.7  [2013/05/08]
       - (試験的) `(no)directunicode` を縦書きに対応。
       - `relfont` オプションを追加。
