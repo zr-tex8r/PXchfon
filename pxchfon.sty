@@ -4,7 +4,7 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2013/05/18 v0.7a]
+\ProvidesPackage{pxchfon}[2013/06/05 v0.7b]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
@@ -162,6 +162,22 @@
   \g@addto@macro\pxcz@user@map}
 \let\pxcz@user@map\@empty
 \@namedef{pxcz@FS/*}{\pxcz@empty}
+
+%%<*> \asUTF{<jachar>}
+\ifpxcz@uptex
+\AtBeginDocument{%
+  \@ifpackageloaded{otf}{%
+    \newcommand*\asUTF{\pxcz@asutf@a}%
+  }{}%
+}
+\def\pxcz@asutf@a#1{%
+  \kchardef\pxcz@tmpa=`#1\relax
+  \expandafter\pxcz@asutf@b\meaning\pxcz@tmpa\relax
+}
+\def\pxcz@asutf@b#1"#2\relax{%
+  \UTF{#2}%
+}
+\fi
 
 %%------------------ map entry handling
 
@@ -495,9 +511,8 @@
     \@ifpackageloaded{utf}{\pxcz@utftrue}{\pxcz@utffalse}%
   \fi
   \ifpxcz@otf
-    \ifpxcz@uptex \pxcz@addtospec{UPOTF}%
-    \else         \pxcz@addtospec{OTF}%
-    \fi
+    \ifpxcz@uptex \pxcz@addtospec{UPOTF}\fi
+    \pxcz@addtospec{OTF}%
   \fi
   \ifpxcz@utf \pxcz@addtospec{UTF}%
   \fi
