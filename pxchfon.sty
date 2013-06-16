@@ -4,7 +4,7 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2013/06/05 v0.7b]
+\ProvidesPackage{pxchfon}[2013/06/16 v0.7c]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
@@ -120,6 +120,10 @@
 \@ifpackagewith{otf}{deluxe}{\pxcz@otf@deluxetrue}{}
 \@ifpackagewith{pxotf}{deluxe}{\pxcz@otf@deluxetrue}{}
 
+%% \ifpxcz@otf@multi
+\newif\ifpxcz@otf@multi \pxcz@otf@multifalse
+\@ifpackagewith{otf}{multi}{\pxcz@otf@multitrue}{}
+
 %%------------------ user interface
 
 %%%%<*> \setminchofont/\setgothicfont/etc.
@@ -131,16 +135,24 @@
 \newcommand*\setmediumgothicfont{\pxcz@setfont{gtr}}
 \newcommand*\setboldgothicfont{\pxcz@setfont{gtb}}
 \newcommand*\setxboldgothicfont{\pxcz@setfont{gtx}}
-\newcommand*\setuniweightgothicfont{\pxcz@setfont{gtu}}
+\newcommand*\setoneweightgothicfont{\pxcz@setfont{gtu}}
 \newcommand*\setmarugothicfont{\pxcz@setfont{mgr}}
+\newcommand*\setkoreanminchofont{\pxcz@setfont{kom}}
+\newcommand*\setkoreangothicfont{\pxcz@setfont{kog}}
+\newcommand*\setschineseminchofont{\pxcz@setfont{scm}}
+\newcommand*\setschinesegothicfont{\pxcz@setfont{scg}}
+\newcommand*\settchineseminchofont{\pxcz@setfont{tcm}}
+\newcommand*\settchinesegothicfont{\pxcz@setfont{tcg}}
 \def\pxcz@setfont#1{\@ifnextchar[%]
   {\pxcz@setfont@a{#1}}{\pxcz@setfont@a{#1}[]}}
 \def\pxcz@setfont@a#1[#2]#3{%
   \@for\pxcz@x:={#1}\do{%
     \ifx @#2@\@namedef{pxcz@FS/\pxcz@x}{#3}%
     \else\@namedef{pxcz@FS/\pxcz@x}{:#2:#3}\fi}}
-\@for\pxcz@x:={mnl,mnr,mnb,gtr,gtb,gtx,gtu,mgr}\do
-  {\@namedef{pxcz@FS/\pxcz@x}{}}
+\@for\pxcz@x:={%
+  mnl,mnr,mnb,gtr,gtb,gtx,gtu,mgr,%
+  kom,kog,scm,scg,tcm,tcg%
+}\do{\@namedef{pxcz@FS/\pxcz@x}{}}
 
 %%%% <*> \usecmapforalphabet/\nousecmapforalphabet
 \def\usecmapforalphabet{\gdef\pxcz@unicmap{UniJIS-UCS2-HW-H}}
@@ -167,7 +179,7 @@
 \ifpxcz@uptex
 \AtBeginDocument{%
   \@ifpackageloaded{otf}{%
-    \newcommand*\asUTF{\pxcz@asutf@a}%
+    \providecommand*\asUTF{\pxcz@asutf@a}%
   }{}%
 }
 \def\pxcz@asutf@a#1{%
@@ -350,6 +362,31 @@
 \Entry{mgr}{otf-ujmgrn-v \+UniJIS2004-UTF16-V \FONT\w}%
 \Entry{mgr}{hmgothrn-h  H              \FONT}%
 \Entry{mgr}{hmgothrn-v  V              \FONT}%
+%
+\Entry{kom}{otf-ukmr-h \+UniKS-UTF16-H   \FONT}%
+\Entry{kom}{otf-ukmr-v \+UniKS-UTF16-V   \FONT\w}%
+\Entry{kom}{otf-ckmr-h Identity-H        \FONT/AK12}%
+\Entry{kom}{otf-ckmr-v Identity-V        \FONT/AK12}%
+\Entry{kog}{otf-ukgr-h \+UniKS-UTF16-H   \FONT}%
+\Entry{kog}{otf-ukgr-v \+UniKS-UTF16-V   \FONT\w}%
+\Entry{kog}{otf-ckgr-h Identity-H        \FONT/AK12}%
+\Entry{kog}{otf-ckgr-v Identity-V        \FONT/AK12}%
+\Entry{scm}{otf-ucmr-h \+UniGB-UTF16-H   \FONT}%
+\Entry{scm}{otf-ucmr-v \+UniGB-UTF16-V   \FONT\w}%
+\Entry{scm}{otf-ccmr-h Identity-H        \FONT/AG14}%
+\Entry{scm}{otf-ccmr-v Identity-V        \FONT/AG14}%
+\Entry{scg}{otf-ucgr-h \+UniGB-UTF16-H   \FONT}%
+\Entry{scg}{otf-ucgr-v \+UniGB-UTF16-V   \FONT\w}%
+\Entry{scg}{otf-ccgr-h Identity-H        \FONT/AG14}%
+\Entry{scg}{otf-ccgr-v Identity-V        \FONT/AG14}%
+\Entry{tcm}{otf-utmr-h \+UniCNS-UTF16-H  \FONT}%
+\Entry{tcm}{otf-utmr-v \+UniCNS-UTF16-V  \FONT\w}%
+\Entry{tcm}{otf-ctmr-h Identity-H        \FONT/AC14}%
+\Entry{tcm}{otf-ctmr-v Identity-V        \FONT/AC14}%
+\Entry{tcg}{otf-utgr-h \+UniCNS-UTF16-H  \FONT}%
+\Entry{tcg}{otf-utgr-v \+UniCNS-UTF16-V  \FONT\w}%
+\Entry{tcg}{otf-ctgr-h Identity-H        \FONT/AC14}%
+\Entry{tcg}{otf-ctgr-v Identity-V        \FONT/AC14}%
 }
 \pxcz@mapentry{UPSTD}{%
 \Entry{mnr}{uprml-h    \UniJIS-UTF16-H \FONTs}%
@@ -362,6 +399,19 @@
 \Entry{mnr}{urmlv      \UniJIS-UTF16-V \FONTs}%
 \Entry{gtu}{ugbm       \UniJIS-UTF16-H \FONTs}%
 \Entry{gtu}{ugbmv      \UniJIS-UTF16-V \FONTs}%
+%
+\Entry{kom}{uphysmjm-h UniKS-UTF16-H  \FONT}%
+\Entry{kom}{uphysmjm-v UniKS-UTF16-V  \FONT}%
+\Entry{kog}{uphygt-h   UniKS-UTF16-H  \FONT}%
+\Entry{kog}{uphygt-v   UniKS-UTF16-V  \FONT}%
+\Entry{scm}{upstsl-h   UniGB-UTF16-H  \FONT}%
+\Entry{scm}{upstsl-v   UniGB-UTF16-V  \FONT}%
+\Entry{scg}{upstht-h   UniGB-UTF16-H  \FONT}%
+\Entry{scg}{upstht-v   UniGB-UTF16-V  \FONT}%
+\Entry{tcm}{upmsl-h    UniCNS-UTF16-H \FONT}%
+\Entry{tcm}{upmsl-v    UniCNS-UTF16-V \FONT}%
+\Entry{tcg}{upmhm-h    UniCNS-UTF16-H \FONT}%
+\Entry{tcg}{upmhm-v    UniCNS-UTF16-V \FONT}%
 }
 \pxcz@mapentry{UPOTF}{%
 \Entry{mnl}{uphminl-h   \UniJIS-UTF16-H \FONTs}%
