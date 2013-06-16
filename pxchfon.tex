@@ -4,8 +4,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{0.7a}
-\newcommand{\PkgDate}{2013/05/18}
+\newcommand{\PkgVersion}{0.7c}
+\newcommand{\PkgDate}{2013/06/16}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -66,7 +66,7 @@ dvipdfmx 専用である。
 \begin{itemize}
 \item \textbf{プリセット指定オプション}（|ipa|、|hiragino| 等）
   名前に対応するプリセット指定を有効にする。
-  詳細については「プリセット指定」節を参照。
+  詳細については\ref{sec:Preset}節を参照。
 \item |alphabet|\Means
   欧文フォントも指定されたフォントの英数字部分で置き換える。
   （明朝が |\rmfamily|、ゴシックが |\sffamily| に適用される。）
@@ -169,10 +169,14 @@ dvipdfmx 専用である。
 %\item \Pkg{PXfontspec}パッケージの日本語フォント --- |nja{r,s}-*|
 \end{itemize}
 
+\Note 0.7c版で\textbf{試験的に}中国語・韓国語フォントに
+対するサポートを行った。
+\ref{sec:Non-Japanese}を参照。
+
 和文フォント置換は、dvipdfmxのマップ設定を文書内で
 （一時的に）変更するという方法で実現している。
 欧文フォントについては実現方法が少し異なる
-（「欧文フォントの置換の原理」節を参照）。
+（\ref{sec:Mechanism-Alph}節を参照）。
 
 \Pkg{OTF}パッケージを |deluxe| オプション付きで用いている
 場合\textgt{以外}、すなわち明朝・ゴシックとも単ウェイトの場合、
@@ -264,6 +268,7 @@ dvipdfmx 専用である。
 
 %===========================================================
 \section{プリセット指定}
+\label{sec:Preset}
 
 このパッケージの元々の意図は、標準のフォントを
 普段使っているものと全く別の書体に変えることであったが、
@@ -555,6 +560,7 @@ DVI文書の全てのページにフォントマップ情報を書き出すの�
 
 %===========================================================
 \section{欧文フォントの置換の原理}
+\label{sec:Mechanism-Alph}
 
 指定された和文フォントの半角部分からなる欧文フォントファミリとして
 OT1/cfjar（明朝）とOT1/cfjas（ゴシック）を定義し、
@@ -662,8 +668,44 @@ r-cfjas-x-@PXcjk0@     msgothic.ttc FontIndex=0
 
 この新しい\Pkg{pxjafont}パッケージは処理を全て\Pkg{pxchfon}に
 渡すという動作をする。
-|ipa| オプションの意味が異なる（「プリセット指定」節参照）
+|ipa| オプションの意味が異なる（\ref{sec:Preset}節参照）
 のを除けば\Pkg{pxjafont} 0.2版と同じ動作である。
+
+%===========================================================
+\section{中国語・韓国語フォントへの対応（試験的）}
+\label{sec:Non-Japanese}
+
+0.7c版で試験的に\Pkg{OTF}パッケージ（|multi| オプション指定）および
+{\upTeX}標準の中国語・韓国語フォントについてのサポートを始めた。
+以下の命令で、実フォントの置換指定ができる。
+
+\begin{itemize}
+\newcommand*{\CNot}{\footnotesize}
+\item |\setkoreanminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      韓国語・明朝体。
+\item |\setkoreangothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      韓国語・ゴシック体。
+\item |\setschineseminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      簡体字中国語・明朝体（宋体）。
+\item |\setschinesegothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      簡体字中国語・ゴシック体（黒体）。
+\item |\settchineseminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      繁体字中国語・明朝体（明体）。
+\item |\settchinesegothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      繁体字中国語・ゴシック体（黒体）。
+\end{itemize}
+
+注意事項。
+
+\begin{itemize}
+\item プリセット指定は中国語・韓国語のフォントについては何も指定しない。
+従って、上記の命令を用いない場合は、これらのフォントのマップ再設定が
+行われることはない。
+\item |directunicode| 指定は中国語・韓国語のフォントに対しても有効である。
+ただし日本語の場合と同じく、効果の範囲は
+「\Pkg{OTF}パッケージのUnicode入力命令」（|\UTFK|、|\UTFM|、等）
+に限られる。
+\end{itemize}
 
 %===========================================================
 \end{document}
