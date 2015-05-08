@@ -4,7 +4,7 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2013/06/16 v0.7d]
+\ProvidesPackage{pxchfon}[2015/05/07 v0.7e]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
@@ -61,9 +61,9 @@
   %(uniweight)
   ms,ipa,ipaex,%
   %(multiweight)
-  ms-hg,ipa-hg,moga-mobo,moga-maruberi,%
-  kozuka-pro,kozuka-pr6,kozuka-pr6n,%
-  hiragino-pro,hiragino-pron,morisawa-pro,morisawa-pr6n,%
+  ms-hg,ipa-hg,ipaex-hg,moga-mobo,moga-maruberi,%
+  kozuka-pro,kozuka-pr6,kozuka-pr6n,hiragino-pro,hiragino-pron,%
+  morisawa-pro,morisawa-pr6n,yu-win,yu-osx,%
   %(obsolete)
   ipa-otf,ipa-otf-dx,kozuka4,kozuka6,kozuka6n,hiragino,%
   %(alias)
@@ -72,6 +72,19 @@
 \def\pxcz@do#1{\DeclareOption{#1}{\def\pxcz@main@preset{#1}}}
 \@for\pxcz@x:=\pxcz@all@main@preset\do{%
   \expandafter\pxcz@do\expandafter{\pxcz@x}}
+% file-preset handler
+\DeclareOption*{%
+  \let\pxcz@x\relax
+  \expandafter\pxcz@popt\CurrentOption\@nnil
+  \ifx\pxcz@x\relax \@unknownoptionerror
+  \else \let\pxcz@file@preset\pxcz@x \fi}
+\let\pxcz@file@preset\relax
+\def\pxcz@popt{%
+  \futurelet\pxcz@tok\pxcz@popt@a}
+\def\pxcz@popt@a{%
+  \ifx+\pxcz@tok \expandafter\pxcz@popt@b
+  \else \expandafter\remove@to@nnil \fi}
+\def\pxcz@popt@b+#1\@nnil{\edef\pxcz@x{#1}}
 % dispatch
 \ProcessOptions*
 % 'everypage' needs 'atbegshi' package
@@ -80,11 +93,15 @@
 \fi
 
 %% \ifpxcz@alpha
+\@tempswafalse
+\if\pxcz@main@preset\relax
+  \if\pxcz@file@preset\relax \@tempswatrue \fi
+\fi
 \newif\ifpxcz@alpha
 \if      t\pxcz@alphabet \pxcz@alphatrue
 \else\if f\pxcz@alphabet \pxcz@alphafalse
 \else\if r\pxcz@alphabet \pxcz@alphafalse
-\else\if\pxcz@main@preset\relax \pxcz@alphatrue
+\else\if@tempswa \pxcz@alphatrue
 \else  \pxcz@alphafalse
 \fi\fi\fi\fi
 \ifpxcz@alpha
@@ -219,12 +236,24 @@
 \newcommand*\JaFontReplacementHook{%
   \g@addto@macro\pxcz@user@hook}
 \let\pxcz@user@hook\@empty
+\@onlypreamble\JaFontReplacementHook
 
 %%<+> \JaFontUserDefinedMap
 \newcommand*\JaFontUserDefinedMap{%
   \g@addto@macro\pxcz@user@map}
 \let\pxcz@user@map\@empty
 \@namedef{pxcz@FS/*}{\pxcz@empty}
+\@onlypreamble\JaFontUserDefinedMap
+
+%%<+> \usefontmapline{<map-line>}
+\newcommand*\usefontmapline[1]{%
+  \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapline#1}}
+\@onlypreamble\usefontmapline
+
+%%<+> \usefontmapfile{<map-file>}
+\newcommand*\usefontmapfile[1]{%
+  \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapfile#1}}
+\@onlypreamble\usefontmapfile
 
 %%------------------ map entry handling
 
@@ -292,9 +321,29 @@
   \ifx\FONT\@empty \expandafter\@gobble
   \else \expandafter\pxcz@entry@a \fi}
 \def\pxcz@entry@a#1{%
-  \xdef\pxcz@spec{\pxcz@spec\noexpand\special{\pxcz@line{#1}}}}
+  \xdef\pxcz@spec{%
+    \pxcz@spec\noexpand\special{\pxcz@mapline{#1}}}}
 \let\pxcz@spec\@empty
-\def\pxcz@line#1{pdf:mapline #1}
+
+%% \pxcz@do@file@preset
+\def\pxcz@do@file@preset{%
+  \ifpxcz@uptex \pxcz@do@file@preset@a{uptex-}%
+  \else         \pxcz@do@file@preset@a{ptex-}%
+  \fi
+  \ifpxcz@otf
+    \ifpxcz@uptex \pxcz@do@file@preset@a{otf-up-}%
+    \else         \pxcz@do@file@preset@a{otf-}%
+    \fi
+  \fi}
+
+\def\pxcz@do@file@preset@a#1{%
+  \pxcz@addtospec@alt\pxcz@mapfile{#1\pxcz@file@preset.map}}
+
+%% \pxcz@addtospec@alt
+\def\pxcz@addtospec@alt#1#2{%
+  \xdef\pxcz@spec{\pxcz@spec\noexpand\special{#1{#2}}}}
+\def\pxcz@mapfile#1{pdf:mapfile #1}
+\def\pxcz@mapline#1{pdf:mapline #1}
 
 %%------------------ map entry definitions
 
@@ -580,6 +629,9 @@
       \pxcz@okfalse \fi}}
 \AtBeginDocument{%
   \pxcz@user@hook
+  \ifx\pxcz@file@preset\relax\else
+    \pxcz@do@file@preset
+  \fi
   \ifpxcz@alpha
     \pxcz@check@alldefined{mnl,mnr,mnb}%
     \ifpxcz@ok \renewcommand\rmdefault{cfjar}\fi
@@ -677,6 +729,9 @@
 \pxcz@declare@preset{ipa-hg}{%
   \pxcz@multiweight{ipam.ttf}{ipam.ttf}{:0:hgrme.ttc}%
   {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{ipag.ttf}{hgrsmp.ttf}}
+\pxcz@declare@preset{ipaex-hg}{%
+  \pxcz@multiweight{ipaexm.ttf}{ipaexm.ttf}{:0:hgrme.ttc}%
+  {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{ipaexg.ttf}{hgrsmp.ttf}}
 \pxcz@declare@preset{moga-mobo}{%
   \pxcz@enable@switch@realfont
   \pxcz@multiweight{\pxcz@MI mogam.ttc}{\pxcz@MI mogam.ttc}%
@@ -724,6 +779,15 @@
    {A-OTF-FutoMinA101Pr6N-Bold.otf}{A-OTF-GothicBBBPr6N-Medium.otf}%
    {A-OTF-FutoGoB101Pr6N-Bold}{A-OTF-MidashiGoPr6N-MB31.otf}%
    {A-OTF-GothicBBBPr6N-Medium.otf}{A-OTFJun101Pr6N-Light.otf}}
+\pxcz@declare@preset{yu-win}{%
+  \pxcz@multiweight{yuminl.ttf}{yumin.ttf}%
+   {yumindb.ttf}{yugothic.ttf}{yugothib.ttf}%
+   {yugothib.ttf}{yugothic.ttf}{yugothic.ttf}}
+\pxcz@declare@preset{yu-osx}{%
+  \usecmapforalphabet
+  \pxcz@multiweight{YuMin-Medium.otf}{YuMin-Medium.otf}%
+   {YuMin-Demibold.otf}{YuGo-Medium.otf}{YuGo-Bold.otf}%
+   {YuGo-Bold.otf}{YuGo-Medium.otf}{YuGo-Medium.otf}}
 %(obsolete)
 \pxcz@declare@preset{ipa-otf}{%
   \pxcz@uniweight{ipam.otf}{ipag.otf}}

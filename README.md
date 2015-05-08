@@ -1,120 +1,75 @@
-PXchfon パッケージバンドル
-==========================
+PXchfon Package
+===============
 
-pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）をユーザ指定の
-ものに置き換える。dvipdfmx 専用である。他のフォント追加パッケージと
-異なり、追加するフォントを LaTeX 文書中で指定するので、一度パッケージ
-をインストールするだけで、任意の日本語フォント（ただし等幅に限る）を
-使うことができる。欧文部分を同じ日本語フォントで置き換えることも可能で
-ある。UTF / OTF パッケージにも対応している。
+LaTeX: Japanese font setup for pLaTeX and upLaTeX
 
-0.5 版での拡張で、pTeX において広く行われているフォント設定(IPA フォント
-の使用等)をパッケージオプション一つで行う機能を追加した。この機能は元々、
-別の PXjafont パッケージとして提供されていたものである。
+This package enables users to declare in their document which physical
+fonts should be used for the standard Japanese (logical) fonts of pLaTeX
+and upLaTeX. Font setup is realized by changing the font mapping of
+dvipdfmx, and thus users can use any (monospaced) physical fonts they
+like, once they properly install this package, without creating helper
+files for each new fonts. This package also supports setup for the fonts
+used in the japanese-otf package.
 
-### 前提環境
+### SYSTEM REQUIREMENTS
 
-  - TeX 処理系： pLaTeX2e / upLaTeX2e
-  - DVI ウェア： dvipdfmx
-  - 前提パッケージ：
-      * atbegshi パッケージ(`everypage` オプション使用時)
+  - TeX format: pLaTeX / upLaTeX.
+  - DVIware: dvipdfmx.
+  - Prerequisite packages: atbegshi.
 
-### 本ソフトウェアの作者のサイト
+### INSTALLATION
 
-  - En toi Pythmeni tes TeXnopoleos ～電脳世界の奥底にて～  
-    <http://zrbabbler.sp.land.to/>
+Move the files as follows (in a system compliant to TDS 1.1):
 
-  - 以下のページに一部機能の使用例を紹介した。  
-    「PXchfon パッケージ」  
-    <http://zrbabbler.sp.land.to/pxchfon.html>
+  - `*.sty`      → $TEXMF/tex/platex/pxchfon/
+  - `*.tfm`      → $TEXMF/fonts/tfm/public/pxchfon/
+  - `*.vf`       → $TEXMF/fonts/vf/public/pxchfon/
+  - `pxcjk0.sfd` → $TEXMF/fonts/sfd/pxchfon/
+  - `*.def`      → $TEXMF/tex/platex/pxchfon/
 
-### インストール
+And rehash your TEXMF trees if necessary.
 
-#### 和文のみを置き換えればよい場合
+### LICENSE
 
-つまり、常に `noalphabet` オプション付きで用いる場合。この場合は以下の
-設定だけで済む。
+This package is distributed under the MIT License.
 
-  - TDS 1.1 に従ったシステムでは、次のファイルを移動する。
-      * `pxchfon.sty` → $TEXMF/tex/platex/pxchfon/
+Revision History
+----------------
 
-  - W32TeX を `C:\usr\local` にインストールした場合の例。
-      * `pxchfon.sty` → `C:\usr\local\share\texmf-local\tex\platex\pxchfon`
-
-  - もっと簡単に、TeX システムのディレクトリには手を加えずに、単に
-    文書ファイルと同じディレクトリに pxchfon.sty を置くだけでも使える。
-
-#### 欧文部分の置き換えも利用したい場合
-
-つまり、`noalphabet` なしでも用いたい場合。この場合は上に加えて以下の
-設定を行う。
-
-  * TDS 1.1 に従ったシステムでは、各ファイルを次の場所に移動する。
-      - `*.tfm`      → $TEXMF/fonts/tfm/public/pxchfon/
-      - `*.vf`       → $TEXMF/fonts/vf/public/pxchfon/
-      - `pxcjk0.sfd` → $TEXMF/fonts/sfd/pxchfon
-      - `*.def`      → $TEXMF/tex/platex/pxchfon/
-
-  * W32TeX を C:\usr\local にインストールした場合の例。
-      - `*.tfm`  → `C:\usr\local\share\texmf-local\fonts\tfm\public\pxchfon`
-      - `*.vf`   → `C:\usr\local\share\texmf-local\fonts\vf\public\pxchfon`
-      - `pxcjk0.sfd` → `C:\usr\local\share\texmf-local\fonts\sfd\pxchfon`
-      - `*.def`  → `C:\usr\local\share\texmf-local\tex\platex\pxchfon`
-
-更新履歴
---------
-
+  * Version 0.7e [2015/05/07]
+      - The map file preset feature.
+      - \usefontmapfile and \usefontmapline.
   * Version 0.7d [2013/06/16]
-      - 非埋込の明示指定をサポート。
+      - Explicit designation of non-embedding.
   * Version 0.7c [2013/06/16]
-      - (試験的) OTF パッケージおよび upTeX 標準の中国語・韓国語フォント
-        をサポートした。
+      - Support for Chinese and Korean fonts.
   * Version 0.7b [2013/06/05]
-      - upTeX + OTF パッケージの時の `\UTF`/`\CID` 入力に対するフォント
-        を置換の対象に含めた。
+      - Support for the combination of upTeX + japanese-otf.
   * Version 0.7a [2013/05/18]
-      - バグ修正。
+      - Bug fix.
   * Version 0.7  [2013/05/08]
-      - (試験的) `(no)directunicode` を縦書きに対応。
-      - `relfont` オプションを追加。
+      - `(no)directunicode` in vertical writing.
+      - `relfont` option.
   * Version 0.6c [2013/04/20]
-      - (試験的) `(no)directunicode` オプションを追加。
+      - `(no)directunicode` option.
   * Version 0.6b [2013/04/20]
-      - `(no)oneweight` オプションを追加。
-      - 非 CID フォントに関する `prefer2004jis` の実現方法を変更。
-        2000JIS と 2004JIS の TFM で別の実フォントがマップされる。
-      - 3 つのパッケージレベル命令 `\JaFontReplacementFor`,
-        `\JaFontReplacementHook`, `\JaFontUserDefinedMap` を追加。
+      - `(no)oneweight` option.
+      - Support for `prefer2004jis` in using some non-CID fonts.
+      - Package level commands `\JaFontReplacementFor`,
+        `\JaFontReplacementHook` and `\JaFontUserDefinedMap`.
   * Version 0.6a [2013/04/07]
-      - プリセットの設定を全面的に見直し。
-      - OTF パッケージの `jis2004` オプション設定時に使用されるフォント
-        群に対応させた。
-      - OTF パッケージで極太ゴシックの CID 版と Unicode 版のフォント
-        に対応させた。
+      - Complete revision of the preset settings.
+      - Support for `jis2004` version of the japanese-otf font set.
+      - Support for extra-bold  weight in the japanese-otf font set.
   * Version 0.6  [2013/03/17]
-      - `prefer2004jis` を pTeX 標準フォントにも有効にした。
+      - `prefer2004jis` working on pTeX.
   * Version 0.5  [2010/05/12]
-      - PXfontspec パッケージのフォントへの対応を追加。
-      - PXjafont パッケージの機能を組み入れた。
-      - `[no]prefer2004jis` オプションを追加。
-      - 欧文のマップ指定について v0.4 で混入したバグを修正。
-      - `[no]everypage` オプションを追加。
   * Version 0.4a [2010/04/12]
-      - 縦書きの文書クラスで必ずエラーになるというバグを修正。
   * Version 0.4  [2009/12/20]
-      - なぜか `\setmarugothicfont` の説明が抜けてたので補った。
-      - `\[no]usecmapforalphabet` を実験的に追加。
   * Version 0.3a [2009/11/23]
-      - README 中に掲げた ttfonts.map の記述の間違いを訂正。
   * Version 0.3  [2009/07/13]
-      - OTF パッケージの多ウェイト機能(deluxe オプション)に対応。
-      - UTF パッケージへの対応が全く機能していなかったのを修正。
-      - 明朝だけ指定した場合の欧文の取り扱いの問題を解決。
   * Version 0.2a [2009/05/31]
-      - `noalphabet` 指定時には PXcjk0.sfd を読む必要はなかったので、説明を訂正
-        した。
   * Version 0.2  [2009/03/29]
-      - 最初の公開版。
 
 --------------------
 Takayuki YATO (aka. "ZR")  

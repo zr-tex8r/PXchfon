@@ -4,8 +4,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{0.7c}
-\newcommand{\PkgDate}{2013/06/16}
+\newcommand{\PkgVersion}{0.7e}
+\newcommand{\PkgDate}{2015/05/07}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -67,6 +67,10 @@ dvipdfmx 専用である。
 \item \textbf{プリセット指定オプション}（|ipa|、|hiragino| 等）
   名前に対応するプリセット指定を有効にする。
   詳細については\ref{sec:Preset}節を参照。
+\item \textbf{ファイルプリセット指定オプション}%
+  （|+|\mbox{}\textgt{名前}）
+  名前に対応するファイルプリセット指定を有効にする。
+  詳細については\ref{sec:FilePreset}節を参照。
 \item |alphabet|\Means
   欧文フォントも指定されたフォントの英数字部分で置き換える。
   （明朝が |\rmfamily|、ゴシックが |\sffamily| に適用される。）
@@ -159,17 +163,19 @@ dvipdfmx 専用である。
 %===========================================================
 \section{機能}
 
-以下に該当する和文フォントを、以降で述べるユーザ命令で指定したものに
-置き換える。
+以下に該当する和文（CJK）フォントを、以降で述べるユーザ命令で
+指定したものに置き換える。
 \begin{itemize}
 \item {\pTeX}の標準のフォント --- |rml*|/|gbm*|
 \item {\upTeX}の日本語フォント --- |urml*|/|ugbm*|/|uprml*|/|upgbm*|
+\item {\upTeX}の日中国語・韓国語フォント
 \item \Pkg{UTF}パッケージのフォント --- |hmr*|/|hkb*|/|unij*|/|cid*|
 \item \Pkg{OTF}パッケージの日本語フォント --- |hmin*|/|hgoth*|/|otf-{u,c}j*|
+\item \Pkg{OTF}パッケージのの日中国語・韓国語フォント
 %\item \Pkg{PXfontspec}パッケージの日本語フォント --- |nja{r,s}-*|
 \end{itemize}
 
-\Note 0.7c版で\textbf{試験的に}中国語・韓国語フォントに
+\Note 0.7c版で中国語・韓国語フォントに
 対するサポートを行った。
 \ref{sec:Non-Japanese}を参照。
 
@@ -188,6 +194,10 @@ dvipdfmx 専用である。
   TTC形式の場合の該当のフォントの番号を\Meta{番号}に指定する。
 \item |\setgothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
   「ゴシック」のフォントを置き換えるフォントをファイル名で指定する。
+\item 以上の2つの命令、および以降で紹介するフォント設定命令について、
+  \Meta{フォントファイル名}の値を |*| にするとフォント非埋込を指示する。
+  また、この値を空にすると、以前に（当該の命令により）設定されていた
+  値を取り消して既定の設定に戻す。
 \end{itemize}
 \begin{quote}\small
   例:
@@ -257,13 +267,16 @@ dvipdfmx 専用である。
   引数に与えるのは最後の1文字（書字方向の「|H|」「|V|」）を除いた
   部分の文字列である。\par
   CMap名接頭辞の既定値は「|2004-|」で、これは最近のTeX Liveに
-  含まれている「|2004-H|」等のCMapファイルを用いることを意味する。
-  W32TeXに以前から含まれているCMapファイルの「\texttt{JISX0213-2004-H}」
-  等を利用したい場合は、
-  |\setnewglyphcmapprefix|\linebreak[0]|{JISX0213-2004-}|
-  を実行すればよいが、この値を指定する場合には特別に %
-  |\setnewglyphcmapprefix{*}|
-  とも書ける。
+  含まれている「|2004-H|」等のCMapファイルを用いることを意味する。%
+  \inhibitglue\footnote{%
+    引数に \texttt{*} を与えた場合は \texttt{JISX0213-2004-H} が
+    指定されたと見なされる（歴史的理由から）。}
+\item |\usefontmapfile{|\Meta{マップファイル名}|}|\Means
+  指定のdvipdfmx用のマップファイルの読込を指示する。
+  pdf{\TeX}の |\pdfmapfile| に相当する機能。
+\item |\usefontmapline{|\Meta{マップ行}|}|\Means
+  dvipdfmxのマップ行を直接指定して、その読込を指示する。
+  pdf{\TeX}の |\pdfmapline| に相当する機能。
 \end{itemize}
 
 %===========================================================
@@ -305,7 +318,11 @@ dvipdfmx 専用である。
 \begin{itemize}
 \item |noembed|\Means
   フォントを埋め込まない。
-  （この指定だけは直接対応する |\setminchofont| 等の命令列がない。）
+\begin{quote}\small\begin{verbatim}
+\setminchofont{*} % 非埋込
+\setgothicfont{*} % 非埋込
+\end{verbatim}\end{quote}
+
 \item |ms|\Means
   MSフォント。
 \begin{quote}\small\begin{verbatim}
@@ -354,6 +371,18 @@ dvipdfmx 専用である。
 \setminchofont{ipam.ttf}           % IPA明朝
 \setboldminchofont[0]{hgrme.ttc}   % HG明朝E
 \setgothicfont{ipag.ttf}           % IPAゴシック
+\setmediumgothicfont[0]{hgrgm.ttc} % HGｺﾞｼｯｸM
+\setboldgothicfont[0]{hgrge.ttc}   % HGｺﾞｼｯｸE
+\setxboldgothicfont[0]{hgrsgu.ttc} % HG創英角ｺﾞｼｯｸUB
+\setmarugothic{hgrsmp.ttf}         % HG丸ｺﾞｼｯｸM-PRO 
+\end{verbatim}\end{quote}
+
+\item |ipaex-hg|\Means
+   IPAexフォント + HGフォント。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{ipaexm.ttf}         % IPAex明朝
+\setboldminchofont[0]{hgrme.ttc}   % HG明朝E
+\setgothicfont{ipaexg.ttf}         % IPAexゴシック
 \setmediumgothicfont[0]{hgrgm.ttc} % HGｺﾞｼｯｸM
 \setboldgothicfont[0]{hgrge.ttc}   % HGｺﾞｼｯｸE
 \setxboldgothicfont[0]{hgrsgu.ttc} % HG創英角ｺﾞｼｯｸUB
@@ -478,6 +507,29 @@ dvipdfmx 専用である。
 \setxboldgothicfont{A-OTF-MidashiGoPr6N-MB31.otf}  % A-OTF 見出ゴMB31 Pr6N
 \setmarugothicfont{A-OTFJun101Pr6N-Light.otf}      % A-OTF じゅん Pr6N 101
 \end{verbatim}\end{quote}
+
+\item |yu-win|\Means
+  游書体（Windows搭載版）。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{yumin.ttf}         % 游明朝 Regular
+\setlightminchofont{yuminl.ttf}   % 游明朝 Light
+\setboldminchofont{yumindb.ttf}   % 游明朝 Demibold
+\setgothicfont{yugothic.ttf}      % 游ゴシック Regular
+\setboldgothicfont{yugothib.ttf}  % 游ゴシック Bold
+\setxboldgothicfont{yugothib.ttf} % 游ゴシック Bold
+\setmarugothicfont{yugothic.ttf}  % 游ゴシック Regular
+\end{verbatim}\end{quote}
+
+\item |yu-osx|\Means
+  游書体（Mac OS X搭載版）。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{YuMin-Medium.otf}       % 游明朝体 ミディアム
+\setboldminchofont{YuMin-Demibold.ttf} % 游明朝体 デミボールド
+\setgothicfont{YuGo-Medium.otf}        % 游ゴシック体 ミディアム
+\setboldgothicfont{YuGo-Bold.otf}      % 游ゴシック体 ボールド
+\setxboldgothicfont{YuGo-Bold.otf}     % 游ゴシック体 ボールド
+\setmarugothicfont{YuGo-Medium.otf}    % 游ゴシック体 ミディアム
+\end{verbatim}\end{quote}
 \end{itemize}
 
 なお、以上の設定で登場したフォントのうち、
@@ -539,6 +591,46 @@ v0.5版以前で用意されていたプリセット設定。
 \item |ipa-dx|\Means |ipa-hg| の別名。
 \item |hiragino-dx|\Means |hiragino-pro| の別名。
 \end{itemize}
+
+%===========================================================
+\section{ファイルプリセット機能}
+\label{sec:FilePreset}
+
+{\TeX} Liveでは{(u)\pLaTeX}のフォントの設定を
+kanji-config-updmapというユーティリティで行うことができる。
+そこでは、決まった形式のファイル名をもつdvipdfmx用の
+マップファイルを用意していて、ユーザが要求したプリセット名に
+対応したファイルをupdmapの機構を用いて有効化することで、
+dvipdfmxの既定の設定を切り替えている。
+
+本パッケージの「ファイルプリセット機能」は、
+kanji-config-updmap用のマップファイルの読込を
+文書内で指示するためのものである。
+この機能を利用するには、パッケージオプションとして
+|+| で始まる文字列（仮に |+NAME| とする）を与える。
+これにより、以下のマップファイルの読込が指示される。
+
+\begin{itemize}
+\item {\pLaTeX}の場合：
+  \begin{itemize}
+  \item |ptex-NAME.map|
+  \item |otf-NAME.map|
+  \end{itemize}
+\item {\upLaTeX}の場合：
+  \begin{itemize}
+  \item |uptex-NAME.map|
+  \item |otf-up-NAME.map|
+  \end{itemize}
+\end{itemize}
+
+例えば、{\upLaTeX}文書において以下のようにパッケージを読み込んだとする。
+
+\begin{quote}\small\begin{verbatim}
+\usepackage[+yu-win]{pxchfon}
+\end{verbatim}\end{quote}
+
+この場合、|uptex-yu-win.map| と |otf-up-yu-win.map| の2つのマップファイル
+がdvipdfmx実行時に読み込まれる。
 
 %===========================================================
 \section{dvipdfmxのページ抜粋処理への対応}
@@ -672,10 +764,10 @@ r-cfjas-x-@PXcjk0@     msgothic.ttc FontIndex=0
 のを除けば\Pkg{pxjafont} 0.2版と同じ動作である。
 
 %===========================================================
-\section{中国語・韓国語フォントへの対応（試験的）}
+\section{中国語・韓国語フォントへの対応}
 \label{sec:Non-Japanese}
 
-0.7c版で試験的に\Pkg{OTF}パッケージ（|multi| オプション指定）および
+0.7c版で\Pkg{OTF}パッケージ（|multi| オプション指定）および
 {\upTeX}標準の中国語・韓国語フォントについてのサポートを始めた。
 以下の命令で、実フォントの置換指定ができる。
 
