@@ -4,7 +4,7 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2015/05/07 v0.7e]
+\ProvidesPackage{pxchfon}[2015/08/04 v0.7f]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
@@ -327,13 +327,11 @@
 
 %% \pxcz@do@file@preset
 \def\pxcz@do@file@preset{%
-  \ifpxcz@uptex \pxcz@do@file@preset@a{uptex-}%
-  \else         \pxcz@do@file@preset@a{ptex-}%
-  \fi
+  \pxcz@do@file@preset@a{ptex-}%
+  \ifpxcz@uptex \pxcz@do@file@preset@a{uptex-}\fi
   \ifpxcz@otf
-    \ifpxcz@uptex \pxcz@do@file@preset@a{otf-up-}%
-    \else         \pxcz@do@file@preset@a{otf-}%
-    \fi
+    \pxcz@do@file@preset@a{otf-}%
+    \ifpxcz@uptex \pxcz@do@file@preset@a{otf-up-}\fi
   \fi}
 
 \def\pxcz@do@file@preset@a#1{%
@@ -454,6 +452,7 @@
 \Entry{mgr}{hmgothrn-h  H              \FONT}%
 \Entry{mgr}{hmgothrn-v  V              \FONT}%
 %
+\ifpxcz@otf@multi
 \Entry{kom}{otf-ukmr-h \+UniKS-UTF16-H   \FONT}%
 \Entry{kom}{otf-ukmr-v \+UniKS-UTF16-V   \FONT\w}%
 \Entry{kom}{otf-ckmr-h Identity-H        \FONT/AK12}%
@@ -478,6 +477,7 @@
 \Entry{tcg}{otf-utgr-v \+UniCNS-UTF16-V  \FONT\w}%
 \Entry{tcg}{otf-ctgr-h Identity-H        \FONT/AC14}%
 \Entry{tcg}{otf-ctgr-v Identity-V        \FONT/AC14}%
+\fi
 }
 \pxcz@mapentry{UPSTD}{%
 \Entry{mnr}{uprml-h    \UniJIS-UTF16-H \FONTs}%
@@ -550,6 +550,101 @@
 \pxcz@mapentry{USR}{%
   \pxcz@user@map
 }
+
+%%------------------ '\diruni'
+
+%% variables
+\newif\ifpxcz@diruni@ok
+\let\pxcz@otf@weight\relax
+
+%% check if \diruni is available
+\ifpxcz@uptex
+  \@ifpackageloaded{otf}{%
+    \ifpxcz@directunicode \pxcz@diruni@oktrue \fi
+  }{}
+\fi
+
+%%<*> \textdiruni{<text>}
+\newcommand*{\textdiruni}[1]{%
+  \relax\ifmmode\hbox\fi{\diruni#1}%
+}
+
+\ifpxcz@diruni@ok   %---- <*diruni-ok>
+
+%% otf weight mode
+% watch out for priority...
+\@ifpackagewith{otf}{deluxe}{%
+  \let\pxcz@otf@weight=d
+}{\@ifpackagewith{otf}{bold}{%
+  \let\pxcz@otf@weight=b
+}{\@ifpackagewith{otf}{noreplace}{%
+  \let\pxcz@otf@weight=n
+}{%else
+  \let\pxcz@otf@weight=r
+}}}
+
+%%<*> \diruni
+\DeclareRobustCommand*{\diruni}{%
+  \not@math@alphabet\diruni\relax
+  \fontshape{diruni}\selectfont
+}
+
+%% \pxcz@du@decl@shape{<fam>}{<ser>}{<font>}
+\@onlypreamble\pxcz@du@decl@shape
+\def\pxcz@du@decl@shape#1#2#3#4{%
+\DeclareFontShape{JY2}{#1}{#2}{diruni}{<->%
+    \if#3ts*[\utf@sc@le]#4-h\else#4\fi}{}%
+\DeclareFontShape{JT2}{#1}{#2}{diruni}{<->%
+    \if#3ts*[\utf@sc@le]#4-v\else#4\fi}{}}
+
+\if d\pxcz@otf@weight % deluxe
+\pxcz@du@decl@shape{hmc}{l}t{otf-ujml}%
+\pxcz@du@decl@shape{hmc}{m}t{otf-ujmr}%
+\pxcz@du@decl@shape{hmc}{bx}t{otf-ujmb}%
+\pxcz@du@decl@shape{hgt}{m}t{otf-ujgr}%
+\pxcz@du@decl@shape{hgt}{bx}t{otf-ujgb}%
+\pxcz@du@decl@shape{hgt}{eb}t{otf-ujge}%
+\pxcz@du@decl@shape{mg}{m}t{otf-ujmgr}%
+\else\if b\pxcz@otf@weight % bold
+\pxcz@du@decl@shape{hmc}{m}t{otf-ujmr}%
+\pxcz@du@decl@shape{hmc}{bx}f{ssub*hgt/m/diruni}%
+\pxcz@du@decl@shape{hgt}{m}t{otf-ujgb}%
+\pxcz@du@decl@shape{hgt}{bx}f{ssub*hgt/m/diruni}%
+\else\if r\pxcz@otf@weight % default
+\pxcz@du@decl@shape{hmc}{m}t{otf-ujmr}%
+\pxcz@du@decl@shape{hmc}{bx}f{ssub*hgt/m/diruni}%
+\pxcz@du@decl@shape{hgt}{m}t{otf-ujgr}%
+\pxcz@du@decl@shape{hgt}{bx}f{ssub*hgt/m/diruni}%
+\else                 % noreplace
+\pxcz@du@decl@shape{mc}{m}t{otf-ujmr}%
+\pxcz@du@decl@shape{mc}{bx}f{ssub*gt/m/diruni}%
+\pxcz@du@decl@shape{gt}{m}t{otf-ujgr}%
+\pxcz@du@decl@shape{gt}{bx}f{ssub*gt/m/diruni}%
+\fi\fi\fi
+
+\AtBeginDocument{%
+  \def\pxcz@do#1#2#3{%
+    \DeclareFontShape{#1}{#2}{#3}{diruni}{<->ssub*#2/#3/n}{}}%
+  \@for\pxcz@tmpa:={\rmdefault,\sfdefault,\ttdefault}\do{%
+    \@for\pxcz@tmpb:={m,bx}\do{%
+      \edef\pxcz@tmpb{{\f@encoding}{\pxcz@tmpa}{\pxcz@tmpb}}%
+      \expandafter\pxcz@do\pxcz@tmpb}}%
+}
+
+\else               %---- <*!diruni-ok>
+
+%%<*> \diruni
+\DeclareRobustCommand*{\diruni}{%
+  \pxcz@err@diruni
+}
+\def\pxcz@err@diruni{%
+  \pxcz@error{Command '\string\diruni' not availble}%
+   {You must load this package with 'directunicode' option on upLaTex,%
+    \MessageBreak after loading 'otf' package.\MessageBreak\@ehc}%
+  \global\let\pxcz@err@diruni\relax
+}
+
+\fi                 %---- </diruni-ok>
 
 %%------------------ 'alphabet' option
 

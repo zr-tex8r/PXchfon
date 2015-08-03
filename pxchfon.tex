@@ -4,8 +4,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{0.7e}
-\newcommand{\PkgDate}{2015/05/07}
+\newcommand{\PkgVersion}{0.7f}
+\newcommand{\PkgDate}{2015/08/04}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -142,7 +142,8 @@ dvipdfmx 専用である。
   このため、Adobe-Japan1のグリフと対応しないUnicode文字は
   普通は使えない。なお、\texttt{directunicode} は0.6c版では
   横書きのみの対応であったが、0.7版で縦書きにも対応した。
-  ただし、dvipdfmxの仕様の都合で、縦書き用グリフにはならない。}
+  ただし、dvipdfmxの仕様の都合で、縦書き用グリフにはならない。
+  また、現状では実質的に効果がBMP内の文字に限られる。}
 \item |nodirectunicode|（既定）\Means
   |directunicode| の否定。
 \item |usecmapforalphabet|\Means
@@ -277,6 +278,20 @@ dvipdfmx 専用である。
 \item |\usefontmapline{|\Meta{マップ行}|}|\Means
   dvipdfmxのマップ行を直接指定して、その読込を指示する。
   pdf{\TeX}の |\pdfmapline| に相当する機能。
+\item |\diruni|\Means
+  和文フォントを、「Unicodeを用いてフォントのグリフにアクセスする」
+  状態に切り替える（宣言型命令）。
+  これにより、全角幅の任意の文字が出力可能となる。
+  \footnote{\texttt{directunicode} オプションはBMP内でしか
+    効かないが、この命令の効果はBMP外の文字にも及ぶ。
+    つまり本当に任意の文字が扱える。}%
+  その代わり、この状態では、約物の周りの空き調整が無効になる。
+  詳細については\ref{sec:Loading}節の |directunicode| オプションの
+  説明を参照されたい。
+  なお、この命令は、シェープを |diruni| という値に変えることで
+  実現されている。
+\item |\textdiruni{|\Meta{テキスト}|}|\Means
+  |\diruni| に対応する引数型命令。
 \end{itemize}
 
 %===========================================================

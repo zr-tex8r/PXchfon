@@ -36,9 +36,11 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 0.7f [2015/08/04]
+      - `\diruni` and `\textdiruni`.
   * Version 0.7e [2015/05/07]
       - The map file preset feature.
-      - \usefontmapfile and \usefontmapline.
+      - `\usefontmapfile` and `\usefontmapline`.
   * Version 0.7d [2013/06/16]
       - Explicit designation of non-embedding.
   * Version 0.7c [2013/06/16]

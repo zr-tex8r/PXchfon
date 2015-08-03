@@ -57,7 +57,7 @@ pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）を
       - `pxcjk0.sfd` → $TEXMF/fonts/sfd/pxchfon/
       - `*.def`      → $TEXMF/tex/platex/pxchfon/
 
-  * W32TeX を C:\usr\local にインストールした場合の例。
+  * W32TeX を `C:\usr\local` にインストールした場合の例。
       - `*.tfm`  → `C:\usr\local\share\texmf-local\fonts\tfm\public\pxchfon`
       - `*.vf`   → `C:\usr\local\share\texmf-local\fonts\vf\public\pxchfon`
       - `pxcjk0.sfd` → `C:\usr\local\share\texmf-local\fonts\sfd\pxchfon`
@@ -70,9 +70,12 @@ MIT ライセンス
 更新履歴
 --------
 
+  * Version 0.7f [2015/08/04]
+      - `\diruni` / `\textdiruni` を追加。
   * Version 0.7e [2015/05/07]
       - マップファイルプリセット機能を追加。
-      - \usefontmapfile / \usefontmapline を追加。
+      - `\usefontmapfile` / `\usefontmapline` を追加。
+      - この版までの「試験的」機能を正式な機能とする。
   * Version 0.7d [2013/06/16]
       - 非埋込の明示指定をサポート。
   * Version 0.7c [2013/06/16]
