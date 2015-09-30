@@ -4,8 +4,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{0.7f}
-\newcommand{\PkgDate}{2015/08/04}
+\newcommand{\PkgVersion}{0.7g}
+\newcommand{\PkgDate}{2015/09/30}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -501,6 +501,30 @@ dvipdfmx 専用である。
 \setmarugothicfont{HiraMaruProN-W4.otf}  % ヒラギノ丸ゴ ProN W4
 \end{verbatim}\end{quote}
 
+\item |hiragino-elcapitan-pro|\Means
+  ヒラギノフォント（Mac~OS~X El~Capitan 搭載；Pro/Std版） + 明朝W2。
+\begin{quote}\small\begin{verbatim}
+\setminchofont[1]{HiraginoSerif-W3.ttc}
+\setlightminchofont{HiraMinPro-W2.otf}
+\setboldminchofont[1]{HiraginoSerif-W6.ttc}
+\setgothicfont[3]{HiraginoSans-W3.ttc}
+\setboldgothicfont[3]{HiraginoSans-W6.ttc}
+\setxboldgothicfont[2]{HiraginoSans-W8.ttc}
+\setmarugothicfont[0]{HiraginoSansR-W4.ttc}
+\end{verbatim}\end{quote}
+
+\item |hiragino-elcapitan-pron|\Means
+  ヒラギノフォント（Mac~OS~X El~Capitan 搭載；ProN/StdN版） + 明朝W2。
+\begin{quote}\small\begin{verbatim}
+\setminchofont[0]{HiraginoSerif-W3.ttc}
+\setlightminchofont{HiraMinProN-W2.otf}
+\setboldminchofont[0]{HiraginoSerif-W6.ttc}
+\setgothicfont[2]{HiraginoSans-W3.ttc}
+\setboldgothicfont[2]{HiraginoSans-W6.ttc}
+\setxboldgothicfont[3]{HiraginoSans-W8.ttc}
+\setmarugothicfont[1]{HiraginoSansR-W4.ttc}
+\end{verbatim}\end{quote}
+
 \item |morisawa-pro|\Means
   モリサワフォント基本7書体（Pro版）。
 \begin{quote}\small\begin{verbatim}
@@ -524,7 +548,7 @@ dvipdfmx 専用である。
 \end{verbatim}\end{quote}
 
 \item |yu-win|\Means
-  游書体（Windows搭載版）。
+  游書体（Windows~8.1搭載版）。
 \begin{quote}\small\begin{verbatim}
 \setminchofont{yumin.ttf}         % 游明朝 Regular
 \setlightminchofont{yuminl.ttf}   % 游明朝 Light
@@ -533,6 +557,19 @@ dvipdfmx 専用である。
 \setboldgothicfont{yugothib.ttf}  % 游ゴシック Bold
 \setxboldgothicfont{yugothib.ttf} % 游ゴシック Bold
 \setmarugothicfont{yugothic.ttf}  % 游ゴシック Regular
+\end{verbatim}\end{quote}
+
+\item |yu-win10|\Means
+  游書体（Windows~10搭載版）。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{yumin.ttf}
+\setlightminchofont{yuminl.ttf}
+\setboldminchofont{yumindb.ttf}
+\setgothicfont[0]{YuGothM.ttc}
+\setmediumgothicfont[0]{YuGothR.ttc}
+\setboldgothicfont[0]{YuGothB.ttc}
+\setxboldgothicfont[0]{YuGothB.ttc}
+\setmarugothicfont[0]{YuGothM.ttc}
 \end{verbatim}\end{quote}
 
 \item |yu-osx|\Means

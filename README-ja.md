@@ -70,6 +70,8 @@ MIT ライセンス
 更新履歴
 --------
 
+  * Version 0.7g [2015/09/30]
+      - プリセット `hiragino-elcapitan-*`、`yu-win10` を追加。
   * Version 0.7f [2015/08/04]
       - `\diruni` / `\textdiruni` を追加。
   * Version 0.7e [2015/05/07]

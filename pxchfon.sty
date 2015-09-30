@@ -4,7 +4,7 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2015/08/04 v0.7f]
+\ProvidesPackage{pxchfon}[2015/09/30 v0.7g]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
@@ -63,11 +63,14 @@
   %(multiweight)
   ms-hg,ipa-hg,ipaex-hg,moga-mobo,moga-maruberi,%
   kozuka-pro,kozuka-pr6,kozuka-pr6n,hiragino-pro,hiragino-pron,%
-  morisawa-pro,morisawa-pr6n,yu-win,yu-osx,%
+  hiragino-elcapitan-pro,hiragino-elcapitan-pron,%
+  morisawa-pro,morisawa-pr6n,yu-win,yu-win10,yu-osx,%
   %(obsolete)
   ipa-otf,ipa-otf-dx,kozuka4,kozuka6,kozuka6n,hiragino,%
   %(alias)
-  ms-dx,ipa-ttf,ipa-ttf-dx,ipav2,ipav2-dx,ipa-dx,hiragino-dx}
+  ms-dx,ipa-ttf,ipa-ttf-dx,ipav2,ipav2-dx,ipa-dx,hiragino-dx,%
+  noEmbed,kozuka,hiragino-elcapitan,morisawa}
+  % But note, 'hiragino' != 'hiragino-pro'
 \let\pxcz@main@preset\relax
 \def\pxcz@do#1{\DeclareOption{#1}{\def\pxcz@main@preset{#1}}}
 \@for\pxcz@x:=\pxcz@all@main@preset\do{%
@@ -864,7 +867,7 @@
    {HiraKakuStdN-W8.otf}{HiraKakuProN-W6.otf}{HiraMaruProN-W4.otf}}
 \pxcz@declare@preset{hiragino-elcapitan-pro}{%
   \usecmapforalphabet
-  \pxcz@multiweight{HiraMinProN-W2.otf}{:1:HiraginoSerif-W3.ttc}%
+  \pxcz@multiweight{HiraMinPro-W2.otf}{:1:HiraginoSerif-W3.ttc}%
    {:1:HiraginoSerif-W6.ttc}{:3:HiraginoSans-W3.ttc}{:3:HiraginoSans-W6.ttc}%
    {:2:HiraginoSans-W8.ttc}{:3:HiraginoSans-W6.ttc}{:0:HiraginoSansR-W4.ttc}}
 \pxcz@declare@preset{hiragino-elcapitan-pron}{%
@@ -888,6 +891,10 @@
   \pxcz@multiweight{yuminl.ttf}{yumin.ttf}%
    {yumindb.ttf}{yugothic.ttf}{yugothib.ttf}%
    {yugothib.ttf}{yugothic.ttf}{yugothic.ttf}}
+\pxcz@declare@preset{yu-win10}{%
+  \pxcz@multiweight{yuminl.ttf}{yumin.ttf}%
+   {yumindb.ttf}{:0:YuGothR.ttc}{:0:YuGothB.ttc}%
+   {:0:YuGothB.ttc}{:0:YuGothM.ttc}{:0:YuGothM.ttc}}
 \pxcz@declare@preset{yu-osx}{%
   \usecmapforalphabet
   \pxcz@multiweight{YuMin-Medium.otf}{YuMin-Medium.otf}%
@@ -919,6 +926,10 @@
 \pxcz@declare@preset@alias{ipav2-dx}{ipa-hg}
 \pxcz@declare@preset@alias{ipa-dx}{ipa-hg}
 \pxcz@declare@preset@alias{hiragino-dx}{hiragino-pro}
+\pxcz@declare@preset@alias{noEmbed}{noembed}
+\pxcz@declare@preset@alias{kozuka}{kozuka-pro}
+\pxcz@declare@preset@alias{hiragino-elcapitan}{hiragino-elcapitan-pro}
+\pxcz@declare@preset@alias{morisawa}{morisawa-pro}
 
 %%%% ... and invokes the specified one!
 \if\pxcz@main@preset\relax\else

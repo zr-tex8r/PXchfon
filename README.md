@@ -36,6 +36,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 0.7g [2015/09/30]
+      - Presets `hiragino-elcapitan-*` and `yu-win10`.
   * Version 0.7f [2015/08/04]
       - `\diruni` and `\textdiruni`.
   * Version 0.7e [2015/05/07]
