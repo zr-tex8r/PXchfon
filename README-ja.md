@@ -70,6 +70,8 @@ MIT ライセンス
 更新履歴
 --------
 
+  * Version 0.7h [2015/10/09]
+      - バグ修正(\usefontmapline/file)。
   * Version 0.7g [2015/09/30]
       - プリセット `hiragino-elcapitan-*`、`yu-win10` を追加。
   * Version 0.7f [2015/08/04]

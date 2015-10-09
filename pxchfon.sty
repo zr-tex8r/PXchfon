@@ -250,12 +250,12 @@
 
 %%<+> \usefontmapline{<map-line>}
 \newcommand*\usefontmapline[1]{%
-  \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapline#1}}
+  \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapline{#1}}}
 \@onlypreamble\usefontmapline
 
 %%<+> \usefontmapfile{<map-file>}
 \newcommand*\usefontmapfile[1]{%
-  \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapfile#1}}
+  \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapfile{#1}}}
 \@onlypreamble\usefontmapfile
 
 %%------------------ map entry handling
