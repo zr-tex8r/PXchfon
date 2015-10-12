@@ -629,9 +629,19 @@
   \def\pxcz@do#1#2#3{%
     \DeclareFontShape{#1}{#2}{#3}{diruni}{<->ssub*#2/#3/n}{}}%
   \@for\pxcz@tmpa:={\rmdefault,\sfdefault,\ttdefault}\do{%
+    \pxcz@force@load@font@fam\pxcz@tmpa
     \@for\pxcz@tmpb:={m,bx}\do{%
       \edef\pxcz@tmpb{{\f@encoding}{\pxcz@tmpa}{\pxcz@tmpb}}%
       \expandafter\pxcz@do\pxcz@tmpb}}%
+}
+\@onlypreamble\pxcz@force@load@font@fam
+\def\pxcz@force@load@font@fam#1{%
+  \begingroup
+    \edef\f@family{#1}\def\f@series{m}\def\f@shape{n}%
+    \xdef\font@name{\csname\curr@fontshape/\f@size\endcsname}%
+    \let\extract@font\relax
+    \pickup@font
+  \endgroup
 }
 
 \else               %---- <*!diruni-ok>
@@ -642,7 +652,7 @@
 }
 \def\pxcz@err@diruni{%
   \pxcz@error{Command '\string\diruni' not availble}%
-   {You must load this package with 'directunicode' option on upLaTex,%
+   {You must load this package with 'directunicode' option on upLaTeX,%
     \MessageBreak after loading 'otf' package.\MessageBreak\@ehc}%
   \global\let\pxcz@err@diruni\relax
 }
