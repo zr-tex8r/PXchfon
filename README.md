@@ -36,7 +36,7 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
-  * Version 0.7h [2015/10/09]
+  * Version 0.7h [2015/10/14]
       - Bug fix.
   * Version 0.7g [2015/09/30]
       - Presets `hiragino-elcapitan-*` and `yu-win10`.

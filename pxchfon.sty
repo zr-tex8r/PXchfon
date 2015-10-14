@@ -4,12 +4,13 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2015/09/30 v0.7g]
+\ProvidesPackage{pxchfon}[2015/10/14 v0.7h]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
 \def\pxcz@error{\PackageError\pxcz@pkgname}
-\def\pxcz@warn{\PackageInfo\pxcz@pkgname}
+\def\pxcz@warn{\PackageWarning\pxcz@pkgname}
+\def\pxcz@info{\PackageInfo\pxcz@pkgname}
 \newif\ifpxcz@ok
 \newif\ifpxcz@utf
 
@@ -745,6 +746,11 @@
     \ifpxcz@ok \renewcommand\rmdefault{cfjar}\fi
     \pxcz@check@alldefined{gtr,gtb,gtx}%
     \ifpxcz@ok \renewcommand\sfdefault{cfjas}\fi
+    \edef\pxcz@tmpa{\encodingdefault}\def\pxcz@tmpb{OT1}
+    \ifx\pxcz@tmpa\pxcz@tmpb\else
+      \pxcz@warn{Default encoding is changed to 'OT1' because%
+        \MessageBreak'alphabet' option is in effect}%
+    \fi
     \renewcommand\encodingdefault{OT1}\normalfont
     \pxcz@addtospec{ALPHA}%
   \fi
@@ -784,7 +790,7 @@
   \ifpxcz@otf@deluxe
     \DeclareRelationFont{\k@encoding}{#1}{#3}{}{OT1}{#2}{#3}{}%
   \fi
-  \pxcz@warn{Relation font set for \k@encoding/#1}%
+  \pxcz@info{Relation font set for \k@encoding/#1}%
 }
 
 %%------------------ preset japanese font mappings
