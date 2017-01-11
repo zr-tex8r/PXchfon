@@ -1,11 +1,17 @@
 % 文字コードは UTF-8
 % uplatex で組版する
-\documentclass[a4paper,uplatex]{jsarticle}
+\documentclass[uplatex,dvipdfmx,a4paper]{jsarticle}
+\usepackage{color}
+\definecolor{myblue}{rgb}{0,0,0.75}
+\definecolor{mygreen}{rgb}{0,0.45,0}
+\usepackage[colorlinks,hyperfootnotes=false]{hyperref}
+\usepackage{pxjahyper}
+\hypersetup{linkcolor=myblue,urlcolor=mygreen}
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{0.7h}
-\newcommand{\PkgDate}{2015/10/14}
+\newcommand{\PkgVersion}{0.8}
+\newcommand{\PkgDate}{2017/01/13}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -16,10 +22,11 @@
 \providecommand{\upLaTeX}{u\pLaTeX}
 %-----------------------------------------------------------
 \begin{document}
-\title{\Pkg{pxchfon} パッケージ（v\PkgVersion）}
+\title{\Pkg{pxchfon} パッケージ}
 \author{八登崇之\ （Takayuki YATO; aka.~``ZR''）}
-\date{\PkgDate}
+\date{v\PkgVersion\quad[\PkgDate]}
 \maketitle
+\tableofcontents
 
 %===========================================================
 \section{概要}
@@ -68,7 +75,7 @@ dvipdfmx 専用である。
   名前に対応するプリセット指定を有効にする。
   詳細については\ref{sec:Preset}節を参照。
 \item \textbf{ファイルプリセット指定オプション}%
-  （|+|\mbox{}\textgt{名前}）
+  （|+|\mbox{}\textgt{名前} または |*|\mbox{}\textgt{名前}）
   名前に対応するファイルプリセット指定を有効にする。
   詳細については\ref{sec:FilePreset}節を参照。
 \item |alphabet|\Means
@@ -94,6 +101,16 @@ dvipdfmx 専用である。
   変更する。
   Adobe-Japan1に対応したOpenTypeフォント使用の場合は、
   所謂「2004JIS字形」が使われることになる。
+  \<\footnote{\Pkg{OTF}パッケージの和文フォントについては、
+    \Pkg{OTF}パッケージの\texttt{jis2004}オプションで2004JIS字形
+    指定を行う仕様になっている。
+    そのため、本パッケージの\texttt{prefer2004jis}の対象にはならない。
+    ところが実際には、0.7h版以前の本パッケージでは、
+    {\upTeX}上の\Pkg{OTF}の和文フォントにも\texttt{prefer2004jis}を
+    適用していた。
+    これは、昔の\Pkg{OTF}が{\upTeX}上では\texttt{jis2004}オプションに
+    未対応であったためであり、非公式の暫定仕様であった。
+    現在では、この暫定仕様は廃止されている。}
 \item |noprefer2004jis|（既定）\Means
   |prefer2004jis| の否定。
 \item |oneweight|\Means
@@ -169,10 +186,10 @@ dvipdfmx 専用である。
 \begin{itemize}
 \item {\pTeX}の標準のフォント --- |rml*|/|gbm*|
 \item {\upTeX}の日本語フォント --- |urml*|/|ugbm*|/|uprml*|/|upgbm*|
-\item {\upTeX}の日中国語・韓国語フォント
+\item {\upTeX}の中国語・韓国語フォント
 \item \Pkg{UTF}パッケージのフォント --- |hmr*|/|hkb*|/|unij*|/|cid*|
 \item \Pkg{OTF}パッケージの日本語フォント --- |hmin*|/|hgoth*|/|otf-{u,c}j*|
-\item \Pkg{OTF}パッケージのの日中国語・韓国語フォント
+\item \Pkg{OTF}パッケージの中国語・韓国語フォント
 %\item \Pkg{PXfontspec}パッケージの日本語フォント --- |nja{r,s}-*|
 \end{itemize}
 
@@ -267,7 +284,7 @@ dvipdfmx 専用である。
   それを適宜用意してそのファイル名をこの命令で指定する必要がある。
   引数に与えるのは最後の1文字（書字方向の「|H|」「|V|」）を除いた
   部分の文字列である。\par
-  CMap名接頭辞の既定値は「|2004-|」で、これは最近のTeX Liveに
+  CMap名接頭辞の既定値は「|2004-|」で、これは最近の{\TeX} Liveに
   含まれている「|2004-H|」等のCMapファイルを用いることを意味する。%
   \inhibitglue\footnote{%
     引数に \texttt{*} を与えた場合は \texttt{JISX0213-2004-H} が
@@ -406,7 +423,7 @@ dvipdfmx 専用である。
 
 \item |moga-mobo|\Means
    Mogaフォント + Moboフォント。
-   \Note 「丸ゴシック」ファミリに Mobogothic を充てている。
+   \Note 「丸ゴシック」ファミリに MoboGothic を充てている。
    \Note Moga/MoboフォントはCIDアクセス非対応であるが、
    フォント実体を変えることで |prefer2004jis| オプションに
    対応させている。
@@ -415,10 +432,10 @@ dvipdfmx 専用である。
 \begin{quote}\small\begin{verbatim}
 \setminchofont[3]{mogam.ttc}       % Moga90Mincho
 \setboldminchofont[3]{mogamb.ttc}  % Moga90Mincho Bold
-\setgothicfont[3]{mogag.ttc}       % Moga90Gothic
-\setboldgothicfont[3]{mogagb.ttc}  % Moga90Gothic Bold
-\setxboldgothicfont[3]{mogagb.ttc} % Moga90Gothic Bold
-\setmarugothic[3]{mobog.ttc}       % Mobo90Gothic
+\setgothicfont[2]{mogag.ttc}       % Moga90Gothic
+\setboldgothicfont[2]{mogagb.ttc}  % Moga90Gothic Bold
+\setxboldgothicfont[2]{mogagb.ttc} % Moga90Gothic Bold
+\setmarugothic[2]{mobog.ttc}       % Mobo90Gothic
 \end{verbatim}\end{quote}
    \par\medskip
    \textgt{|prefer2004jis| 指定時}
@@ -429,6 +446,32 @@ dvipdfmx 専用である。
 \setboldgothicfont[0]{mogagb.ttc}  % MogaGothic Bold
 \setxboldgothicfont[0]{mogagb.ttc} % MogaGothic Bold
 \setmarugothic[0]{mobog.ttc}       % MoboGothic
+\end{verbatim}\end{quote}
+
+\item |moga-mobo-ex|\Means
+   MogaExフォント + MoboExフォント。
+   \Note 「丸ゴシック」ファミリに MoboExGothic を充てている。
+   \Note フォント実体を変えることで |prefer2004jis| オプションに
+   対応させている。
+   \par\medskip
+   \textgt{|prefer2004jis| 非指定時}
+\begin{quote}\small\begin{verbatim}
+\setminchofont[4]{mogam.ttc}       % MogaEx90Mincho
+\setboldminchofont[4]{mogamb.ttc}  % MogaEx90Mincho Bold
+\setgothicfont[3]{mogag.ttc}       % MogaEx90Gothic
+\setboldgothicfont[3]{mogagb.ttc}  % MogaEx90Gothic Bold
+\setxboldgothicfont[3]{mogagb.ttc} % MogaEx90Gothic Bold
+\setmarugothic[3]{mobog.ttc}       % MoboEx90Gothic
+\end{verbatim}\end{quote}
+   \par\medskip
+   \textgt{|prefer2004jis| 指定時}
+\begin{quote}\small\begin{verbatim}
+\setminchofont[1]{mogam.ttc}       % MogaExMincho
+\setboldminchofont[1]{mogamb.ttc}  % MogaExMincho Bold
+\setgothicfont[1]{mogag.ttc}       % MogaExGothic
+\setboldgothicfont[1]{mogagb.ttc}  % MogaExGothic Bold
+\setxboldgothicfont[1]{mogagb.ttc} % MogaExGothic Bold
+\setmarugothic[1]{mobog.ttc}       % MoboExGothic
 \end{verbatim}\end{quote}
 
 \item |moga-maruberi|\Means
@@ -648,6 +691,20 @@ v0.5版以前で用意されていたプリセット設定。
 \section{ファイルプリセット機能}
 \label{sec:FilePreset}
 
+ファイルプリセット機能を利用すると、既存のdvipdfmx用のマップファイル
+の読込を文書内で指定することが可能になる。
+パッケージオプションに次の何れかの形式の文字列を指定すると、
+ファイルプリセットの指定と見なされる。
+
+\begin{itemize}
+\item |+|\mbox{}\textgt{名前}\Means
+  {\TeX} Live用ファイルプリセット。
+\item |*|\mbox{}\textgt{名前}\Means
+  単純ファイルプリセット。
+\end{itemize}
+
+\subsection{{\TeX} Live用ファイルプリセット機能}
+
 {\TeX} Liveでは{(u)\pLaTeX}のフォントの設定を
 kanji-config-updmapというユーティリティで行うことができる。
 そこでは、決まった形式のファイル名をもつdvipdfmx用の
@@ -655,12 +712,10 @@ kanji-config-updmapというユーティリティで行うことができる。
 対応したファイルをupdmapの機構を用いて有効化することで、
 dvipdfmxの既定の設定を切り替えている。
 
-本パッケージの「ファイルプリセット機能」は、
-kanji-config-updmap用のマップファイルの読込を
-文書内で指示するためのものである。
-この機能を利用するには、パッケージオプションとして
-|+| で始まる文字列（仮に |+NAME| とする）を与える。
-これにより、以下のマップファイルの読込が指示される。
+パッケージオプションとして |+| で始まる文字列
+（仮に |+NAME| とする）を与えると、
+kanji-config-updmap用のマップファイルの読込が指示される。
+具体的には、以下の名前のマップファイルが読み込まれる。
 
 \begin{itemize}
 \item {\pLaTeX}の場合：
@@ -668,21 +723,39 @@ kanji-config-updmap用のマップファイルの読込を
   \item |ptex-NAME.map|
   \item |otf-NAME.map|
   \end{itemize}
-\item {\upLaTeX}の場合：
+\item {\upLaTeX}の場合、上記のものに加えて以下のもの：
   \begin{itemize}
   \item |uptex-NAME.map|
   \item |otf-up-NAME.map|
   \end{itemize}
 \end{itemize}
 
-例えば、{\upLaTeX}文書において以下のようにパッケージを読み込んだとする。
+例えば、{\pLaTeX}文書において以下のようにパッケージを読み込んだとする。
 
 \begin{quote}\small\begin{verbatim}
 \usepackage[+yu-win]{pxchfon}
 \end{verbatim}\end{quote}
 
-この場合、|uptex-yu-win.map| と |otf-up-yu-win.map| の2つのマップファイル
+この場合、|ptex-yu-win.map| と |otf-yu-win.map| の2つのマップファイル
 がdvipdfmx実行時に読み込まれる。
+
+\subsection{単純ファイルプリセット機能}
+
+パッケージオプションとして |*| で始まる文字列
+（仮に |*NAME| とする）を与えると、
+|NAME.map| という名前のマップファイルの読込が指示される。
+
+例えば、以下のようにパッケージを読み込んだとする。
+
+\begin{quote}\small\begin{verbatim}
+\usepackage[*yu]{pxchfon}
+\end{verbatim}\end{quote}
+
+この場合、|yu.map| というマップファイル
+\footnote{例えばW32{\TeX}ではこの名前のマップファイルが
+  用意されている。}%
+がdvipdfmx実行時に読み込まれる。
+
 
 %===========================================================
 \section{dvipdfmxのページ抜粋処理への対応}
