@@ -293,7 +293,7 @@
 
 %% \pxcz@MI
 % NB: not \edef
-\def\pxcz@MI{\ifpxcz@mmivjis:0:\else:3:\fi}
+\def\pxcz@MI#1#2:{\ifpxcz@mmivjis:#1:\else:#2:\fi}
 
 %% \pxcz@unidirect
 \let\pxcz@unidirect\@empty
@@ -862,14 +862,19 @@
   {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{ipaexg.ttf}{hgrsmp.ttf}}
 \pxcz@declare@preset{moga-mobo}{%
   \pxcz@enable@switch@realfont
-  \pxcz@multiweight{\pxcz@MI mogam.ttc}{\pxcz@MI mogam.ttc}%
-  {\pxcz@MI mogamb.ttc}{\pxcz@MI mogag.ttc}{\pxcz@MI mogagb.ttc}%
-  {\pxcz@MI mogagb.ttc}{\pxcz@MI mogag.ttc}{\pxcz@MI mobog.ttc}}
+  \pxcz@multiweight{\pxcz@MI03:mogam.ttc}{\pxcz@MI03:mogam.ttc}%
+  {\pxcz@MI03:mogamb.ttc}{\pxcz@MI02:mogag.ttc}{\pxcz@MI02:mogagb.ttc}%
+  {\pxcz@MI02:mogagb.ttc}{\pxcz@MI02:mogag.ttc}{\pxcz@MI02:mobog.ttc}}
+\pxcz@declare@preset{moga-mobo-ex}{%
+  \pxcz@enable@switch@realfont
+  \pxcz@multiweight{\pxcz@MI14:mogam.ttc}{\pxcz@MI14:mogam.ttc}%
+  {\pxcz@MI14:mogamb.ttc}{\pxcz@MI13:mogag.ttc}{\pxcz@MI13:mogagb.ttc}%
+  {\pxcz@MI13:mogagb.ttc}{\pxcz@MI13:mogag.ttc}{\pxcz@MI13:mobog.ttc}}
 \pxcz@declare@preset{moga-maruberi}{%
   \pxcz@enable@switch@realfont
-  \pxcz@multiweight{\pxcz@MI mogam.ttc}{\pxcz@MI mogam.ttc}%
-  {\pxcz@MI mogamb.ttc}{\pxcz@MI mogag.ttc}{\pxcz@MI mogagb.ttc}%
-  {\pxcz@MI mogagb.ttc}{\pxcz@MI mogag.ttc}{MTLmr3m.ttf}}
+  \pxcz@multiweight{\pxcz@MI03:mogam.ttc}{\pxcz@MI03:mogam.ttc}%
+  {\pxcz@MI03:mogamb.ttc}{\pxcz@MI02:mogag.ttc}{\pxcz@MI02:mogagb.ttc}%
+  {\pxcz@MI02:mogagb.ttc}{\pxcz@MI02:mogag.ttc}{MTLmr3m.ttf}}
 \pxcz@declare@preset{kozuka-pro}{%
   \usecmapforalphabet
   \pxcz@multiweight{KozMinPro-Light.otf}{KozMinPro-Regular.otf}%
