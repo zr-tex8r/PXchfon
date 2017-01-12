@@ -83,12 +83,17 @@
   \ifx\pxcz@x\relax \@unknownoptionerror
   \else \let\pxcz@file@preset\pxcz@x \fi}
 \let\pxcz@file@preset\relax
+\newif\ifpxcz@file@preset@tl
 \def\pxcz@popt{%
   \futurelet\pxcz@tok\pxcz@popt@a}
 \def\pxcz@popt@a{%
-  \ifx+\pxcz@tok \expandafter\pxcz@popt@b
-  \else \expandafter\remove@to@nnil \fi}
-\def\pxcz@popt@b+#1\@nnil{\edef\pxcz@x{#1}}
+  \let\pxcz@tmpa\remove@to@nnil
+  \ifx+\pxcz@tok
+    \pxcz@file@preset@tltrue \let\pxcz@tmpa\pxcz@popt@b
+  \else\ifx*\pxcz@tok
+    \pxcz@file@preset@tlfalse \let\pxcz@tmpa\pxcz@popt@b
+  \fi\fi \pxcz@tmpa}
+\def\pxcz@popt@b#1#2\@nnil{\edef\pxcz@x{#2}}
 % dispatch
 \ProcessOptions*
 % 'everypage' needs 'atbegshi' package
@@ -331,13 +336,16 @@
 
 %% \pxcz@do@file@preset
 \def\pxcz@do@file@preset{%
-  \pxcz@do@file@preset@a{ptex-}%
-  \ifpxcz@uptex \pxcz@do@file@preset@a{uptex-}\fi
-  \ifpxcz@otf
-    \pxcz@do@file@preset@a{otf-}%
-    \ifpxcz@uptex \pxcz@do@file@preset@a{otf-up-}\fi
+  \ifpxcz@file@preset@tl
+    \pxcz@do@file@preset@a{ptex-}%
+    \ifpxcz@uptex \pxcz@do@file@preset@a{uptex-}\fi
+    \ifpxcz@otf
+      \pxcz@do@file@preset@a{otf-}%
+      \ifpxcz@uptex \pxcz@do@file@preset@a{otf-up-}\fi
+    \fi
+  \else
+    \pxcz@do@file@preset@a{}%
   \fi}
-
 \def\pxcz@do@file@preset@a#1{%
   \pxcz@addtospec@alt\pxcz@mapfile{#1\pxcz@file@preset.map}}
 
