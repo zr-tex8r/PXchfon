@@ -38,6 +38,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 0.9  ‹2017/04/08›
+      - Option `directunicode*`.
   * Version 0.8  ‹2017/01/13›
       - Now `prefer2004jis` has no effect on the Japanese fonts provided
         by japanese-otf pacakge even when using upTeX, since `jis2004`
