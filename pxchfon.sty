@@ -842,6 +842,18 @@
   \expandafter\endcsname\csname pxcz@the@preset@#2\endcsname}
 \def\pxcz@decl@preset@alias@a#1#2{\@onlypreamble#1\let#1#2}
 
+%% \pxcz@declare@depre@preset
+\def\pxcz@declare@depre@preset#1{%
+  \pxcz@declare@deprecated{#1}%
+  \pxcz@declare@preset{#1}}
+%% \pxcz@declare@depre@preset@alias
+\def\pxcz@declare@depre@preset@alias#1{%
+  \pxcz@declare@deprecated{#1}%
+  \pxcz@declare@preset@alias{#1}}
+%% \pxcz@declare@deprecated{<name>}
+\def\pxcz@declare@deprecated#1{%
+  \expandafter\let\csname pxcz@depre@preset@#1\endcsname=t}
+
 %% \pxcz@uniweight{<font-mn>}{<font-gt>}
 \@onlypreamble\pxcz@uniweight
 \def\pxcz@uniweight#1#2{%
@@ -859,6 +871,10 @@
 
 %% \pxcz@use@preset{<name>}
 \def\pxcz@use@preset#1{%
+  \expandafter\ifx\csname pxcz@depre@preset@#1\endcsname t%
+    \pxcz@warn{Preset '#1' is obsolete and\MessageBreak
+      its use is *deprecated*,}%
+  \fi
   \csname pxcz@the@preset@#1\endcsname}
 
 %%%% definitions of main preset mappings
@@ -958,31 +974,31 @@
    {YuMin-Demibold.otf}{YuGo-Medium.otf}{YuGo-Bold.otf}%
    {YuGo-Bold.otf}{YuGo-Medium.otf}{YuGo-Medium.otf}}
 %(obsolete)
-\pxcz@declare@preset{ipa-otf}{%
+\pxcz@declare@depre@preset{ipa-otf}{%
   \pxcz@uniweight{ipam.otf}{ipag.otf}}
-\pxcz@declare@preset{ipa-otf-dx}{%
+\pxcz@declare@depre@preset{ipa-otf-dx}{%
   \pxcz@multiweight{ipam.otf}{:0:hgrme.ttc}%
   {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{hgrsmp.ttf}}
-\pxcz@declare@preset{kozuka4}{%
+\pxcz@declare@depre@preset{kozuka4}{%
   \usecmapforalphabet
   \pxcz@uniweight{KozMinPro-Regular-Acro.otf}{KozGoPro-Medium-Acro.otf}}
-\pxcz@declare@preset{kozuka6}{%
+\pxcz@declare@depre@preset{kozuka6}{%
   \usecmapforalphabet
   \pxcz@uniweight{KozMinProVI-Regular.otf}{KozGoProVI-Medium.otf}}
-\pxcz@declare@preset{kozuka6n}{%
+\pxcz@declare@depre@preset{kozuka6n}{%
   \usecmapforalphabet
   \pxcz@uniweight{KozMinPr6N-Regular.otf}{KozGoPr6N-Medium.otf}}
-\pxcz@declare@preset{hiragino}{%
+\pxcz@declare@depre@preset{hiragino}{%
   \usecmapforalphabet
   \pxcz@uniweight{HiraMinPro-W3.otf}{HiraKakuPro-W6.otf}}
 %(alias)
-\pxcz@declare@preset@alias{ms-dx}{ms-hg}
-\pxcz@declare@preset@alias{ipa-ttf}{ipa}
-\pxcz@declare@preset@alias{ipa-ttf-dx}{ipa-hg}
-\pxcz@declare@preset@alias{ipav2}{ipa}
-\pxcz@declare@preset@alias{ipav2-dx}{ipa-hg}
-\pxcz@declare@preset@alias{ipa-dx}{ipa-hg}
-\pxcz@declare@preset@alias{hiragino-dx}{hiragino-pro}
+\pxcz@declare@depre@preset@alias{ms-dx}{ms-hg}
+\pxcz@declare@depre@preset@alias{ipa-ttf}{ipa}
+\pxcz@declare@depre@preset@alias{ipa-ttf-dx}{ipa-hg}
+\pxcz@declare@depre@preset@alias{ipav2}{ipa}
+\pxcz@declare@depre@preset@alias{ipav2-dx}{ipa-hg}
+\pxcz@declare@depre@preset@alias{ipa-dx}{ipa-hg}
+\pxcz@declare@depre@preset@alias{hiragino-dx}{hiragino-pro}
 \pxcz@declare@preset@alias{noEmbed}{noembed}
 \pxcz@declare@preset@alias{kozuka}{kozuka-pro}
 \pxcz@declare@preset@alias{hiragino-elcapitan}{hiragino-elcapitan-pro}
