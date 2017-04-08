@@ -10,7 +10,7 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2017/01/13 v0.8]
+\ProvidesPackage{pxchfon}[2017/04/08 v0.9]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
@@ -59,9 +59,10 @@
 \newif\ifpxcz@oneweight
 \DeclareOption{oneweight}{\pxcz@oneweighttrue}
 \DeclareOption{nooneweight}{\pxcz@oneweightfalse}
-\newif\ifpxcz@directunicode
-\DeclareOption{directunicode}{\pxcz@directunicodetrue}
-\DeclareOption{nodirectunicode}{\pxcz@directunicodefalse}
+\chardef\pxcz@directunicode=0
+\DeclareOption{directunicode*}{\chardef\pxcz@directunicode=2 }
+\DeclareOption{directunicode}{\chardef\pxcz@directunicode=1 }
+\DeclareOption{nodirectunicode}{\chardef\pxcz@directunicode=0 }
 % preset spec options
 \def\pxcz@all@main@preset{%
   noembed,%
@@ -308,29 +309,36 @@
 
 %% \pxcz@unidirect
 \let\pxcz@unidirect\@empty
+\let\pxcz@unidirectX\@empty
 \let\pxcz@unidirect@wopt\@empty
-\ifpxcz@directunicode
-\def\pxcz@unidirect#116-#2{\pxcz@cmap@directuni}
+\let\pxcz@unidirectX@wopt\@empty
+\ifnum\pxcz@directunicode>\z@
+\def\pxcz@unidirect#1-#2-#3{\pxcz@cmap@directuni}
 \def\pxcz@unidirect@wopt{ -w 1}
+\fi
+\ifnum\pxcz@directunicode>\@ne
+\let\pxcz@unidirectX\pxcz@unidirect
+\let\pxcz@unidirectX@wopt\pxcz@unidirect@wopt
 \fi
 
 %% \pxcz@addtospec{<id>}
 \def\pxcz@addtospec#1{%
   \bgroup \let\Entry\pxcz@Entry
     \let\ \space \let\*\pxcz@pfx@jis 
-    \let\UniJIS\pxcz@pfx@unijis
+    \def\UniJIS{\pxcz@unidirectX\pxcz@pfx@unijis}%
     \@nameuse{pxcz@ME/#1}\egroup}
 \def\pxcz@Entry#1{%
   \expandafter\let\expandafter\FONT\csname pxcz@FS/#1\endcsname
   \let\FONTo\FONT \let\FONTs\FONT
   \ifx\FONT\pxcz@noembed
     \let\UniCMap\pxcz@cmap@hwuni
-    \let\+\@empty \let\w\@empty
+    \let\+\@empty \let\w\@empty \def\@+{}\let\@w\@empty
     \edef\FONT{!\@nameuse{pxcz@NEF/#1}}%
     \let\FONTo\FONT \let\FONTs\FONT
   \else\ifx\FONT\@empty\else
     \let\UniCMap\pxcz@cmap@uni
     \let\+\pxcz@unidirect \let\w\pxcz@unidirect@wopt
+    \def\@+{\pxcz@unidirectX}\let\@w\pxcz@unidirectX@wopt
     \pxcz@switch@realfont
   \fi\fi
   \ifx\FONT\@empty \expandafter\@gobble
@@ -386,13 +394,13 @@
 }
 \pxcz@mapentry{UTF}{%
 \Entry{mnr}{unijmin-h  \UniJIS-UTF16-H \FONTs}%
-\Entry{mnr}{unijmin-v  \UniJIS-UTF16-V \FONTs}%
+\Entry{mnr}{unijmin-v  \UniJIS-UTF16-V \FONTs\@w}%
 \Entry{mnr}{cidmin-h   Identity-H     \FONT/AJ16}%
 \Entry{mnr}{cidmin-v   Identity-V     \FONT/AJ16}%
 \Entry{mnr}{hmr        \*H            \FONTs}%
 \Entry{mnr}{hmrv       \*V            \FONTs}%
 \Entry{gtu}{unijgoth-h \UniJIS-UTF16-H \FONTs}%
-\Entry{gtu}{unijgoth-v \UniJIS-UTF16-V \FONTs}%
+\Entry{gtu}{unijgoth-v \UniJIS-UTF16-V \FONTs\@w}%
 \Entry{gtu}{cidgoth-h  Identity-H     \FONT/AJ16}%
 \Entry{gtu}{cidgoth-v  Identity-V     \FONT/AJ16}%
 \Entry{gtu}{hkb        \*H            \FONTs}%
@@ -498,59 +506,59 @@
 \fi
 }
 \pxcz@mapentry{UPSTD}{%
-\Entry{mnr}{uprml-h    \UniJIS-UTF16-H \FONTs}%
-\Entry{mnr}{uprml-v    \UniJIS-UTF16-V \FONTs}%
-\Entry{mnr}{uprml-hq   UniJIS-UCS2-H   \FONT}%
-\Entry{gtu}{upgbm-h    \UniJIS-UTF16-H \FONTs}%
-\Entry{gtu}{upgbm-v    \UniJIS-UTF16-V \FONTs}%
-\Entry{gtu}{upgbm-hq   UniJIS-UCS2-H   \FONT}%
-\Entry{mnr}{urml       \UniJIS-UTF16-H \FONTs}%
-\Entry{mnr}{urmlv      \UniJIS-UTF16-V \FONTs}%
-\Entry{gtu}{ugbm       \UniJIS-UTF16-H \FONTs}%
-\Entry{gtu}{ugbmv      \UniJIS-UTF16-V \FONTs}%
+\Entry{mnr}{uprml-h    \UniJIS-UTF16-H   \FONTs}%
+\Entry{mnr}{uprml-v    \UniJIS-UTF16-V   \FONTs\@w}%
+\Entry{mnr}{uprml-hq   \@+UniJIS-UCS2-H  \FONT}%
+\Entry{gtu}{upgbm-h    \UniJIS-UTF16-H   \FONTs}%
+\Entry{gtu}{upgbm-v    \UniJIS-UTF16-V   \FONTs\@w}%
+\Entry{gtu}{upgbm-hq   \@+UniJIS-UCS2-H  \FONT}%
+\Entry{mnr}{urml       \UniJIS-UTF16-H   \FONTs}%
+\Entry{mnr}{urmlv      \UniJIS-UTF16-V   \FONTs\@w}%
+\Entry{gtu}{ugbm       \UniJIS-UTF16-H   \FONTs}%
+\Entry{gtu}{ugbmv      \UniJIS-UTF16-V   \FONTs\@w}%
 %
-\Entry{kom}{uphysmjm-h UniKS-UTF16-H  \FONT}%
-\Entry{kom}{uphysmjm-v UniKS-UTF16-V  \FONT}%
-\Entry{kog}{uphygt-h   UniKS-UTF16-H  \FONT}%
-\Entry{kog}{uphygt-v   UniKS-UTF16-V  \FONT}%
-\Entry{scm}{upstsl-h   UniGB-UTF16-H  \FONT}%
-\Entry{scm}{upstsl-v   UniGB-UTF16-V  \FONT}%
-\Entry{scg}{upstht-h   UniGB-UTF16-H  \FONT}%
-\Entry{scg}{upstht-v   UniGB-UTF16-V  \FONT}%
-\Entry{tcm}{upmsl-h    UniCNS-UTF16-H \FONT}%
-\Entry{tcm}{upmsl-v    UniCNS-UTF16-V \FONT}%
-\Entry{tcg}{upmhm-h    UniCNS-UTF16-H \FONT}%
-\Entry{tcg}{upmhm-v    UniCNS-UTF16-V \FONT}%
+\Entry{kom}{uphysmjm-h   \@+UniKS-UTF16-H      \FONT}%
+\Entry{kom}{uphysmjm-v   \@+UniKS-UTF16-V      \FONT\@w}%
+\Entry{kog}{uphygt-h     \@+UniKS-UTF16-H      \FONT}%
+\Entry{kog}{uphygt-v     \@+UniKS-UTF16-V      \FONT\@w}%
+\Entry{scm}{upstsl-h     \@+UniGB-UTF16-H      \FONT}%
+\Entry{scm}{upstsl-v     \@+UniGB-UTF16-V      \FONT\@w}%
+\Entry{scg}{upstht-h     \@+UniGB-UTF16-H      \FONT}%
+\Entry{scg}{upstht-v     \@+UniGB-UTF16-V      \FONT\@w}%
+\Entry{tcm}{upmsl-h      \@+UniCNS-UTF16-H     \FONT}%
+\Entry{tcm}{upmsl-v      \@+UniCNS-UTF16-V     \FONT\@w}%
+\Entry{tcg}{upmhm-h      \@+UniCNS-UTF16-H     \FONT}%
+\Entry{tcg}{upmhm-v      \@+UniCNS-UTF16-V     \FONT\@w}%
 }
 \pxcz@mapentry{UPOTF}{%
-\Entry{mnl}{uphminl-h    UniJIS-UTF16-H     \FONTs}%
-\Entry{mnl}{uphminl-v    UniJIS-UTF16-V     \FONTs}%
-\Entry{mnl}{uphminln-h   UniJIS2004-UTF16-H \FONTs}%
-\Entry{mnl}{uphminln-v   UniJIS2004-UTF16-V \FONTs}%
-\Entry{mnr}{uphminr-h    UniJIS-UTF16-H     \FONTs}%
-\Entry{mnr}{uphminr-v    UniJIS-UTF16-V     \FONTs}%
-\Entry{mnr}{uphminrn-h   UniJIS2004-UTF16-H \FONTs}%
-\Entry{mnr}{uphminrn-v   UniJIS2004-UTF16-V \FONTs}%
-\Entry{mnb}{uphminb-h    UniJIS-UTF16-H     \FONTs}%
-\Entry{mnb}{uphminb-v    UniJIS-UTF16-V     \FONTs}%
-\Entry{mnb}{uphminbn-h   UniJIS2004-UTF16-H \FONTs}%
-\Entry{mnb}{uphminbn-v   UniJIS2004-UTF16-V \FONTs}%
-\Entry{gtr}{uphgothr-h   UniJIS-UTF16-H     \FONTs}%
-\Entry{gtr}{uphgothr-v   UniJIS-UTF16-V     \FONTs}%
-\Entry{gtr}{uphgothrn-h  UniJIS2004-UTF16-H \FONTs}%
-\Entry{gtr}{uphgothrn-v  UniJIS2004-UTF16-V \FONTs}%
-\Entry{gtb}{uphgothb-h   UniJIS-UTF16-H     \FONTs}%
-\Entry{gtb}{uphgothb-v   UniJIS-UTF16-V     \FONTs}%
-\Entry{gtb}{uphgothbn-h  UniJIS2004-UTF16-H \FONTs}%
-\Entry{gtb}{uphgothbn-v  UniJIS2004-UTF16-V \FONTs}%
-\Entry{gtx}{uphgotheb-h  UniJIS-UTF16-H     \FONTs}%
-\Entry{gtx}{uphgotheb-v  UniJIS-UTF16-V     \FONTs}%
-\Entry{gtx}{uphgothebn-h UniJIS2004-UTF16-H \FONTs}%
-\Entry{gtx}{uphgothebn-v UniJIS2004-UTF16-V \FONTs}%
-\Entry{mgr}{uphmgothr-h  UniJIS-UTF16-H     \FONTs}%
-\Entry{mgr}{uphmgothr-v  UniJIS-UTF16-V     \FONTs}%
-\Entry{mgr}{uphmgothrn-h UniJIS2004-UTF16-H \FONTs}%
-\Entry{mgr}{uphmgothrn-v UniJIS2004-UTF16-V \FONTs}%
+\Entry{mnl}{uphminl-h    \@+UniJIS-UTF16-H     \FONTs}%
+\Entry{mnl}{uphminl-v    \@+UniJIS-UTF16-V     \FONTs\@w}%
+\Entry{mnl}{uphminln-h   \@+UniJIS2004-UTF16-H \FONTs}%
+\Entry{mnl}{uphminln-v   \@+UniJIS2004-UTF16-V \FONTs\@w}%
+\Entry{mnr}{uphminr-h    \@+UniJIS-UTF16-H     \FONTs}%
+\Entry{mnr}{uphminr-v    \@+UniJIS-UTF16-V     \FONTs\@w}%
+\Entry{mnr}{uphminrn-h   \@+UniJIS2004-UTF16-H \FONTs}%
+\Entry{mnr}{uphminrn-v   \@+UniJIS2004-UTF16-V \FONTs\@w}%
+\Entry{mnb}{uphminb-h    \@+UniJIS-UTF16-H     \FONTs}%
+\Entry{mnb}{uphminb-v    \@+UniJIS-UTF16-V     \FONTs\@w}%
+\Entry{mnb}{uphminbn-h   \@+UniJIS2004-UTF16-H \FONTs}%
+\Entry{mnb}{uphminbn-v   \@+UniJIS2004-UTF16-V \FONTs\@w}%
+\Entry{gtr}{uphgothr-h   \@+UniJIS-UTF16-H     \FONTs}%
+\Entry{gtr}{uphgothr-v   \@+UniJIS-UTF16-V     \FONTs\@w}%
+\Entry{gtr}{uphgothrn-h  \@+UniJIS2004-UTF16-H \FONTs}%
+\Entry{gtr}{uphgothrn-v  \@+UniJIS2004-UTF16-V \FONTs\@w}%
+\Entry{gtb}{uphgothb-h   \@+UniJIS-UTF16-H     \FONTs}%
+\Entry{gtb}{uphgothb-v   \@+UniJIS-UTF16-V     \FONTs\@w}%
+\Entry{gtb}{uphgothbn-h  \@+UniJIS2004-UTF16-H \FONTs}%
+\Entry{gtb}{uphgothbn-v  \@+UniJIS2004-UTF16-V \FONTs\@w}%
+\Entry{gtx}{uphgotheb-h  \@+UniJIS-UTF16-H     \FONTs}%
+\Entry{gtx}{uphgotheb-v  \@+UniJIS-UTF16-V     \FONTs\@w}%
+\Entry{gtx}{uphgothebn-h \@+UniJIS2004-UTF16-H \FONTs}%
+\Entry{gtx}{uphgothebn-v \@+UniJIS2004-UTF16-V \FONTs\@w}%
+\Entry{mgr}{uphmgothr-h  \@+UniJIS-UTF16-H     \FONTs}%
+\Entry{mgr}{uphmgothr-v  \@+UniJIS-UTF16-V     \FONTs\@w}%
+\Entry{mgr}{uphmgothrn-h \@+UniJIS2004-UTF16-H \FONTs}%
+\Entry{mgr}{uphmgothrn-v \@+UniJIS2004-UTF16-V \FONTs\@w}%
 }
 % for 'PXOTF'
 \@onlypreamble\pxcz@entry@pxotf
@@ -592,7 +600,7 @@
 %% check if \diruni is available
 \ifpxcz@uptex
   \@ifpackageloaded{otf}{%
-    \ifpxcz@directunicode \pxcz@diruni@oktrue \fi
+    \ifnum\pxcz@directunicode>\z@ \pxcz@diruni@oktrue \fi
   }{}
 \fi
 
