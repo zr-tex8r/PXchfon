@@ -10,7 +10,7 @@
 
 %%%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2017/04/08 v0.9]
+\ProvidesPackage{pxchfon}[2017/04/08 v1.0-pre]
 \def\pxcz@pkgname{pxchfon}
 
 %%%% definitions
@@ -872,8 +872,8 @@
 %% \pxcz@use@preset{<name>}
 \def\pxcz@use@preset#1{%
   \expandafter\ifx\csname pxcz@depre@preset@#1\endcsname t%
-    \pxcz@warn{Preset '#1' is obsolete and\MessageBreak
-      its use is *deprecated*,}%
+    \pxcz@error{The old preset '#1' is *abolished*}
+      {\@ehc}%
   \fi
   \csname pxcz@the@preset@#1\endcsname}
 
