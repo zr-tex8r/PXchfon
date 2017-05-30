@@ -188,7 +188,7 @@
 }\do{\@namedef{pxcz@FS/\pxcz@x}{}}
 
 %%------------------ '\asUTF'
-% NB. This feature is superseded by the pxasutf package.
+% NB. This feature is superseded by the \diruni command.
 \ifpxcz@uptex
 
 %%<*> \asUTF{<jachar>}
@@ -377,6 +377,15 @@
 \def\pxcz@mapentry@a#1{\@onlypreamble#1\def#1}
 
 %%%% map entries
+% \FONT: file name for the 2004JIS font
+% \FONTo: file name for the 90JIS font
+% \FONTs: \FONT if prefer2004jis, \FONTo otherwise
+% \*H: 2004-H if prefer2004jis, H otherwise
+% \UniJIS: UniJIS2004 if prefer2004jis, UniJIS otherwise
+% \+Uni...-H: replaced by 'unicode' if directunicode
+% \@+Uni...-H: replaced by 'unicode' if directunicode*
+% \w: '-w 1' if directunicode
+% \@w: '-w 1' if directunicode*
 \pxcz@mapentry{STD}{%
 \Entry{mnr}{rml        \*H            \FONTs}%
 \Entry{mnr}{rmlv       \*V            \FONTs}%
@@ -599,10 +608,22 @@
 
 %% check if \diruni is available
 \ifpxcz@uptex
-  \@ifpackageloaded{otf}{%
+  \@ifpackageloaded{otf}{% directunicode needs otf
     \ifnum\pxcz@directunicode>\z@ \pxcz@diruni@oktrue \fi
-  }{}
+  }{%else
+    \ifnum\pxcz@directunicode>\@ne
+      \pxcz@diruni@oktrue % directunicode* does not need otf
+      \AtBeginDocument{% to laod otf later causes inconsistency
+        \@ifpackageloaded{otf}{\pxcz@diruni@okfalse}{}}%
+    \fi
+  }
 \fi
+
+%%<*> \diruni
+\DeclareRobustCommand*{\diruni}{%
+  \not@math@alphabet\diruni\relax
+  \fontshape{diruni}\selectfont
+}
 
 %%<*> \textdiruni{<text>}
 \newcommand*{\textdiruni}[1]{%
@@ -611,7 +632,7 @@
 
 \ifpxcz@diruni@ok   %---- <*diruni-ok>
 
-%% otf weight mode
+%% \pxcz@otf@weight: otf weight mode
 % watch out for priority...
 \@ifpackagewith{otf}{deluxe}{%
   \let\pxcz@otf@weight=d
@@ -619,47 +640,69 @@
   \let\pxcz@otf@weight=b
 }{\@ifpackagewith{otf}{noreplace}{%
   \let\pxcz@otf@weight=n
-}{%else
+}{\@ifpackageloaded{otf}{%
   \let\pxcz@otf@weight=r
-}}}
-
-%%<*> \diruni
-\DeclareRobustCommand*{\diruni}{%
-  \not@math@alphabet\diruni\relax
-  \fontshape{diruni}\selectfont
+}{%else
+  \let\pxcz@otf@weight=n
+}}}}
+%% \pxcz@otf@mmivjis: otf jis2004
+\@ifpackagewith{otf}{jis2004}{%
+  \let\pxcz@otf@mmivjis=t%
+}{%else
+  \let\pxcz@otf@mmivjis=f%
 }
+%% \pxcz@du@scale
+\let\pxcz@du@scale\utf@sc@le
+\ifx\pxcz@du@scale\@undefined
+  \let\pxcz@du@scale\Cjascale
+\fi
+\ifx\pxcz@du@scale\@undefined
+  \edef\pxcz@du@scale{\ifx\jsc@JYn\@undefined 0.962216\else 0.924715\fi}%
+\fi
 
 %% \pxcz@du@decl@shape{<fam>}{<ser>}{<font>}
 \@onlypreamble\pxcz@du@decl@shape
-\def\pxcz@du@decl@shape#1#2#3#4{%
+\def\pxcz@du@decl@shape#1#2#3#4#5{%
 \DeclareFontShape{JY2}{#1}{#2}{diruni}{<->%
-    \if#3ts*[\utf@sc@le]#4-h\else#4\fi}{}%
+    \pxcz@du@shape@spec{#3}{#4}{#5}{h}}{}%
 \DeclareFontShape{JT2}{#1}{#2}{diruni}{<->%
-    \if#3ts*[\utf@sc@le]#4-v\else#4\fi}{}}
+    \pxcz@du@shape@spec{#3}{#4}{#5}{v}}{}}
+\@onlypreamble\pxcz@du@shape@spec
+\def\pxcz@du@shape@spec#1#2#3#4{%
+  \if#1t%
+    s*[\pxcz@du@scale]#2\if t\pxcz@otf@mmivjis#3\fi-#4%
+  \else#2\fi}
 
 \if d\pxcz@otf@weight % deluxe
-\pxcz@du@decl@shape{hmc}{l}t{otf-ujml}%
-\pxcz@du@decl@shape{hmc}{m}t{otf-ujmr}%
-\pxcz@du@decl@shape{hmc}{bx}t{otf-ujmb}%
-\pxcz@du@decl@shape{hgt}{m}t{otf-ujgr}%
-\pxcz@du@decl@shape{hgt}{bx}t{otf-ujgb}%
-\pxcz@du@decl@shape{hgt}{eb}t{otf-ujge}%
-\pxcz@du@decl@shape{mg}{m}t{otf-ujmgr}%
+\pxcz@du@decl@shape{hmc}{l}t{otf-ujml}{n}%
+\pxcz@du@decl@shape{hmc}{m}t{otf-ujmr}{n}%
+\pxcz@du@decl@shape{hmc}{bx}t{otf-ujmb}{n}%
+\pxcz@du@decl@shape{hgt}{m}t{otf-ujgr}{n}%
+\pxcz@du@decl@shape{hgt}{bx}t{otf-ujgb}{n}%
+\pxcz@du@decl@shape{hgt}{eb}t{otf-ujge}{n}%
+\pxcz@du@decl@shape{mg}{m}t{otf-ujmgr}{n}%
 \else\if b\pxcz@otf@weight % bold
-\pxcz@du@decl@shape{hmc}{m}t{otf-ujmr}%
-\pxcz@du@decl@shape{hmc}{bx}f{ssub*hgt/m/diruni}%
-\pxcz@du@decl@shape{hgt}{m}t{otf-ujgb}%
-\pxcz@du@decl@shape{hgt}{bx}f{ssub*hgt/m/diruni}%
+\pxcz@du@decl@shape{hmc}{m}t{otf-ujmr}{n}%
+\pxcz@du@decl@shape{hmc}{bx}f{ssub*hgt/m/diruni}{}%
+\pxcz@du@decl@shape{hgt}{m}t{otf-ujgb}{n}%
+\pxcz@du@decl@shape{hgt}{bx}f{ssub*hgt/m/diruni}{}%
 \else\if r\pxcz@otf@weight % default
-\pxcz@du@decl@shape{hmc}{m}t{otf-ujmr}%
-\pxcz@du@decl@shape{hmc}{bx}f{ssub*hgt/m/diruni}%
-\pxcz@du@decl@shape{hgt}{m}t{otf-ujgr}%
-\pxcz@du@decl@shape{hgt}{bx}f{ssub*hgt/m/diruni}%
+\pxcz@du@decl@shape{hmc}{m}t{otf-ujmr}{n}%
+\pxcz@du@decl@shape{hmc}{bx}f{ssub*hgt/m/diruni}{}%
+\pxcz@du@decl@shape{hgt}{m}t{otf-ujgr}{n}%
+\pxcz@du@decl@shape{hgt}{bx}f{ssub*hgt/m/diruni}{}%
 \else                 % noreplace
-\pxcz@du@decl@shape{mc}{m}t{otf-ujmr}%
-\pxcz@du@decl@shape{mc}{bx}f{ssub*gt/m/diruni}%
-\pxcz@du@decl@shape{gt}{m}t{otf-ujgr}%
-\pxcz@du@decl@shape{gt}{bx}f{ssub*gt/m/diruni}%
+\ifnum\pxcz@directunicode>\@ne % (directunicode*)
+\pxcz@du@decl@shape{mc}{m}t{uprml}{}%
+\pxcz@du@decl@shape{mc}{bx}f{ssub*gt/m/diruni}{}%
+\pxcz@du@decl@shape{gt}{m}t{upgbm}{}%
+\pxcz@du@decl@shape{gt}{bx}f{ssub*gt/m/diruni}{}%
+\else                          % (directunicode)
+\pxcz@du@decl@shape{mc}{m}t{otf-ujmr}{n}%
+\pxcz@du@decl@shape{mc}{bx}f{ssub*gt/m/diruni}{}%
+\pxcz@du@decl@shape{gt}{m}t{otf-ujgr}{n}%
+\pxcz@du@decl@shape{gt}{bx}f{ssub*gt/m/diruni}{}%
+\fi
 \fi\fi\fi
 
 \AtBeginDocument{%
@@ -681,20 +724,27 @@
   \endgroup
 }
 
-\else               %---- <*!diruni-ok>
+\fi                 %---- </diruni-ok>
 
-%%<*> \diruni
-\DeclareRobustCommand*{\diruni}{%
-  \pxcz@err@diruni
-}
+%% \pxcz@err@diruni
+\ifcase\pxcz@directunicode
+  \def\pxcz@errhelp@diruni{%
+    You must use upLaTeX and load pxchfon with 'directunicode(*)' option.}
+\else
+  \def\pxcz@errhelp@diruni{%
+    You must use upLaTeX and load pxchfon after 'otf' package.}
+\fi
 \def\pxcz@err@diruni{%
   \pxcz@error{Command '\string\diruni' not available}%
-   {You must load this package with 'directunicode' option on upLaTeX,%
-    \MessageBreak after loading 'otf' package.\MessageBreak\@ehc}%
-  \global\let\pxcz@err@diruni\relax
-}
-
-\fi                 %---- </diruni-ok>
+   {\pxcz@errhelp@diruni\MessageBreak\@ehc}%
+  \global\let\pxcz@err@diruni\relax}
+\AtBeginDocument{%
+  \ifpxcz@diruni@ok
+    \let\pxcz@err@diruni\relax
+    \let\pxcz@errhelp@diruni\relax
+  \else
+    \let\diruni\pxcz@err@diruni
+  \fi}
 
 %%------------------ 'alphabet' option
 
