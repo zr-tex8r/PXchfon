@@ -74,6 +74,7 @@
   kozuka-pro,kozuka-pr6,kozuka-pr6n,hiragino-pro,hiragino-pron,%
   hiragino-elcapitan-pro,hiragino-elcapitan-pron,%
   morisawa-pro,morisawa-pr6n,yu-win,yu-win10,yu-osx,%
+  sourcehan-otc,sourcehan,noto-otc,noto%
   %(obsolete)
   ipa-otf,ipa-otf-dx,kozuka4,kozuka6,kozuka6n,hiragino,%
   %(alias)
@@ -168,6 +169,24 @@
 %% \ifpxcz@otf@multi
 \newif\ifpxcz@otf@multi \pxcz@otf@multifalse
 \@ifpackagewith{otf}{multi}{\pxcz@otf@multitrue}{}
+
+%%------------------ preset-triggered setup
+
+%% \pxcz@if@main@preset{<name>}{<code>}
+\def\pxcz@if@main@preset#1{%
+  \edef\pxcz@tmpa{#1}%
+  \ifx\pxcz@main@preset\pxcz@tmpa \expandafter\@firstofone
+  \else \expandafter\@gobble
+  \fi}
+%% setup
+\pxcz@if@main@preset{sourcehan}{%
+  \chardef\pxcz@directunicode=3 \pxcz@uniquifyfalse}
+\pxcz@if@main@preset{sourcehan-otc}{%
+  \chardef\pxcz@directunicode=3 \pxcz@uniquifyfalse}
+\pxcz@if@main@preset{noto}{%
+  \chardef\pxcz@directunicode=3 \pxcz@uniquifyfalse}
+\pxcz@if@main@preset{noto-otc}{%
+  \chardef\pxcz@directunicode=3 \pxcz@uniquifyfalse}
 
 %%------------------ user interface
 
@@ -318,6 +337,28 @@
 %% \pxcz@MI
 % NB: not \edef
 \def\pxcz@MI#1#2:{\ifpxcz@mmivjis:#1:\else:#2:\fi}
+
+%% \pxcz@SH
+% NB: not \edef
+\def\pxcz@SH#1{%
+  \ifx#1/\expandafter\pxcz@SH@otf@dif
+  \else \expandafter\pxcz@SH@otc@dif
+  \fi}
+\def\pxcz@SH@otc@dif#1:{%
+  :\the\pxcz@entry@type:}
+\def\pxcz@SH@otf@dif#1-{%
+  #1\ifcase\pxcz@entry@type\or K\or SC\fi-}
+
+%% \pxcz@NC
+% NB: not \edef
+\def\pxcz@NC#1{%
+  \ifx#1/\expandafter\pxcz@NC@otf@dif
+  \else \expandafter\pxcz@NC@otc@dif
+  \fi}
+\def\pxcz@NC@otc@dif#1:{%
+  :\the\pxcz@entry@type:}
+\def\pxcz@NC@otf@dif#1jp{%
+  #1\ifcase\pxcz@entry@type\or kr\or sc\fi}
 
 %% primary macros
 \let\pxcz@unidirect\@empty
@@ -1035,6 +1076,46 @@
   \pxcz@multiweight{YuMin-Medium.otf}{YuMin-Medium.otf}%
    {YuMin-Demibold.otf}{YuGo-Medium.otf}{YuGo-Bold.otf}%
    {YuGo-Bold.otf}{YuGo-Medium.otf}{YuGo-Medium.otf}}
+% Source Han Sans/Serif, "OTC"
+\pxcz@declare@preset{sourcehan-otc}{%
+  \pxcz@multiweight{\pxcz@SH:0:SourceHanSerif-Light.ttc}%
+   {\pxcz@SH:0:SourceHanSerif-Regular.ttc}%
+   {\pxcz@SH:0:SourceHanSerif-Bold.ttc}%
+   {\pxcz@SH:0:SourceHanSans-Regular.ttc}%
+   {\pxcz@SH:0:SourceHanSans-Bold.ttc}%
+   {\pxcz@SH:0:SourceHanSans-Heavy.ttc}%
+   {\pxcz@SH:0:SourceHanSans-Medium.ttc}%
+   {\pxcz@SH:0:SourceHanSans-Heavy.ttc}}
+% Source Han Sans/Serif, "Language-specific OTF"
+\pxcz@declare@preset{sourcehan}{%
+  \pxcz@multiweight{\pxcz@SH/SourceHanSerif-Light.otf}%
+  {\pxcz@SH/SourceHanSerif-Regular.otf}%
+   {\pxcz@SH/SourceHanSerif-Bold.otf}%
+   {\pxcz@SH/SourceHanSans-Regular.otf}%
+   {\pxcz@SH/SourceHanSans-Bold.otf}%
+   {\pxcz@SH/SourceHanSans-Heavy.otf}%
+   {\pxcz@SH/SourceHanSans-Medium.otf}%
+   {\pxcz@SH/SourceHanSans-Heavy.otf}}
+% Noto Sans/Serif CJK, "OpenType/CFF Collection (OTC)"
+\pxcz@declare@preset{noto-otc}{%
+  \pxcz@multiweight{\pxcz@NC:0:NotoSerifCJK-Light.ttc}%
+   {\pxcz@NC:0:NotoSerifCJK-Regular.ttc}%
+   {\pxcz@NC:0:NotoSerifCJK-Bold.ttc}%
+   {\pxcz@NC:0:NotoSansCJK-Regular.ttc}%
+   {\pxcz@NC:0:NotoSansCJK-Bold.ttc}%
+   {\pxcz@NC:0:NotoSansCJK-Black.ttc}%
+   {\pxcz@NC:0:NotoSansCJK-Medium.ttc}%
+   {\pxcz@NC:0:NotoSansCJK-Black.ttc}}
+% Noto Sans/Serif CJK, "Language-specific OpenType/CFF (OTF)"
+\pxcz@declare@preset{noto}{%
+  \pxcz@multiweight{\pxcz@NC/NotoSerifCJKjp-Light.otf}%
+   {\pxcz@NC/NotoSerifCJKjp-Regular.otf}%
+   {\pxcz@NC/NotoSerifCJKjp-Bold.otf}%
+   {\pxcz@NC/NotoSansCJKjp-Regular.otf}%
+   {\pxcz@NC/NotoSansCJKjp-Bold.otf}%
+   {\pxcz@NC/NotoSansCJKjp-Black.otf}%
+   {\pxcz@NC/NotoSansCJKjp-Medium.otf}%
+   {\pxcz@NC/NotoSansCJKjp-Black.otf}}
 %(obsolete)
 \pxcz@declare@depre@preset{ipa-otf}{%
   \pxcz@uniweight{ipam.otf}{ipag.otf}}
