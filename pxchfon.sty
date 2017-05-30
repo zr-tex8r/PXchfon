@@ -59,6 +59,7 @@
 \newif\ifpxcz@oneweight
 \DeclareOption{oneweight}{\pxcz@oneweighttrue}
 \DeclareOption{nooneweight}{\pxcz@oneweightfalse}
+\newif\ifpxcz@uniquify
 \chardef\pxcz@directunicode=0
 \DeclareOption{directunicode*}{\chardef\pxcz@directunicode=2 }
 \DeclareOption{directunicode}{\chardef\pxcz@directunicode=1 }
@@ -83,24 +84,35 @@
 \def\pxcz@do#1{\DeclareOption{#1}{\def\pxcz@main@preset{#1}}}
 \@for\pxcz@x:=\pxcz@all@main@preset\do{%
   \expandafter\pxcz@do\expandafter{\pxcz@x}}
-% file-preset handler
+% others
+\def\pxcz@opt@@unicode{unicode}
+\def\pxcz@opt@@unicodeS{unicode*}
 \DeclareOption*{%
-  \let\pxcz@x\relax
-  \expandafter\pxcz@popt\CurrentOption\@nnil
-  \ifx\pxcz@x\relax \@unknownoptionerror
-  \else \let\pxcz@file@preset\pxcz@x \fi}
+  \ifx\CurrentOption\pxcz@opt@@unicode
+    \chardef\pxcz@directunicode=3
+  \else\ifx\CurrentOption\pxcz@opt@@unicodeS
+    \pxcz@uniquifytrue
+    \chardef\pxcz@directunicode=3
+  \else
+    \pxcz@parse@opt\CurrentOption
+    \ifpxcz@ok\else \@unknownoptionerror \fi
+  \fi\fi}
 \let\pxcz@file@preset\relax
 \newif\ifpxcz@file@preset@tl
-\def\pxcz@popt{%
-  \futurelet\pxcz@tok\pxcz@popt@a}
-\def\pxcz@popt@a{%
+\def\pxcz@parse@opt#1{%
+  \expandafter\pxcz@parse@opt@a#1\@nnil}
+\def\pxcz@parse@opt@a{%
+  \futurelet\pxcz@tok\pxcz@parse@opt@b}
+\def\pxcz@parse@opt@b{%
+  \pxcz@okfalse
   \let\pxcz@tmpa\remove@to@nnil
   \ifx+\pxcz@tok
-    \pxcz@file@preset@tltrue \let\pxcz@tmpa\pxcz@popt@b
+    \pxcz@file@preset@tltrue \let\pxcz@tmpa\pxcz@parse@opt@c
   \else\ifx*\pxcz@tok
-    \pxcz@file@preset@tlfalse \let\pxcz@tmpa\pxcz@popt@b
+    \pxcz@file@preset@tlfalse \let\pxcz@tmpa\pxcz@parse@opt@c
   \fi\fi \pxcz@tmpa}
-\def\pxcz@popt@b#1#2\@nnil{\edef\pxcz@x{#2}}
+\def\pxcz@parse@opt@c#1#2\@nnil{%
+  \edef\pxcz@file@preset{#2}}
 % dispatch
 \ProcessOptions*
 % 'everypage' needs 'atbegshi' package
