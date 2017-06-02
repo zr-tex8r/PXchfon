@@ -63,7 +63,7 @@
 \newif\ifpxcz@everypage
 \newif\ifpxcz@oneweight
 \newif\ifpxcz@uniquify
-\chardef\pxcz@directunicode=0
+\let\pxcz@directunicode\relax
 \let\pxcz@main@preset\relax
 \let\pxcz@file@preset\relax
 \newif\ifpxcz@file@preset@tl
@@ -101,9 +101,14 @@
 \DeclareOption{oneweight}{\pxcz@oneweighttrue}
 \DeclareOption{nooneweight}{\pxcz@oneweightfalse}
 % (no)directunicode / directunicode*
-\DeclareOption{directunicode*}{\chardef\pxcz@directunicode=2 }
-\DeclareOption{directunicode}{\chardef\pxcz@directunicode=1 }
-\DeclareOption{nodirectunicode}{\chardef\pxcz@directunicode=0 }
+\chardef\pxcz@directunicode@none=0
+\chardef\pxcz@directunicode@otf=1
+\chardef\pxcz@directunicode@all=2
+\chardef\pxcz@directunicode@full=3
+\let\pxcz@directunicode\pxcz@directunicode@none
+\DeclareOption{directunicode*}{\let\pxcz@directunicode\pxcz@directunicode@all}
+\DeclareOption{directunicode}{\let\pxcz@directunicode\pxcz@directunicode@otf}
+\DeclareOption{nodirectunicode}{\let\pxcz@directunicode\pxcz@directunicode@none}
 % (no)dumpmap
 \DeclareOption{dumpmap}{\pxcz@dumpmaptrue}
 \DeclareOption{nodumpmap}{\pxcz@dumpmapfalse}
@@ -135,10 +140,10 @@
 \def\pxcz@opt@@unicodeS{unicode*}
 \DeclareOption*{%
   \ifx\CurrentOption\pxcz@opt@@unicode
-    \chardef\pxcz@directunicode=3
+    \let\pxcz@directunicode\pxcz@directunicode@full
   \else\ifx\CurrentOption\pxcz@opt@@unicodeS
     \pxcz@uniquifytrue
-    \chardef\pxcz@directunicode=3
+    \let\pxcz@directunicode\pxcz@directunicode@full
   \else
     \pxcz@parse@opt\CurrentOption
     \ifpxcz@ok\else \@unknownoptionerror \fi
@@ -216,14 +221,19 @@
   \else \expandafter\@gobble
   \fi}
 %% setup
+\def\pxcz@preset@setup@sourcehan{%
+  \ifnum\pxcz@directunicode=\pxcz@directunicode@all \else
+    \let\pxcz@directunicode\pxcz@directunicode@full
+    \pxcz@uniquifyfalse
+  \fi}
 \pxcz@if@main@preset{sourcehan}{%
-  \chardef\pxcz@directunicode=3 \pxcz@uniquifyfalse}
+  \pxcz@preset@setup@sourcehan}
 \pxcz@if@main@preset{sourcehan-otc}{%
-  \chardef\pxcz@directunicode=3 \pxcz@uniquifyfalse}
+  \pxcz@preset@setup@sourcehan}
 \pxcz@if@main@preset{noto}{%
-  \chardef\pxcz@directunicode=3 \pxcz@uniquifyfalse}
+  \pxcz@preset@setup@sourcehan}
 \pxcz@if@main@preset{noto-otc}{%
-  \chardef\pxcz@directunicode=3 \pxcz@uniquifyfalse}
+  \pxcz@preset@setup@sourcehan}
 
 %--------------------------------------- user interface
 
@@ -407,15 +417,15 @@
 \let\pxcz@unidirect@wopt\@empty
 \let\pxcz@unidirectX@wopt\@empty
 \let\pxcz@unidirectX@lopt\@gobble
-\ifnum\pxcz@directunicode>\z@
+\ifnum\pxcz@directunicode<\pxcz@directunicode@otf\else
 \def\pxcz@unidirect#1-#2-#3{\pxcz@cmap@directuni}
 \def\pxcz@unidirect@wopt{ -w 1}
 \fi
-\ifnum\pxcz@directunicode>\@ne
+\ifnum\pxcz@directunicode<\pxcz@directunicode@all\else
 \let\pxcz@unidirectX\pxcz@unidirect
 \let\pxcz@unidirectX@wopt\pxcz@unidirect@wopt
 \fi
-\ifnum\pxcz@directunicode>\tw@
+\ifnum\pxcz@directunicode<\pxcz@directunicode@full\else
 \def\pxcz@unidirectX@lopt#1{ -l #1}
 \fi
 %% secondary macros
@@ -712,7 +722,7 @@
   \@ifpackageloaded{otf}{% directunicode needs otf
     \ifnum\pxcz@directunicode>\z@ \pxcz@diruni@oktrue \fi
   }{%else
-    \ifnum\pxcz@directunicode>\@ne
+    \ifnum\pxcz@directunicode<\pxcz@directunicode@all\else
       \pxcz@diruni@oktrue % directunicode* does not need otf
       \AtBeginDocument{% to laod otf later causes inconsistency
         \@ifpackageloaded{otf}{\pxcz@diruni@okfalse}{}}%
