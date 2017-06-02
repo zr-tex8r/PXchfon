@@ -10,8 +10,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{0.9}
-\newcommand{\PkgDate}{2017/04/08}
+\newcommand{\PkgVersion}{1.0}
+\newcommand{\PkgDate}{2017/05/31}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -44,8 +44,6 @@ dvipdfmx 専用である。
 0.5 版での拡張で、{\pTeX}において広く行われているフォント設定
 （IPA フォントの使用等）をパッケージオプション一つで
 行う機能を追加した。
-（この機能は元々、別の \Pkg{PXjafont} パッケージとして
-提供されていたものである。）
 
 %===========================================================
 \section{前提環境}
@@ -334,8 +332,9 @@ dvipdfmx 専用である。
 場合にも有用である。
 そこで、{\pTeX}において広く行われている設定をパッケージ内に
 組み込んで、パッケージオプションでそれを呼び出すという機能を追加した。
-元々は\Pkg{PXjafont}という別のパッケージで提供されていた機能であるが、
-0.5版からこのパッケージに組み入れることにした。
+\footnote{元々は\Pkg{PXjafont}という別のパッケージで
+提供されていた機能であるが、
+0.5版からこのパッケージに組み入れることにした。}
 
 パッケージオプションにプリセット名を指定すると予め決められたフォント
 ファイル名が |\setminchofont| 等の命令で設定される。
@@ -640,6 +639,36 @@ dvipdfmx 専用である。
 \end{verbatim}\end{quote}
 \end{itemize}
 
+以下は試験的なプリセット設定である。
+\Note 具体的な設定内容は未確定のため割愛する。
+\Note 種々の事情のため、現状の実装では日本語用の設定のために
+繁体中国語等の日本語以外のフォントも利用している。
+従って、言語別OTF版のフォントファイルを利用する場合は、
+原則的に全てのCJK言語の版を用意する必要がある。
+
+\begin{itemize}
+\item |sourcehan-otc|\Means
+  Source Han Serif（源ノ明朝）+ Source Han Sans（源ノ角ゴシック）、
+  OTC版。
+  \Note |SourceHanSerif-Regular.ttc|、|SourceHanSans-Regular.ttc|等。
+
+\item |sourcehan|\Means
+  Source Han Serif（源ノ明朝）+ Source Han Sans（源ノ角ゴシック）、
+  言語別OTF版。
+  \Note |SourceHanSerif-Regular.otf|、|SourceHanSans-Regular.otf|等。
+
+\item |noto-otc|\Means
+  Noto Serif CJK + Noto Sans CJK、
+  OTC版。
+  \Note |NotoSerifCJK-Regular.ttc|、|NotoSansCJK-Regular.ttc|等。
+
+\item |noto|\Means
+  Noto Serif CJK + Noto Sans CJK、
+  言語別OTF版。
+  \Note |NotoSerifCJKjp-Regular.otf|、|NotoSansCJKjp-Regular.otf|等。
+
+\end{itemize}
+
 なお、以上の設定で登場したフォントのうち、
 「HG丸ｺﾞｼｯｸM-PRO」
 は欧文が等幅でないので |alphabet| オプション指定と
@@ -665,53 +694,31 @@ dvipdfmx 専用である。
   は\Pkg{ptex-fontmaps}のものと同義になる予定である。}
 
 %-------------------
-\subsection{旧版のオプション}
+\subsection{廃止されたオプション}
 
-0.5版以前で用意されていたプリセット設定。
-現在は非推奨となっている。
-\Note これらの非推奨のオプションは1.0版で廃止予定であり、
-0.9版以降で使用すると警告が出る。
+以下に挙げるのは、0.5版以降で非推奨となっていたプリセット設定である。
+これらは1.0版において\textgt{廃止}されたため、
+現在は使用するとエラーが発生する。
 
 \begin{itemize}
 \item |ipa-otf|\Means
-  「拡張子が |.otf| の」IPAフォントを使用する。
-\begin{quote}\small\begin{verbatim}
-\setminchofont{ipam.otf} % IPA明朝
-\setgothicfont{ipag.otf} % IPAゴシック
-\end{verbatim}\end{quote}
-
+  「拡張子が |.otf| の」IPAフォント。
+  \Note 代替のプリセットはない。
 \item |ipa-dx|\Means
   「拡張子が |.otf| の」IPAフォント + HGフォント。
-  \Note |ipa-hg| とIPAフォントの拡張子を除いて同じ。
-
+  \Note 代替のプリセットはない。
 \item |kozuka4|\Means
   小塚フォント（Pro版）の単ウェイト使用。
-\begin{quote}\small\begin{verbatim}
-\setminchofont{KozMinPro-Regular-Acro.otf} % 小塚明朝 Pro R
-\setgothicfont{KozGoPro-Medium-Acro.otf}   % 小塚ゴシック Pro M
-\end{verbatim}\end{quote}
-
+  \Note |kozuka-pro|＋|oneweight| オプションで代替可能。
 \item |kozuka6|\Means
   小塚フォント（Pr6版）の単ウェイト使用。
-\begin{quote}\small\begin{verbatim}
-\setminchofont{KozMinProVI-Regular.otf} % 小塚明朝 Pro-VI R
-\setgothicfont{KozGoProVI-Medium.otf}   % 小塚ゴシック Pro-VI M
-\end{verbatim}\end{quote}
-
+  \Note |kozuka-pr6|＋|oneweight| オプションで代替可能。
 \item |kozuka6n|\Means
   小塚フォント（Pr6n版）の単ウェイト使用。
-\begin{quote}\small\begin{verbatim}
-\setminchofont{KozMinPr6N-Regular.otf} % 小塚明朝 Pr6N R
-\setgothicfont{KozGoPr6N-Medium.otf}   % 小塚ゴシック Pr6N M
-\end{verbatim}\end{quote}
-
+  \Note |kozuka-prn|＋|oneweight| オプションで代替可能。
 \item |hiragino|\Means
   ヒラギノフォントの単ウェイト使用。
-\begin{quote}\small\begin{verbatim}
-\setminchofont{HiraMinPro-W3.otf}  % ヒラギノ明朝 Pro W3
-\setgothicfont{HiraKakuPro-W6.otf} % ヒラギノ角ゴ Pro W6
-\end{verbatim}\end{quote}
-
+  \Note |hiragino-pro|＋|oneweight| オプションで代替可能。
 \item |ms-dx|\Means |ms-hg| の別名。
 \item |ipa-ttf|\Means |ipa| の別名。
 \item |ipa-ttf-dx|\Means |ipa-hg| の別名。
@@ -905,24 +912,19 @@ r-cfjas-x-@PXcjk0@     msgothic.ttc FontIndex=0
 \end{verbatim}\end{quote}
 
 %===========================================================
-\section{pxjafontパッケージの更新}
+\section{pxjafontパッケージ}
 
-{\sffamily
-\Pkg{PXjafont}バンドル0.2版をインストールしている場合の注意。}
+現在の版の\Pkg{pxchfon}パッケージは旧来の\Pkg{pxjafont}の機能を
+取り込んでいるため、\Pkg{pxjafont}は不要である。
+古い環境との互換性のため\Pkg{pxjafont}を残していたが、
+1.0版において\Pkg{pxjafont}の使用を非推奨の扱いとした。
+（近い将来に廃止予定。）
 
-現在の版の\Pkg{pxchfon}パッケージは\Pkg{pxjafont}の機能を
-取り込んでいるため、\Pkg{pxjafont}は不要となり、
-そのため現在の版は\Pkg{pxjafont}と一緒に使えない。
-何らかの理由で引き続き\Pkg{pxjafont}パッケージを使いたい場合は、
-既にインストールされている |pxjafont.sty| を
-本バンドルの\Pkg{PXjafont}ディレクトリにある %
-|pxjafont.sty|（\Pkg{pxjafont}パッケージ 0.5 版）
-で置き換えればよい。
+\Pkg{pxjafont}を利用しているユーザは、
+\ref{sec:Preset}節を参照して現在の\Pkg{pxchfon}用の
+適切な設定に書き直す必要がある。
 
-この新しい\Pkg{pxjafont}パッケージは処理を全て\Pkg{pxchfon}に
-渡すという動作をする。
-|ipa| オプションの意味が異なる（\ref{sec:Preset}節参照）
-のを除けば\Pkg{pxjafont} 0.2版と同じ動作である。
+\Note 古いプリセット名の中に廃止されたものがあるので注意。
 
 %===========================================================
 \section{中国語・韓国語フォントへの対応}
@@ -954,10 +956,13 @@ r-cfjas-x-@PXcjk0@     msgothic.ttc FontIndex=0
 \item プリセット指定は中国語・韓国語のフォントについては何も指定しない。
 従って、上記の命令を用いない場合は、これらのフォントのマップ再設定が
 行われることはない。
-\item |directunicode| 指定は中国語・韓国語のフォントに対しても有効である。
-ただし日本語の場合と同じく、効果の範囲は
-「\Pkg{OTF}パッケージのUnicode入力命令」（|\UTFK|、|\UTFM|、等）
-に限られる。
+\item |directunicode(*)| 指定は中国語・韓国語のフォントに対しても
+有効である。
+効果の範囲は日本語の場合と同様で、
+|directunicode| では「\Pkg{OTF}パッケージのUnicode入力命令」
+（|\UTFK|、|\UTFM|、等）が対象となり、
+|directunicode*| ではこれに加えて{\upTeX}標準のフォントも
+対象になる。
 \end{itemize}
 
 %===========================================================

@@ -38,6 +38,12 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.0  ‹2017/05/31›
+      - The long-deprecated presets are now abolished.
+      - The package pxjafont is deprecated.
+      - Now `directunicode*` does not need japanese-otf.
+      - (experimental) Option `unicode*`.
+      - (experimental) Presets `sourcehan(-otc)` and `noto(-otc)`.
   * Version 0.9  ‹2017/04/08›
       - Option `directunicode*`.
   * Version 0.8  ‹2017/01/13›

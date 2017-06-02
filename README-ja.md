@@ -62,6 +62,14 @@ MITライセンスの下で配布される。
 更新履歴
 --------
 
+  * Version 1.0  ‹2017/05/31›
+      - オプション `directunicode*` を追加。
+      - 非推奨のプリセットに対してエラーを出す。
+      - pxjafont パッケージを非推奨とする。
+      - `directunicode*` については OTF パッケージの読込を不要とした。
+      - (試験的) オプション `unicode*` を追加。  
+        ※新しい dvipdfmx の「OpenType 属性指定」機能を利用したもの。
+      - (試験的) プリセット `sourcehan(-otc)`、`noto(-otc)` を追加。
   * Version 0.9  ‹2017/04/08›
       - オプション `directunicode*` を追加。
       - 非推奨のプリセットに対して警告を出す。
