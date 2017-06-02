@@ -69,6 +69,8 @@
 \newif\ifpxcz@file@preset@tl
 \newif\ifpxcz@alpha
 \newif\ifpxcz@rel
+\newif\ifpxcz@dumpmap
+\newif\ifpxcz@dumpmap@tl
 
 %% process options
 % drivers
@@ -102,6 +104,12 @@
 \DeclareOption{directunicode*}{\chardef\pxcz@directunicode=2 }
 \DeclareOption{directunicode}{\chardef\pxcz@directunicode=1 }
 \DeclareOption{nodirectunicode}{\chardef\pxcz@directunicode=0 }
+% (no)dumpmap
+\DeclareOption{dumpmap}{\pxcz@dumpmaptrue}
+\DeclareOption{nodumpmap}{\pxcz@dumpmapfalse}
+% (no)dumpmaptl
+\DeclareOption{dumpmaptl}{\pxcz@dumpmap@tltrue}
+\DeclareOption{nodumpmaptl}{\pxcz@dumpmap@tlfalse}
 % preset spec options
 \def\pxcz@all@main@preset{%
   noembed,%
@@ -964,6 +972,12 @@
   \ifpxcz@enabled
     \pxcz@set@page@hook{\pxcz@spec}%
   \fi
+  \ifpxcz@dumpmap
+    \pxcz@do@dumpmap
+  \fi
+  \ifpxcz@dumpmap@tl
+    \pxcz@do@dumpmap@tl
+  \fi
 }
 
 %% \pxcz@decl@relfont
@@ -977,6 +991,57 @@
   \pxcz@info{Relation font set for \k@encoding/#1}%
 }
 
+%--------------------------------------- dump font map
+% if some dumpmap is enabled...
+\ifnum 0\ifpxcz@dumpmap 1\fi
+        \ifpxcz@dumpmap@tl 1\fi >\z@
+
+%% variables
+\let\pxcz@dump@text\relax
+\let\pxcz@spec@save\relax
+\newwrite\pxcz@fout
+
+%% \pxcz@add@to@dump@text
+\def\pxcz@add@to@dump@text#1{%
+  \edef\pxcz@dump@text{\pxcz@dump@text#1}}
+
+
+%% \pxcz@dump@spec@to{<file-name>}
+\@onlypreamble\pxcz@dump@spec@to
+\def\pxcz@dump@spec@to#1{%
+  \def\pxcz@dump@text{\@percentchar\space#1^^J}%
+  \def\special##1{\pxcz@add@to@dump@text{##1^^J}}%
+  \pxcz@spec \let\special\relax
+  \pxcz@add@to@dump@text{\@percentchar\space EOF}%
+  \immediate\openout\pxcz@fout=#1\relax
+  \immediate\write\pxcz@fout{\pxcz@dump@text}%
+  \immediate\closeout\pxcz@fout}
+
+%% \pxcz@do@dumpmap
+\@onlypreamble\pxcz@do@dumpmap
+\def\pxcz@do@dumpmap{%
+  \begingroup
+    \pxcz@dump@spec@to{\jobname.map}%
+  \endgroup}
+
+%% \pxcz@do@dumpmap@tl
+\@onlypreamble\pxcz@do@dumpmap@tl
+\def\pxcz@do@dumpmap@tl{%
+  \begingroup
+    \let\pxcz@spec@save\pxcz@spec
+    \pxcz@do@dumpmap@tl@a{STD}{ptex-\jobname}%
+    \pxcz@do@dumpmap@tl@a{UPSTD}{uptex-\jobname}%
+    \pxcz@do@dumpmap@tl@a{OTF}{otf-\jobname}%
+    \pxcz@do@dumpmap@tl@a{UPOTF}{otf-up-\jobname}%
+    \global\let\pxcz@spec\pxcz@spec@save
+  \endgroup}
+\@onlypreamble\pxcz@do@dumpmap@tl@a
+\def\pxcz@do@dumpmap@tl@a#1#2{%
+  \global\let\pxcz@spec\@empty
+  \pxcz@addtospec{#1}%
+  \pxcz@dump@spec@to{#2.map}}
+
+\fi
 %--------------------------------------- preset japanese font mappings
 
 %% \pxcz@declare@preset{<name>}{<text>}
