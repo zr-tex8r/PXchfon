@@ -8,19 +8,25 @@
 %% This package is distributed under the MIT License.
 %%
 
-%%%% package declaration
+%% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2017/05/31 v1.0]
+\ProvidesPackage{pxchfon}[2017/05/31 v1.0a-pre]
 \def\pxcz@pkgname{pxchfon}
 
-%%%% definitions
+%% preparations
 \def\pxcz@error{\PackageError\pxcz@pkgname}
 \def\pxcz@warn{\PackageWarning\pxcz@pkgname}
 \def\pxcz@info{\PackageInfo\pxcz@pkgname}
+
+%--------------------------------------- general
+
+%% variables
 \newif\ifpxcz@ok
 \newif\ifpxcz@utf
 
-%%%% check for 'pxjafont' package
+%--------------------------------------- environment check
+
+%% check for 'pxjafont' package
 % if old version of pxjafont is loaded (probably this package is
 % required from pxjafont), then I abort here with an error message
 % and in addition cause pxjafont to abort immediately.
@@ -32,35 +38,60 @@
     \let\pxjf@main@preset\relax % make pxjafont bombout
   \endinput\fi}{}
 
-%%%% check for upTeX
+%% \ifpxcz@uptex
 \newif\ifpxcz@uptex \pxcz@uptexfalse
 \edef\pxcz@tmpa{\string\ucs}\edef\pxcz@tmpb{\meaning\ucs}
 \ifx\pxcz@tmpa\pxcz@tmpb \pxcz@uptextrue \fi
 
-%%%% process options
+%% \ifpxcz@otf@deluxe
+\newif\ifpxcz@otf@deluxe \pxcz@otf@deluxefalse
+\@ifpackagewith{otf}{deluxe}{\pxcz@otf@deluxetrue}{}
+\@ifpackagewith{pxotf}{deluxe}{\pxcz@otf@deluxetrue}{}
+
+%% \ifpxcz@otf@multi
+\newif\ifpxcz@otf@multi \pxcz@otf@multifalse
+\@ifpackagewith{otf}{multi}{\pxcz@otf@multitrue}{}
+
+%--------------------------------------- handle options
+
+%% variables
 \let\pxcz@alphabet=n
+\newif\ifpxcz@otf \pxcz@otftrue
+\newif\ifpxcz@cmap@alpha
+\newif\ifpxcz@mmivjis
+\newif\ifpxcz@everypage
+\newif\ifpxcz@oneweight
+\newif\ifpxcz@uniquify
+\chardef\pxcz@directunicode=0
+\let\pxcz@main@preset\relax
+\let\pxcz@file@preset\relax
+\newif\ifpxcz@file@preset@tl
+\newif\ifpxcz@alpha
+\newif\ifpxcz@rel
+
+%% process options
+% (no)alphabet / relfont
 \DeclareOption{alphabet}{\let\pxcz@alphabet=t}
 \DeclareOption{noalphabet}{\let\pxcz@alphabet=f}
 \DeclareOption{relfont}{\let\pxcz@alphabet=r}
-\newif\ifpxcz@otf \pxcz@otftrue
+% (no)otf
 \DeclareOption{otf}{\pxcz@otftrue}
 \DeclareOption{nootf}{\pxcz@otffalse}
 \DeclareOption{utf}{\pxcz@otftrue}
 \DeclareOption{noutf}{\pxcz@otffalse}
-\newif\ifpxcz@cmap@alpha
+% (no)usecmapforalphabet
 \DeclareOption{usecmapforalphabet}{\pxcz@cmap@alphatrue}
 \DeclareOption{nousecmapforalphabet}{\pxcz@cmap@alphafalse}
-\newif\ifpxcz@mmivjis
+% (no)prefer2004jis
 \DeclareOption{prefer2004jis}{\pxcz@mmivjistrue}
 \DeclareOption{noprefer2004jis}{\pxcz@mmivjisfalse}
-\newif\ifpxcz@everypage
+% (no)everypage
 \DeclareOption{everypage}{\pxcz@everypagetrue}
 \DeclareOption{noeverypage}{\pxcz@everypagefalse}
-\newif\ifpxcz@oneweight
+% (no)oneweight
 \DeclareOption{oneweight}{\pxcz@oneweighttrue}
 \DeclareOption{nooneweight}{\pxcz@oneweightfalse}
-\newif\ifpxcz@uniquify
-\chardef\pxcz@directunicode=0
+% (no)directunicode / directunicode*
 \DeclareOption{directunicode*}{\chardef\pxcz@directunicode=2 }
 \DeclareOption{directunicode}{\chardef\pxcz@directunicode=1 }
 \DeclareOption{nodirectunicode}{\chardef\pxcz@directunicode=0 }
@@ -81,7 +112,6 @@
   ms-dx,ipa-ttf,ipa-ttf-dx,ipav2,ipav2-dx,ipa-dx,hiragino-dx,%
   noEmbed,kozuka,hiragino-elcapitan,morisawa}
   % But note, 'hiragino' != 'hiragino-pro'
-\let\pxcz@main@preset\relax
 \def\pxcz@do#1{\DeclareOption{#1}{\def\pxcz@main@preset{#1}}}
 \@for\pxcz@x:=\pxcz@all@main@preset\do{%
   \expandafter\pxcz@do\expandafter{\pxcz@x}}
@@ -98,12 +128,13 @@
     \pxcz@parse@opt\CurrentOption
     \ifpxcz@ok\else \@unknownoptionerror \fi
   \fi\fi}
-\let\pxcz@file@preset\relax
-\newif\ifpxcz@file@preset@tl
+\@onlypreamble\pxcz@parse@opt
 \def\pxcz@parse@opt#1{%
   \expandafter\pxcz@parse@opt@a#1\@nnil}
+\@onlypreamble\pxcz@parse@opt@a
 \def\pxcz@parse@opt@a{%
   \futurelet\pxcz@tok\pxcz@parse@opt@b}
+\@onlypreamble\pxcz@parse@opt@b
 \def\pxcz@parse@opt@b{%
   \pxcz@okfalse
   \let\pxcz@tmpa\remove@to@nnil
@@ -112,21 +143,21 @@
   \else\ifx*\pxcz@tok
     \pxcz@file@preset@tlfalse \let\pxcz@tmpa\pxcz@parse@opt@c
   \fi\fi \pxcz@tmpa}
+\@onlypreamble\pxcz@parse@opt@c
 \def\pxcz@parse@opt@c#1#2\@nnil{%
   \edef\pxcz@file@preset{#2}}
 % dispatch
 \ProcessOptions*
-% 'everypage' needs 'atbegshi' package
+%% 'everypage' needs 'atbegshi' package
 \ifpxcz@everypage
 \RequirePackage{atbegshi}
 \fi
 
-%% \ifpxcz@alpha
+%% set 'pxcz@alpha'
 \@tempswafalse
 \if\pxcz@main@preset\relax
   \if\pxcz@file@preset\relax \@tempswatrue \fi
 \fi
-\newif\ifpxcz@alpha
 \if      t\pxcz@alphabet \pxcz@alphatrue
 \else\if f\pxcz@alphabet \pxcz@alphafalse
 \else\if r\pxcz@alphabet \pxcz@alphafalse
@@ -141,8 +172,7 @@
   \pxcz@alphafalse}
 \fi
 
-%% \ifpxcz@rel
-\newif\ifpxcz@rel
+%% set 'pxcz@rel'
 \if r\pxcz@alphabet \pxcz@reltrue
 \else \pxcz@relfalse
 \fi
@@ -161,18 +191,10 @@
 \else \pxcz@alphafontfalse
 \fi\fi
 
-%% \ifpxcz@otf@deluxe
-\newif\ifpxcz@otf@deluxe \pxcz@otf@deluxefalse
-\@ifpackagewith{otf}{deluxe}{\pxcz@otf@deluxetrue}{}
-\@ifpackagewith{pxotf}{deluxe}{\pxcz@otf@deluxetrue}{}
-
-%% \ifpxcz@otf@multi
-\newif\ifpxcz@otf@multi \pxcz@otf@multifalse
-\@ifpackagewith{otf}{multi}{\pxcz@otf@multitrue}{}
-
-%%------------------ preset-triggered setup
+%--------------------------------------- preset-triggered setup
 
 %% \pxcz@if@main@preset{<name>}{<code>}
+\@onlypreamble\pxcz@if@main@preset
 \def\pxcz@if@main@preset#1{%
   \edef\pxcz@tmpa{#1}%
   \ifx\pxcz@main@preset\pxcz@tmpa \expandafter\@firstofone
@@ -188,9 +210,9 @@
 \pxcz@if@main@preset{noto-otc}{%
   \chardef\pxcz@directunicode=3 \pxcz@uniquifyfalse}
 
-%%------------------ user interface
+%--------------------------------------- user interface
 
-%%%%<*> \setminchofont/\setgothicfont/etc.
+%%<*> \setminchofont/\setgothicfont/etc.
 \newcommand*\setminchofont{\pxcz@setfont{mnl,mnr,mnb}}
 \newcommand*\setgothicfont{\pxcz@setfont{gtr,gtb,gtx,gtu}}
 \newcommand*\setlightminchofont{\pxcz@setfont{mnl}}
@@ -207,8 +229,10 @@
 \newcommand*\setschinesegothicfont{\pxcz@setfont{scg}}
 \newcommand*\settchineseminchofont{\pxcz@setfont{tcm}}
 \newcommand*\settchinesegothicfont{\pxcz@setfont{tcg}}
+\@onlypreamble\pxcz@setfont
 \def\pxcz@setfont#1{\@ifnextchar[%]
   {\pxcz@setfont@a{#1}}{\pxcz@setfont@a{#1}[]}}
+\@onlypreamble\pxcz@setfont@a
 \def\pxcz@setfont@a#1[#2]#3{%
   \@for\pxcz@x:={#1}\do{%
     \ifx @#2@\@namedef{pxcz@FS/\pxcz@x}{#3}%
@@ -218,7 +242,7 @@
   kom,kog,scm,scg,tcm,tcg%
 }\do{\@namedef{pxcz@FS/\pxcz@x}{}}
 
-%%------------------ '\asUTF'
+%--------------------------------------- '\asUTF'
 % NB. This feature is superseded by the \diruni command.
 \ifpxcz@uptex
 
@@ -237,7 +261,7 @@
 }
 
 \fi
-%%------------------ fontmap internals
+%--------------------------------------- fontmap internals
 
 %% \pxcz@noembed
 % The value given to \set...font to mean 'no-embed'.
@@ -251,7 +275,7 @@
 % CMap name for halfwidth fonts.
 \def\pxcz@cmap@hwuni{UniJIS-UCS2-HW-H}
 
-%%%% <*> \usecmapforalphabet/\nousecmapforalphabet
+%%<*> \usecmapforalphabet/\nousecmapforalphabet
 \def\usecmapforalphabet{%
   \global\let\pxcz@cmap@uni\pxcz@cmap@hwuni}
 \def\nousecmapforalphabet{%
@@ -280,33 +304,34 @@
   \csname pxcz@FS/#1\endcsname}
 
 %%<+> \JaFontReplacementHook{<code>}
+\@onlypreamble\JaFontReplacementHook
 \newcommand*\JaFontReplacementHook{%
   \g@addto@macro\pxcz@user@hook}
 \let\pxcz@user@hook\@empty
-\@onlypreamble\JaFontReplacementHook
 
 %%<+> \JaFontUserDefinedMap
+\@onlypreamble\JaFontUserDefinedMap
 \newcommand*\JaFontUserDefinedMap{%
   \g@addto@macro\pxcz@user@map}
 \let\pxcz@user@map\@empty
 \@namedef{pxcz@FS/*}{\pxcz@empty}
-\@onlypreamble\JaFontUserDefinedMap
 
 %%<+> \usefontmapline{<map-line>}
+\@onlypreamble\usefontmapline
 \newcommand*\usefontmapline[1]{%
   \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapline{#1}}}
-\@onlypreamble\usefontmapline
 
 %%<+> \usefontmapfile{<map-file>}
+\@onlypreamble\usefontmapfile
 \newcommand*\usefontmapfile[1]{%
   \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapfile{#1}}}
-\@onlypreamble\usefontmapfile
 
-%%------------------ map entry handling
+%--------------------------------------- map entry handling
 
 %%<*> \setnewglyphcmapprefix{<str>}
 \def\pxcz@pfx@jis@dflt{2004-}
 \def\pxcz@pfx@jis@star{JISX0213-2004-}
+\@onlypreamble\setnewglyphcmapprefix
 \newcommand*\setnewglyphcmapprefix{%
   \@ifstar{\pxcz@set@pfx@jis\pxcz@pfx@jis@star}%
    {\pxcz@set@pfx@jis}}
@@ -324,6 +349,7 @@
 \let\pxcz@switch@realfont\relax
 
 %% \pxcz@do@switch@realfont
+\@onlypreamble\pxcz@do@switch@realfont
 \def\pxcz@do@switch@realfont{%
   \edef\pxcz@reset@mmivjis{%
     \ifpxcz@mmivjis \noexpand\pxcz@mmivjistrue
@@ -392,7 +418,11 @@
 \let\pxcz@entry@@fwid\pxcz@entry@@jpXX
 \fi
 
+%% \pxcz@spec
+\let\pxcz@spec\@empty
+
 %% \pxcz@addtospec{<id>}
+\@onlypreamble\pxcz@addtospec
 \def\pxcz@addtospec#1{%
   \bgroup \let\Entry\pxcz@Entry
     \let\ \space \let\*\pxcz@pfx@jis
@@ -400,6 +430,7 @@
     \let\@hwid\pxcz@entry@@hwid \let\@fwid\pxcz@entry@@fwid
     \let\@jp\pxcz@entry@@jp \let\@jpXX\pxcz@entry@@jpXX
     \@nameuse{pxcz@ME/#1}\egroup}
+\@onlypreamble\pxcz@Entry
 \def\pxcz@Entry#1{%
   \expandafter\let\expandafter\FONT\csname pxcz@FS/#1\endcsname
   \let\FONTo\FONT \let\FONTs\FONT
@@ -418,13 +449,14 @@
   \fi\fi
   \ifx\FONT\@empty \expandafter\@gobbletwo
   \else \expandafter\pxcz@entry@a \fi}
+\@onlypreamble\pxcz@entry@a
 \def\pxcz@entry@a#1#2{%
   \chardef\pxcz@entry@type=#1\relax
   \xdef\pxcz@spec{%
     \pxcz@spec\noexpand\special{\pxcz@mapline{#2}}}}
-\let\pxcz@spec\@empty
 
 %% \pxcz@do@file@preset
+\@onlypreamble\pxcz@do@file@preset
 \def\pxcz@do@file@preset{%
   \ifpxcz@file@preset@tl
     \pxcz@do@file@preset@a{ptex-}%
@@ -436,6 +468,7 @@
   \else
     \pxcz@do@file@preset@a{}%
   \fi}
+\@onlypreamble\pxcz@do@file@preset@a
 \def\pxcz@do@file@preset@a#1{%
   \pxcz@addtospec@alt\pxcz@mapfile{#1\pxcz@file@preset.map}}
 
@@ -445,14 +478,14 @@
 \def\pxcz@mapfile#1{pdf:mapfile #1}
 \def\pxcz@mapline#1{pdf:mapline #1}
 
-%%------------------ map entry definitions
+%--------------------------------------- map entry definitions
 
 %% \pxcz@mapentry{<id>}{<text>}
 \def\pxcz@mapentry#1{%
   \expandafter\pxcz@mapentry@a\csname pxcz@ME/#1\endcsname}
 \def\pxcz@mapentry@a#1{\@onlypreamble#1\def#1}
 
-%%%% map entries
+%% map entries
 % \FONT: file name for the 2004JIS font
 % \FONTo: file name for the 90JIS font
 % \FONTs: \FONT if prefer2004jis, \FONTo otherwise
@@ -653,7 +686,7 @@
   \pxcz@user@map
 }
 
-%%------------------ '\diruni'
+%--------------------------------------- '\diruni'
 
 %% variables
 \newif\ifpxcz@diruni@ok
@@ -799,7 +832,7 @@
     \let\diruni\pxcz@err@diruni
   \fi}
 
-%%------------------ 'alphabet' option
+%--------------------------------------- 'alphabet' option
 
 %% \pxcz@decl@shape{<fam>}{<ser>}{<font>}
 \@onlypreamble\pxcz@decl@shape
@@ -855,9 +888,10 @@
 \fi                 %---- </otfdx>
 \fi                 %---- </alphabet>
 
-%%------------------ begin-document hook
+%--------------------------------------- begin-document hook
 
-%%%% \pxcz@set@page@hook{<text>}
+%% \pxcz@set@page@hook{<text>}
+\@onlypreamble\pxcz@set@page@hook
 \ifpxcz@everypage
 \def\pxcz@set@page@hook#1{%
   \AtBeginShipout{\setbox\AtBeginShipoutBox=\vbox{%
@@ -869,7 +903,8 @@
   \global\setbox\@begindvibox\vbox{\yoko\unvbox\@begindvibox#1}}
 \fi
 
-%%%% \AtBeginDocument
+%% the begin-document hook
+\@onlypreamble\pxcz@check@alldefined
 \def\pxcz@check@alldefined#1{%
   \pxcz@oktrue
   \@for\pxcz@x:={#1}\do{%
@@ -923,6 +958,7 @@
 }
 
 %% \pxcz@decl@relfont
+\@onlypreamble\pxcz@decl@relfont
 \def\pxcz@decl@relfont#1#2#3{%
   \DeclareRelationFont{\k@encoding}{#1}{m}{}{OT1}{#2}{m}{}%
   \DeclareRelationFont{\k@encoding}{#1}{bx}{}{OT1}{#2}{bx}{}%
@@ -932,24 +968,28 @@
   \pxcz@info{Relation font set for \k@encoding/#1}%
 }
 
-%%------------------ preset japanese font mappings
+%--------------------------------------- preset japanese font mappings
 
 %% \pxcz@declare@preset{<name>}{<text>}
+\@onlypreamble\pxcz@declare@preset
 \def\pxcz@declare@preset#1{%
   \expandafter\pxcz@decl@preset@a\csname pxcz@the@preset@#1\endcsname}
 \def\pxcz@decl@preset@a#1{\@onlypreamble#1\def#1}
 
 %% \pxcz@declare@preset@alias{<name1>}{<name2>}
+\@onlypreamble\pxcz@declare@preset@alias
 \def\pxcz@declare@preset@alias#1#2{%
   \expandafter\pxcz@decl@preset@alias@a\csname pxcz@the@preset@#1%
   \expandafter\endcsname\csname pxcz@the@preset@#2\endcsname}
 \def\pxcz@decl@preset@alias@a#1#2{\@onlypreamble#1\let#1#2}
 
 %% \pxcz@declare@depre@preset
+\@onlypreamble\pxcz@declare@depre@preset
 \def\pxcz@declare@depre@preset#1{%
   \pxcz@declare@deprecated{#1}%
   \pxcz@declare@preset{#1}}
 %% \pxcz@declare@depre@preset@alias
+\@onlypreamble\pxcz@declare@depre@preset@alias
 \def\pxcz@declare@depre@preset@alias#1{%
   \pxcz@declare@deprecated{#1}%
   \pxcz@declare@preset@alias{#1}}
@@ -980,7 +1020,7 @@
   \fi
   \csname pxcz@the@preset@#1\endcsname}
 
-%%%% definitions of main preset mappings
+%% definitions of main preset mappings
 \pxcz@declare@preset{noembed}{%
   \usecmapforalphabet
   \pxcz@uniweight{Ryumin-Light}{GothicBBB-Medium}}
@@ -1147,11 +1187,11 @@
 \pxcz@declare@preset@alias{hiragino-elcapitan}{hiragino-elcapitan-pro}
 \pxcz@declare@preset@alias{morisawa}{morisawa-pro}
 
-%%%% ... and invokes the specified one!
+%% ... and invokes the specified one!
 \if\pxcz@main@preset\relax\else
 \pxcz@use@preset{\pxcz@main@preset}
 \fi
 
-%%------------------ all done
+%--------------------------------------- all done
 \endinput
 %% EOF
