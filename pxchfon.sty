@@ -124,7 +124,7 @@
   ms-hg,ipa-hg,ipaex-hg,moga-mobo,moga-mobo-ex,moga-maruberi,%
   kozuka-pro,kozuka-pr6,kozuka-pr6n,hiragino-pro,hiragino-pron,%
   hiragino-elcapitan-pro,hiragino-elcapitan-pron,%
-  morisawa-pro,morisawa-pr6n,yu-win,yu-win10,yu-osx,%
+  morisawa-pro,morisawa-pr6n,yu-win,yu-win10,yu-win10+,yu-osx,%
   sourcehan-otc,sourcehan,noto-otc,noto%
   %(obsolete)
   ipa-otf,ipa-otf-dx,kozuka4,kozuka6,kozuka6n,hiragino,%
@@ -234,6 +234,9 @@
   \pxcz@preset@setup@sourcehan}
 \pxcz@if@main@preset{noto-otc}{%
   \pxcz@preset@setup@sourcehan}
+\pxcz@if@main@preset{yu-win10+}{%
+  \let\pxcz@directunicode\pxcz@directunicode@full
+  \pxcz@uniquifyfalse}
 
 %--------------------------------------- user interface
 
@@ -410,6 +413,19 @@
   :\the\pxcz@entry@type:}
 \def\pxcz@NC@otf@dif#1jp{%
   #1\ifcase\pxcz@entry@type\or kr\or sc\fi}
+
+%% \pxcz@YW
+\def\pxcz@YW#1{%
+  \ifx#1/\expandafter\pxcz@YW@mc@dif
+  \else \expandafter\pxcz@YW@gt@dif
+  \fi}
+\def\pxcz@YW@gt@dif#1:{%
+  \ifnum\pxcz@entry@type=\tw@ :1:\else:0:\fi}
+\def\pxcz@YW@mc@dif#1.ttf{%
+  \ifnum\pxcz@entry@type=\tw@ \@nameuse{pxcz@YWG/#1}\else#1.ttf\fi}
+\@namedef{pxcz@YWG/yuminl}{:1:YuGothL.ttc}
+\@namedef{pxcz@YWG/yumin}{:1:YuGothR.ttc}
+\@namedef{pxcz@YWG/yumindb}{:1:YuGothM.ttc}
 
 %% primary macros
 \let\pxcz@unidirect\@empty
@@ -1195,6 +1211,10 @@
   \pxcz@multiweight{yuminl.ttf}{yumin.ttf}%
    {yumindb.ttf}{:0:YuGothR.ttc}{:0:YuGothB.ttc}%
    {:0:YuGothB.ttc}{:0:YuGothM.ttc}{:0:YuGothM.ttc}}
+\pxcz@declare@preset{yu-win10+}{%
+  \pxcz@multiweight{\pxcz@YW/yuminl.ttf}{\pxcz@YW/yumin.ttf}%
+   {\pxcz@YW/yumindb.ttf}{\pxcz@YW:0:YuGothR.ttc}{\pxcz@YW:0:YuGothB.ttc}%
+   {\pxcz@YW:0:YuGothB.ttc}{\pxcz@YW:0:YuGothM.ttc}{\pxcz@YW:0:YuGothM.ttc}}
 \pxcz@declare@preset{yu-osx}{%
   \usecmapforalphabet
   \pxcz@multiweight{YuMin-Medium.otf}{YuMin-Medium.otf}%
