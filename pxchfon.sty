@@ -55,6 +55,7 @@
 %--------------------------------------- handle options
 
 %% variables
+\newif\ifpxcz@enabled \pxcz@enabledtrue
 \let\pxcz@alphabet=n
 \newif\ifpxcz@otf \pxcz@otftrue
 \newif\ifpxcz@cmap@alpha
@@ -70,6 +71,12 @@
 \newif\ifpxcz@rel
 
 %% process options
+% drivers
+\DeclareOption{nodvidriver}{\pxcz@enabledfalse}
+\DeclareOption{dvips}{\pxcz@enabledfalse}
+\DeclareOption{dviout}{\pxcz@enabledfalse}
+\DeclareOption{xdvi}{\pxcz@enabledfalse}
+\DeclareOption{dvipdfmx}{\pxcz@enabledtrue}
 % (no)alphabet / relfont
 \DeclareOption{alphabet}{\let\pxcz@alphabet=t}
 \DeclareOption{noalphabet}{\let\pxcz@alphabet=f}
@@ -954,7 +961,9 @@
   \fi
   \pxcz@check@extra
   \pxcz@addtospec{USR}%
-  \pxcz@set@page@hook{\pxcz@spec}%
+  \ifpxcz@enabled
+    \pxcz@set@page@hook{\pxcz@spec}%
+  \fi
 }
 
 %% \pxcz@decl@relfont
