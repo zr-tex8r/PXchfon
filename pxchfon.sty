@@ -473,6 +473,7 @@
     \@nameuse{pxcz@ME/#1}\egroup}
 \@onlypreamble\pxcz@Entry
 \def\pxcz@Entry#1{%
+  \def\pxcz@entry@sym{#1}%
   \expandafter\let\expandafter\FONT\csname pxcz@FS/#1\endcsname
   \let\FONTo\FONT \let\FONTs\FONT
   \ifx\FONT\pxcz@noembed
@@ -493,8 +494,22 @@
 \@onlypreamble\pxcz@entry@a
 \def\pxcz@entry@a#1#2{%
   \chardef\pxcz@entry@type=#1\relax
-  \xdef\pxcz@spec{%
-    \pxcz@spec\noexpand\special{\pxcz@mapline{#2}}}}
+  \pxcz@check@entry \ifpxcz@ok
+    \xdef\pxcz@spec{%
+      \pxcz@spec\noexpand\special{\pxcz@mapline{#2}}}%
+  \fi}
+
+%% \pxcz@check@entry
+\@onlypreamble\pxcz@check@entry
+\def\pxcz@sym@@mgr{mgr}
+\def\pxcz@check@entry{%
+  \pxcz@oktrue
+  \ifnum\pxcz@entry@type=\@ne
+    \ifx\pxcz@entry@sym\pxcz@sym@@mgr
+      \expandafter\ifx\csname pxcz@FS/gtr\endcsname\relax\else
+        \pxcz@okfalse \fi
+    \fi
+  \fi}
 
 %% \pxcz@do@file@preset
 \@onlypreamble\pxcz@do@file@preset
