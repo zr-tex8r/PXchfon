@@ -1052,12 +1052,21 @@
 \def\pxcz@add@to@dump@text#1{%
   \edef\pxcz@dump@text{\pxcz@dump@text#1}}
 
+%% \pxcz@dump@special{<string>}
+\@onlypreamble\pxcz@dump@special
+\def\pxcz@dump@special#1{%
+  \pxcz@dump@special@a#1\bxcz@end}
+\@onlypreamble\pxcz@dump@special@a
+\def\pxcz@dump@special@a#1 #2\bxcz@end{%
+  \@nameuse{pxcz@dump@special@#1}\@gobble{#2}}
+\@namedef{pxcz@dump@special@pdf:mapline}#1#2{%
+  \pxcz@add@to@dump@text{#2^^J}}
 
 %% \pxcz@dump@spec@to{<file-name>}
 \@onlypreamble\pxcz@dump@spec@to
 \def\pxcz@dump@spec@to#1{%
   \def\pxcz@dump@text{\@percentchar\space#1^^J}%
-  \def\special##1{\pxcz@add@to@dump@text{##1^^J}}%
+  \let\special\pxcz@dump@special
   \pxcz@spec \let\special\relax
   \pxcz@add@to@dump@text{\@percentchar\space EOF}%
   \immediate\openout\pxcz@fout=#1\relax
