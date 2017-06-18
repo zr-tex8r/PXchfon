@@ -1014,7 +1014,11 @@
   \pxcz@addtospec{USR}%
   \ifpxcz@enabled
     \pxcz@set@page@hook{\pxcz@spec}%
-  \fi
+  \else\ifx\pxcz@spec\@empty\else
+    \PackageWarningNoLine\pxcz@pkgname
+     {Font mapping is disabled, since the driver in use\MessageBreak
+      is not dvipdfmx}%
+  \fi\fi
   \ifpxcz@dumpmap
     \pxcz@do@dumpmap
   \fi
