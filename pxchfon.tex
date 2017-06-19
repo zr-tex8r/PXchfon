@@ -10,8 +10,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.0}
-\newcommand{\PkgDate}{2017/05/31}
+\newcommand{\PkgVersion}{1.0a}
+\newcommand{\PkgDate}{2017/06/19}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -69,6 +69,16 @@ dvipdfmx 専用である。
 オプションは次のものが用意されている。
 
 \begin{itemize}
+\item ドライバオプション\Means
+  |dvipdfmx|、|dvips|、|dviout|、|xdvi| および |nodvidriver|%
+  \footnote{ドライバ依存動作を明示的に無効化するための指定。}
+  が指定できる。
+  ただし、本パッケージの主要機能である
+  「フォントマップの文書内での指定」
+  がサポートされるのはdvipdfmxのみである。
+  他のDVIウェアにおける動作については
+  \ref{sec:Other-Drivers}節を参照。
+  ドライバオプションの既定値は |dvipdfmx| である。
 \item \textbf{プリセット指定オプション}（|ipa|、|hiragino| 等）
   名前に対応するプリセット指定を有効にする。
   詳細については\ref{sec:Preset}節を参照。
@@ -111,6 +121,10 @@ dvipdfmx 専用である。
     現在では、この暫定仕様は廃止されている。}
 \item |noprefer2004jis|（既定）\Means
   |prefer2004jis| の否定。
+\item |(no)jis2004|\Means
+  |(no)prefer2004jis| の別名。
+  \Note グローバルオプションに |jis2004| を指定して\Pkg{OTF}と
+  \Pkg{pxchfon}の両方に適用することを意図している。
 \item |oneweight|\Means
   \Pkg{OTF}パッケージを単ウェイトで使用する場合に、
   プリセット設定で使われるフォントの集合を{\pTeX}標準と同一にする。
@@ -187,6 +201,28 @@ dvipdfmx 専用である。
   \ref{sec:Notice}節も参照されたい。}
 \item |nousecmapforalphabet|（既定）\Means
   |usecmapforalphabet| の否定。
+\item |dumpmap|\Means
+  「通常マップファイルダンプ出力」を有効にする。
+  すなわち、本パッケージにより文書に設定されるマップ行を、
+  \Meta{ジョブ名}|.map| の名のファイルに書き出す。
+\item |nodumpmap|（既定）\Means
+  |dumpmap| の否定。
+\item |dumpmaptl|\Means
+  「{\TeX} Liveマップファイルダンプ出力」を有効にする。
+  すなわち、本パッケージにより設定されたフォントマップに対応する
+  kanji-config-updmap用のマップファイルのセット
+  （|ptex-NAME.map|、|otf-NAME.map|、|uptex-NAME.map|、
+  |otf-up-NAME.map| の4つ、ただし |NAME| はジョブ名）
+  を出力する。
+  \Note 例えば、\Pkg{OTF}パッケージが使われない場合は
+  \Pkg{OTF}パッケージ用のマップ行は適用されない。
+  そのため、通常ダンプ出力はそのようなマップ行は書き出されない。
+  これに対して、
+  {\TeX} Live用ダンプ出力は「実際に適用されるか」は無関係で
+  kanji-config-updmapの規則に従うため、
+  \Pkg{OTF}パッケージ用のマップが |otf-*.map| に書き出される。
+\item |nodumpmaptl|（既定）\Means
+  |dumpmaptl| の否定。
 \end{itemize}
 
 %===========================================================
@@ -639,12 +675,18 @@ dvipdfmx 専用である。
 \end{verbatim}\end{quote}
 \end{itemize}
 
-以下は試験的なプリセット設定である。
+なお、以上の設定で登場したフォントのうち、
+「HG丸ｺﾞｼｯｸM-PRO」
+は欧文が等幅でないので |alphabet| オプション指定と
+ともに使うことができない。
+
+%-------------------
+\subsection{試験的なプリセット設定}
+
+以下は試験的に実装されたプリセット設定である。
+これらについては将来的な仕様変更・廃止の可能性がある
+ことに注意されたい。
 \Note 具体的な設定内容は未確定のため割愛する。
-\Note 種々の事情のため、現状の実装では日本語用の設定のために
-繁体中国語等の日本語以外のフォントも利用している。
-従って、言語別OTF版のフォントファイルを利用する場合は、
-原則的に全てのCJK言語の版を用意する必要がある。
 
 \begin{itemize}
 \item |sourcehan-otc|\Means
@@ -669,10 +711,17 @@ dvipdfmx 専用である。
 
 \end{itemize}
 
-なお、以上の設定で登場したフォントのうち、
-「HG丸ｺﾞｼｯｸM-PRO」
-は欧文が等幅でないので |alphabet| オプション指定と
-ともに使うことができない。
+\Note 種々の事情のため、上記の4つの“Source Han系”のプリセットでは
+現状の実装では日本語用の設定のために
+繁体中国語等の日本語以外のフォントも利用している。
+従って、言語別OTF版のフォントファイルを利用する場合は、
+原則的に全てのCJK言語の版を用意する必要がある。
+
+\begin{itemize}
+\item |yu-win10+|\Means
+  |yu-win10| で引用符“\,”‘\,’の出力が不正になることに
+  対処したもの。
+\end{itemize}
 
 %-------------------
 \subsection{ptex-fontmaps互換のオプション}
@@ -864,6 +913,7 @@ OT1 として扱われるが、実際には OT1 の一部のグリフしか持�
 \appendix
 %===========================================================
 \section{dvipdfmx以外のDVIウェアでの使用}
+\label{sec:Other-Drivers}
 
 本パッケージの核心の機能である
 「使用フォントを文書中で指定する」
@@ -881,7 +931,7 @@ DVI文書を扱える可能性がある。
 dvipdfmx以外のDVIウェアに読ませた場合、
 フォント置換が無視され、
 そのソフトウェアで設定されたフォントで出力されるはずである。
-ただ、ソフトウェアによっては、警告やエラーが出る可能性もある。
+%ただ、ソフトウェアによっては、警告やエラーが出る可能性もある。
 
 %-------------------
 \subsection{欧文フォントも置き換えた場合（\texttt{alphabet} 指定時）}

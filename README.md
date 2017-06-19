@@ -38,7 +38,7 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
-  * Version 1.0  ‹2017/05/31›
+  * Version 1.0  ‹2017/06/19›
       - The long-deprecated presets are now abolished.
       - The package pxjafont is deprecated.
       - Now `directunicode*` does not need japanese-otf.
