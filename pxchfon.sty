@@ -414,7 +414,7 @@
 \def\pxcz@NC@otc@dif#1:{%
   :\the\pxcz@entry@type:}
 \def\pxcz@NC@otf@dif#1jp{%
-  #1\ifcase\pxcz@entry@type\or kr\or sc\fi}
+  #1\ifcase\pxcz@entry@type jp\or kr\or sc\fi}
 
 %% \pxcz@YW
 \def\pxcz@YW#1{%
@@ -496,6 +496,9 @@
 \@onlypreamble\pxcz@entry@a
 \def\pxcz@entry@a#1#2{%
   \chardef\pxcz@entry@type=#1\relax
+  \ifnum\pxcz@entry@type=\@ne\ifx\pxcz@cmap@uni\pxcz@cmap@hwuni
+    \let\@l\@gobble
+  \fi\fi
   \pxcz@check@entry \ifpxcz@ok
     \xdef\pxcz@spec{%
       \pxcz@spec\noexpand\special{\pxcz@mapline{#2}}}%
@@ -569,14 +572,14 @@
 \Entry{mgr}1{r-cfjas-r-@PXcjk0@ \UniCMap\            \FONT\@hwid}%
 }
 \pxcz@mapentry{UTF}{%
-\Entry{mnr}0{unijmin-h       \UniJIS-UTF16-H         \FONTs}%
-\Entry{mnr}0{unijmin-v       \UniJIS-UTF16-V         \FONTs\@w}%
+\Entry{mnr}0{unijmin-h       \UniJIS-UTF16-H         \FONTs\@jpXX}%
+\Entry{mnr}0{unijmin-v       \UniJIS-UTF16-V         \FONTs\@w\@jpXX}%
 \Entry{mnr}0{cidmin-h        Identity-H              \FONT/AJ16}%
 \Entry{mnr}0{cidmin-v        Identity-V              \FONT/AJ16}%
 \Entry{mnr}0{hmr             \*H                     \FONTs}%
 \Entry{mnr}0{hmrv            \*V                     \FONTs}%
-\Entry{gtu}0{unijgoth-h      \UniJIS-UTF16-H         \FONTs}%
-\Entry{gtu}0{unijgoth-v      \UniJIS-UTF16-V         \FONTs\@w}%
+\Entry{gtu}0{unijgoth-h      \UniJIS-UTF16-H         \FONTs\@jpXX}%
+\Entry{gtu}0{unijgoth-v      \UniJIS-UTF16-V         \FONTs\@w\@jpXX}%
 \Entry{gtu}0{cidgoth-h       Identity-H              \FONT/AJ16}%
 \Entry{gtu}0{cidgoth-v       Identity-V              \FONT/AJ16}%
 \Entry{gtu}0{hkb             \*H                     \FONTs}%
@@ -707,34 +710,34 @@
 \Entry{tcg}0{upmhm-v         \@+UniCNS-UTF16-V       \FONT\@w}%
 }
 \pxcz@mapentry{UPOTF}{%
-\Entry{mnl}0{uphminl-h       \@+UniJIS-UTF16-H       \FONTs\@jp90}%
-\Entry{mnl}0{uphminl-v       \@+UniJIS-UTF16-V       \FONTs\@w\@jp90}%
-\Entry{mnl}0{uphminln-h      \@+UniJIS2004-UTF16-H   \FONTs\@jp04}%
-\Entry{mnl}0{uphminln-v      \@+UniJIS2004-UTF16-V   \FONTs\@w\@jp04}%
-\Entry{mnr}0{uphminr-h       \@+UniJIS-UTF16-H       \FONTs\@jp90}%
-\Entry{mnr}0{uphminr-v       \@+UniJIS-UTF16-V       \FONTs\@w\@jp90}%
-\Entry{mnr}0{uphminrn-h      \@+UniJIS2004-UTF16-H   \FONTs\@jp04}%
-\Entry{mnr}0{uphminrn-v      \@+UniJIS2004-UTF16-V   \FONTs\@w\@jp04}%
-\Entry{mnb}0{uphminb-h       \@+UniJIS-UTF16-H       \FONTs\@jp90}%
-\Entry{mnb}0{uphminb-v       \@+UniJIS-UTF16-V       \FONTs\@w\@jp90}%
-\Entry{mnb}0{uphminbn-h      \@+UniJIS2004-UTF16-H   \FONTs\@jp04}%
-\Entry{mnb}0{uphminbn-v      \@+UniJIS2004-UTF16-V   \FONTs\@w\@jp04}%
-\Entry{gtr}0{uphgothr-h      \@+UniJIS-UTF16-H       \FONTs\@jp90}%
-\Entry{gtr}0{uphgothr-v      \@+UniJIS-UTF16-V       \FONTs\@w\@jp90}%
-\Entry{gtr}0{uphgothrn-h     \@+UniJIS2004-UTF16-H   \FONTs\@jp04}%
-\Entry{gtr}0{uphgothrn-v     \@+UniJIS2004-UTF16-V   \FONTs\@w\@jp04}%
-\Entry{gtb}0{uphgothb-h      \@+UniJIS-UTF16-H       \FONTs\@jp90}%
-\Entry{gtb}0{uphgothb-v      \@+UniJIS-UTF16-V       \FONTs\@w\@jp90}%
-\Entry{gtb}0{uphgothbn-h     \@+UniJIS2004-UTF16-H   \FONTs\@jp04}%
-\Entry{gtb}0{uphgothbn-v     \@+UniJIS2004-UTF16-V   \FONTs\@w\@jp04}%
-\Entry{gtx}0{uphgotheb-h     \@+UniJIS-UTF16-H       \FONTs\@jp90}%
-\Entry{gtx}0{uphgotheb-v     \@+UniJIS-UTF16-V       \FONTs\@w\@jp90}%
-\Entry{gtx}0{uphgothebn-h    \@+UniJIS2004-UTF16-H   \FONTs\@jp04}%
-\Entry{gtx}0{uphgothebn-v    \@+UniJIS2004-UTF16-V   \FONTs\@w\@jp04}%
-\Entry{mgr}0{uphmgothr-h     \@+UniJIS-UTF16-H       \FONTs\@jp90}%
-\Entry{mgr}0{uphmgothr-v     \@+UniJIS-UTF16-V       \FONTs\@w\@jp90}%
-\Entry{mgr}0{uphmgothrn-h    \@+UniJIS2004-UTF16-H   \FONTs\@jp04}%
-\Entry{mgr}0{uphmgothrn-v    \@+UniJIS2004-UTF16-V   \FONTs\@w\@jp04}%
+\Entry{mnl}0{uphminl-h       \@+UniJIS-UTF16-H       \FONTo\@jp90}%
+\Entry{mnl}0{uphminl-v       \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
+\Entry{mnl}0{uphminln-h      \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
+\Entry{mnl}0{uphminln-v      \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
+\Entry{mnr}0{uphminr-h       \@+UniJIS-UTF16-H       \FONTo\@jp90}%
+\Entry{mnr}0{uphminr-v       \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
+\Entry{mnr}0{uphminrn-h      \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
+\Entry{mnr}0{uphminrn-v      \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
+\Entry{mnb}0{uphminb-h       \@+UniJIS-UTF16-H       \FONTo\@jp90}%
+\Entry{mnb}0{uphminb-v       \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
+\Entry{mnb}0{uphminbn-h      \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
+\Entry{mnb}0{uphminbn-v      \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
+\Entry{gtr}0{uphgothr-h      \@+UniJIS-UTF16-H       \FONTo\@jp90}%
+\Entry{gtr}0{uphgothr-v      \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
+\Entry{gtr}0{uphgothrn-h     \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
+\Entry{gtr}0{uphgothrn-v     \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
+\Entry{gtb}0{uphgothb-h      \@+UniJIS-UTF16-H       \FONTo\@jp90}%
+\Entry{gtb}0{uphgothb-v      \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
+\Entry{gtb}0{uphgothbn-h     \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
+\Entry{gtb}0{uphgothbn-v     \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
+\Entry{gtx}0{uphgotheb-h     \@+UniJIS-UTF16-H       \FONTo\@jp90}%
+\Entry{gtx}0{uphgotheb-v     \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
+\Entry{gtx}0{uphgothebn-h    \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
+\Entry{gtx}0{uphgothebn-v    \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
+\Entry{mgr}0{uphmgothr-h     \@+UniJIS-UTF16-H       \FONTo\@jp90}%
+\Entry{mgr}0{uphmgothr-v     \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
+\Entry{mgr}0{uphmgothrn-h    \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
+\Entry{mgr}0{uphmgothrn-v    \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
 }
 \pxcz@mapentry{PXOTF}{%
 }
@@ -1152,8 +1155,7 @@
 
 %% definitions of main preset mappings
 \pxcz@declare@preset{noembed}{%
-  \usecmapforalphabet
-  \pxcz@uniweight{Ryumin-Light}{GothicBBB-Medium}}
+  \pxcz@uniweight{*}{*}}
 %(uniweight)
 \pxcz@declare@preset{ms}{%
   \pxcz@uniweight{:0:msmincho.ttc}{:0:msgothic.ttc}}
