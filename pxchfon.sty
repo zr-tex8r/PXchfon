@@ -103,6 +103,7 @@
 \newif\ifpxcz@dumpmap
 \newif\ifpxcz@dumpmap@tl
 \newif\ifpxcz@switch@font@mmivjis \pxcz@switch@font@mmivjistrue
+\let\pxcz@strict@csi\relax
 
 %% process options
 % drivers
@@ -152,6 +153,9 @@
 % (no)switchfont2004jis
 \DeclareOption{switchfont2004jis}{\pxcz@switch@font@mmivjistrue}
 \DeclareOption{noswitchfont2004jis}{\pxcz@switch@font@mmivjisfalse}
+% (no)strictcsi
+\DeclareOption{strictcsi}{\let\pxcz@strict@csi=t}
+\DeclareOption{nostrictcsi}{\let\pxcz@strict@csi=f}
 % preset spec options
 \def\pxcz@all@main@preset{%
   noembed,%
@@ -249,6 +253,20 @@
 \else \pxcz@alphafontfalse
 \fi\fi
 
+%% resolve \pxcz@strict@csi
+\ifx\pxcz@strict@csi\relax
+  \let\pxcz@strict@csi=f
+  \ifpxcz@dumpmap \let\pxcz@strict@csi=t \fi
+  \ifpxcz@dumpmap@tl \let\pxcz@strict@csi=t \fi
+\fi
+\if t\pxcz@strict@csi
+  \ifx\pdffiledump\@undefined
+    \PackageWarning\pxcz@pkgname
+     {The option 'strictcsi' cannot be used, because\MessageBreak
+      the engine does not support '\string\pdffiledump'}
+  \fi
+\fi
+
 %--------------------------------------- preset-triggered setup
 
 %% \pxcz@if@main@preset{<name>}{<code>}
@@ -280,6 +298,10 @@
 
 %--------------------------------------- user interface
 
+%% \pxcz@sym@list
+\def\pxcz@sym@list{%
+  mnl,mnr,mnb,gtr,gtb,gtx,gtu,mgr,kom,kog,scm,scg,tcm,tcg}
+
 %%<*> \setminchofont/\setgothicfont/etc.
 \newcommand*\setminchofont{\pxcz@setfont{mnl,mnr,mnb}}
 \newcommand*\setgothicfont{\pxcz@setfont{gtr,gtb,gtx,gtu}}
@@ -305,10 +327,8 @@
   \@for\pxcz@x:={#1}\do{%
     \ifx @#2@\@namedef{pxcz@FS/\pxcz@x}{#3}%
     \else\@namedef{pxcz@FS/\pxcz@x}{:#2:#3}\fi}}
-\@for\pxcz@x:={%
-  mnl,mnr,mnb,gtr,gtb,gtx,gtu,mgr,%
-  kom,kog,scm,scg,tcm,tcg%
-}\do{\@namedef{pxcz@FS/\pxcz@x}{}}
+\@for\pxcz@x:=\pxcz@sym@list\do{%
+  \@namedef{pxcz@FS/\pxcz@x}{}}
 
 %--------------------------------------- '\asUTF'
 % NB. This feature is superseded by the \diruni command.
@@ -594,7 +614,11 @@
 % Fin: final step
 \pxcz@declare@entry@modifier{Fin}{%
   \ifx\pxcz@csi\relax\else
-    \edef\pxcz@mopts{/\pxcz@csi}%
+    \expandafter\ifx\csname pxcz@OT/\pxcz@sym\endcsname\relax
+      \edef\pxcz@mopts{/\pxcz@csi}%
+    \else
+      \let\pxcz@mopts\@empty
+    \fi
   \fi}
 
 
@@ -1109,6 +1133,9 @@
   \ifx\pxcz@file@preset\relax\else
     \pxcz@do@file@preset
   \fi
+  \ifx t\pxcz@strict@csi
+    \pxcz@inspect@flavor@all
+  \fi
   \ifpxcz@alpha
     \pxcz@check@alldefined{mnl,mnr,mnb}%
     \ifpxcz@ok \renewcommand\rmdefault{cfjar}\fi
@@ -1174,6 +1201,145 @@
   \pxcz@info{Relation font set for \k@encoding/#1}%
 }
 
+%--------------------------------------- strict-CSI mode
+\ifx t\pxcz@strict@csi
+% In this section, the e-TeX extension plus \pdffiledump and
+% \pdffilesize is assumed to be available.
+
+%% variables
+\newcount\pxcz@cntr
+\let\pxcz@insf@file\relax
+\let\pxcz@insf@idx\relax
+\let\pxcz@insf@nfont\relax
+\let\pxcz@kpse@dir\relax
+
+%% constants
+\def\pxcz@insf@@OTTO{"4F54544F }
+\def\pxcz@insf@@IZ{"00010000 }
+\def\pxcz@insf@@ttcf{"74746366 }
+
+%% \pxcz@insf@read@word{<offset>}
+% Reads a 32-bit integer from \pxcz@insf@file at the given offset,
+% and sets the value (or -1 on error) to \pxcz@cntr.
+\@onlypreamble\pxcz@insf@read@word
+\def\pxcz@insf@read@word#1{%
+  \pxcz@cntr=#1\relax
+  \edef\pxcz@tmpa{\pdffiledump offset\pxcz@cntr length1{\pxcz@insf@file}}%
+  \ifnum"0\pxcz@tmpa<"80
+    \advance\pxcz@cntr\@ne
+    \edef\pxcz@tmpb{\pdffiledump offset\pxcz@cntr length3{\pxcz@insf@file}}%
+    \ifnum"1\pxcz@tmpb<"1000000 \pxcz@cntr\m@ne % truncated
+    \else \pxcz@cntr"\pxcz@tmpa\pxcz@tmpb\relax % the value
+    \fi
+  \else \pxcz@cntr\m@ne % overflow
+  \fi}
+
+%% \pxcz@inspect@flavor{<path>}{<index>}
+% Sets the result to \pxcz@cntr.
+% 1=CFF, 0=TTF, <0 if error.
+\@onlypreamble\pxcz@inspect@flavor
+\def\pxcz@inspect@flavor#1#2{%
+  \edef\pxcz@insf@file{#1}%
+  \mathchardef\pxcz@insf@idx=#2\relax
+  \pxcz@insf@read@word{0}% outer tag
+  \ifnum\pxcz@cntr=\pxcz@insf@@ttcf % TTC/OTC
+    \pxcz@insf@read@word{8}% font count
+    \ifnum\pxcz@cntr>"7FFF \pxcz@cntr\m@ne \fi
+    \ifnum\pxcz@cntr>\m@ne
+      \mathchardef\pxcz@insf@nfont\pxcz@cntr
+      \@tempcnta\pxcz@insf@idx \multiply\@tempcnta4
+      \advance\@tempcnta12 \pxcz@insf@read@word{\@tempcnta}% inner tag
+      \@tempcnta\pxcz@cntr
+    \fi
+  \else % not collection
+    \@tempcnta=0 \chardef\pxcz@insf@nfont=1
+  \fi
+  \ifnum\pxcz@cntr>\m@ne % no format error so far
+    \ifnum\pxcz@insf@idx<\pxcz@insf@nfont
+      \pxcz@insf@read@word{\@tempcnta}%
+      \ifnum\pxcz@cntr=\m@ne % ERROR: bad format
+      \else\ifnum\pxcz@cntr=\pxcz@insf@@OTTO \pxcz@cntr\@ne % CFF-flavor
+      \else\ifnum\pxcz@cntr=\pxcz@insf@@IZ \pxcz@cntr\z@ % TTF-flavor
+      \else \pxcz@cntr-\thr@@ % ERROR: unknown tag
+      \fi\fi\fi
+    \else \pxcz@cntr-\tw@ % ERROR: bad index
+    \fi
+  %else ERROR: bad format
+  \fi}
+
+%% \pxcz@kpse@dir@cache
+% to spped up \pxcz@kpsewhich
+\@onlypreamble\pxcz@kpse@dir@cache
+\let\pxcz@kpse@dir@cache\@empty
+
+%% \pxcz@kpsewhich{<filename>}
+% Sets to \pxcz@kpse@dir the directory where the file is found
+% (or \relax if not found).
+\@onlypreamble\pxcz@kpsewhich
+\def\pxcz@kpsewhich#1{%
+  \edef\pxcz@tmpa{#1}\let\pxcz@kpse@dir\relax
+  \let\do\pxcz@kpsewhich@do \pxcz@kpse@dir@cache\relax
+  \ifx\pxcz@kpse@dir\relax
+    \chardef\pxcz@tmpz=\endlinechar \endlinechar\m@ne
+    \openin\@inputcheck="|kpsewhich \pxcz@tmpa"\relax
+    \unless\ifeof\@inputcheck
+      \readline\@inputcheck to\pxcz@tmpb
+      \unless\ifx\pxcz@tmpb\@empty
+        \let\pxcz@kpse@dir\@empty \let\do\relax
+        \expandafter\pxcz@kpsewhich@a\pxcz@tmpb/\pxcz@end
+        \edef\pxcz@kpse@dir@cache{%
+          \pxcz@kpse@dir@cache\do{\pxcz@kpse@dir}}%
+      \fi
+    \fi
+    \endlinechar\pxcz@tmpz
+  \fi}
+\@onlypreamble\pxcz@kpsewhich@a
+\def\pxcz@kpsewhich@a#1/#2\pxcz@end{%
+  \ifx\pxcz@end#2\pxcz@end \expandafter\@gobble
+  \else \expandafter\@firstofone
+  \fi{%
+    \edef\pxcz@kpse@dir{\pxcz@kpse@dir#1/}%
+    \pxcz@kpsewhich@a#2\pxcz@end}}
+\@onlypreamble\pxcz@kpsewhich@do
+\def\pxcz@kpsewhich@do#1{%
+  \ifnum0\pdffilesize{#1\pxcz@tmpa}>\z@
+    \def\pxcz@kpse@dir{#1}%
+    \expandafter\pxcz@kpsewhich@do@a
+  \fi}
+\def\pxcz@kpsewhich@do@a#1\relax{}
+
+%% \pxcz@inspect@flavor@all
+% Sets \[pxcz@OT/<sym>].
+\@onlypreamble\pxcz@inspect@flavor@all
+\def\pxcz@inspect@flavor@all{%
+  \chardef\pxcz@entry@type\z@
+  \@for\pxcz@tmpa:=\pxcz@sym@list\do{%
+    \edef\pxcz@tmpa{{\pxcz@tmpa}{\@nameuse{pxcz@FS/\pxcz@tmpa}}}%
+    \expandafter\pxcz@inspect@flavor@all@a\pxcz@tmpa}}
+\@onlypreamble\pxcz@inspect@flavor@all@a
+\def\pxcz@inspect@flavor@all@a#1#2{%
+  \def\pxcz@tmpa{#2}%
+  \ifx\pxcz@tmpa\@empty
+  \else\ifx\pxcz@tmpa\pxcz@noembed
+    \@namedef{pxcz@OT/#1}{t}%
+  \else \pxcz@inspect@flavor@all@b#2\pxcz@end{#1}%
+  \fi\fi}
+\@onlypreamble\pxcz@inspect@flavor@all@b
+\def\pxcz@inspect@flavor@all@b#1#2\pxcz@end{%
+  \edef\pxcz@tmpa{\ifx:#1\else:0:\fi#1#2}%
+  \expandafter\pxcz@inspect@flavor@all@c\pxcz@tmpa\pxcz@end}
+\@onlypreamble\pxcz@inspect@flavor@all@c
+\def\pxcz@inspect@flavor@all@c:#1:#2\pxcz@end#3{%
+  \pxcz@kpsewhich{#2}%
+  \unless\ifx\pxcz@kpse@dir\relax
+    \pxcz@inspect@flavor{\pxcz@kpse@dir#2}{#1}%
+%\typeout{#3)\pxcz@kpse@dir#2;#1==>\the\pxcz@cntr}%
+    \ifnum\pxcz@cntr>\z@
+      \@namedef{pxcz@OT/#3}{t}%
+    \fi
+  \fi}
+
+\fi
 %--------------------------------------- dump font map
 % if some dumpmap is enabled...
 \ifnum 0\ifpxcz@dumpmap 1\fi
