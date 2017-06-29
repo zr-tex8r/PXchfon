@@ -1,4 +1,4 @@
-%%
+
 %% This is file 'pxchfon.sty'.
 %% 
 %% Copyright (c) 2017 Takayuki YATO (aka. "ZR")
@@ -23,6 +23,37 @@
 %% variables
 \newif\ifpxcz@ok
 \newif\ifpxcz@utf
+\let\pxcz@pre\relax
+\let\pxcz@post\relax
+
+%% unique tokens
+\def\pxcz@end{\pxcz@end@}
+\def\pxcz@mt{\pxcz@mt@}
+
+%% \pxcz@csletcs{<cs1>}{<cs2>}
+\def\pxcz@csletcs#1#2{%
+  \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
+
+%% \pxcz@lower\CS
+\def\pxcz@lower#1{%
+  \expandafter\pxcz@lower@a#1\pxcz@end#1}
+\def\pxcz@lower@a#1\pxcz@end#2{%
+  \lowercase{\def#2{#1}}}
+
+%% \pxcz@split{<at>}{<target>}
+\def\pxcz@split#1#2{%
+  \edef\pxcz@tmpx{{#1}{#2}}%
+  \expandafter\pxcz@split@a\pxcz@tmpx}
+\def\pxcz@split@a#1#2{%
+  \def\pxcz@tmpx##1#1##2\pxcz@end{\pxcz@split@b{##1}{##2}}%
+  \pxcz@tmpx#2\pxcz@mt#1\pxcz@end}
+\def\pxcz@split@b#1#2{%
+  \let\pxcz@pre\relax \let\pxcz@post\relax
+  \ifx\pxcz@end#2\pxcz@end\else
+    \pxcz@split@c#2\pxcz@end{#1}%
+  \fi}
+\def\pxcz@split@c#1\pxcz@mt#2\pxcz@end#3{%
+  \def\pxcz@pre{#3}\def\pxcz@post{#1}}
 
 %--------------------------------------- environment check
 
@@ -71,6 +102,7 @@
 \newif\ifpxcz@rel
 \newif\ifpxcz@dumpmap
 \newif\ifpxcz@dumpmap@tl
+\newif\ifpxcz@switch@font@mmivjis \pxcz@switch@font@mmivjistrue
 
 %% process options
 % drivers
@@ -117,6 +149,9 @@
 % (no)dumpmaptl
 \DeclareOption{dumpmaptl}{\pxcz@dumpmap@tltrue}
 \DeclareOption{nodumpmaptl}{\pxcz@dumpmap@tlfalse}
+% (no)switchfont2004jis
+\DeclareOption{switchfont2004jis}{\pxcz@switch@font@mmivjistrue}
+\DeclareOption{noswitchfont2004jis}{\pxcz@switch@font@mmivjisfalse}
 % preset spec options
 \def\pxcz@all@main@preset{%
   noembed,%
@@ -369,100 +404,199 @@
   \@ifstar{\pxcz@set@pfx@jis\pxcz@pfx@jis@star}%
    {\pxcz@set@pfx@jis}}
 \def\pxcz@set@pfx@jis#1{%
-  \edef\pxcz@pfx@jis{\ifpxcz@mmivjis#1\fi}}
+  \edef\pxcz@pfx@jis{#1}}
 \setnewglyphcmapprefix{\pxcz@pfx@jis@dflt}
 
-%% \pxcz@pfx@unijis
-\edef\pxcz@pfx@unijis{UniJIS\ifpxcz@mmivjis 2004\fi}
+%% variables
+\let\pxcz@sym\relax
+\let\pxcz@cmap\relax
+\let\pxcz@font\relax
+\let\pxcz@csi\relax
+\let\pxcz@lopts\relax
+\let\pxcz@mopts\relax
+\newif\ifpxcz@switch@font@yuwinx
 
-%% \pxcz@enable@switch@realfont
-\def\pxcz@enable@switch@realfont{%
-  \let\pxcz@switch@realfont\pxcz@do@switch@realfont
-}
-\let\pxcz@switch@realfont\relax
-
-%% \pxcz@do@switch@realfont
-\@onlypreamble\pxcz@do@switch@realfont
-\def\pxcz@do@switch@realfont{%
-  \edef\pxcz@reset@mmivjis{%
-    \ifpxcz@mmivjis \noexpand\pxcz@mmivjistrue
-    \else \noexpand\pxcz@mmivjisfalse \fi}%
-  \let\pxcz@empty\relax
-  \pxcz@mmivjistrue  \edef\FONT{\FONTs}%
-  \pxcz@mmivjisfalse \edef\FONTo{\FONTs}%
-  \pxcz@reset@mmivjis \edef\FONTs{\FONTs}%
-  \let\pxcz@empty\@empty}
-
-%% \pxcz@MI
-% NB: not \edef
-\def\pxcz@MI#1#2:{\ifpxcz@mmivjis:#1:\else:#2:\fi}
-
-%% \pxcz@SH
-% NB: not \edef
-\def\pxcz@SH#1{%
-  \ifx#1/\expandafter\pxcz@SH@otf@dif
-  \else \expandafter\pxcz@SH@otc@dif
+%% \pxcz@@jpXX
+\edef\pxcz@@jpXX{%
+  \ifpxcz@mmivjis jp04\else jp90\fi}
+%% \pxcz@add@lopt
+\@onlypreamble\pxcz@add@lopt
+\def\pxcz@add@lopt#1{%
+  \edef\pxcz@lopts{%
+    \ifx\pxcz@lopts\@empty\else \pxcz@lopts:\fi#1}}
+%% \pxcz@uniquify@lopts
+\@onlypreamble\pxcz@uniquify@lopts
+\def\pxcz@uniquify@lopts#1#2{%
+  \pxcz@oktrue
+  \def\pxcz@tmpb{jp90}\ifx\pxcz@tmpb\pxcz@lopts\pxcz@okfalse\fi
+  \def\pxcz@tmpb{jp04}\ifx\pxcz@tmpb\pxcz@lopts\pxcz@okfalse\fi
+  \ifx\@empty\pxcz@lopts\if t#1\pxcz@okfalse\fi\fi
+  \ifpxcz@ok
+    \edef\pxcz@lopts{#2}%
   \fi}
-\def\pxcz@SH@otc@dif#1:{%
-  :\the\pxcz@entry@type:}
-\def\pxcz@SH@otf@dif#1-{%
-  #1\ifcase\pxcz@entry@type\or K\or SC\fi-}
 
-%% \pxcz@NC
-% NB: not \edef
-\def\pxcz@NC#1{%
-  \ifx#1/\expandafter\pxcz@NC@otf@dif
-  \else \expandafter\pxcz@NC@otc@dif
+%% \pxcz@sidx
+\@onlypreamble\pxcz@sidx
+\def\pxcz@sidx#1#2{%
+  \expandafter\pxcz@sidx@a#2\pxcz@end{#1}}
+\def\pxcz@sidx@a:#1:#2\pxcz@end#3{:#3:#2}
+
+%% \pxcz@is@jis@cmap
+\@onlypreamble\pxcz@is@jis@cmap
+\def\pxcz@is@jis@cmap{%
+  \pxcz@okfalse
+  \expandafter\pxcz@is@jis@cmap@a\pxcz@cmap\pxcz@end}
+\def\pxcz@is@jis@cmap@a#1#2\pxcz@end{%
+  \ifx\pxcz@mt#2\pxcz@mt \pxcz@oktrue \fi}
+
+%% \pxcz@force@mmiv@cmap
+\@onlypreamble\pxcz@force@mmiv@cmap
+\def\pxcz@force@mmiv@cmap{%
+  \pxcz@is@jis@cmap \ifpxcz@ok
+    \edef\pxcz@cmap{\pxcz@pfx@jis\pxcz@cmap}%
+  \else
+    \pxcz@split{UniJIS-}\pxcz@cmap
+    \ifx\pxcz@pre\relax\else
+      \edef\pxcz@cmap{UniJIS2004-\pxcz@post}%
+    \fi
   \fi}
-\def\pxcz@NC@otc@dif#1:{%
-  :\the\pxcz@entry@type:}
-\def\pxcz@NC@otf@dif#1jp{%
-  #1\ifcase\pxcz@entry@type jp\or kr\or sc\fi}
 
-%% \pxcz@YW
-\def\pxcz@YW#1{%
-  \ifx#1/\expandafter\pxcz@YW@mc@dif
-  \else \expandafter\pxcz@YW@gt@dif
-  \fi}
-\def\pxcz@YW@gt@dif#1:{%
-  \ifnum\pxcz@entry@type=\tw@ :1:\else:0:\fi}
-\def\pxcz@YW@mc@dif#1.ttf{%
-  \ifnum\pxcz@entry@type=\tw@ \@nameuse{pxcz@YWG/#1}\else#1.ttf\fi}
-\@namedef{pxcz@YWG/yuminl}{:1:YuGothL.ttc}
-\@namedef{pxcz@YWG/yumin}{:1:YuGothR.ttc}
-\@namedef{pxcz@YWG/yumindb}{:1:YuGothM.ttc}
-
-%% primary macros
-\let\pxcz@unidirect\@empty
-\let\pxcz@unidirectX\@empty
-\let\pxcz@unidirect@wopt\@empty
-\let\pxcz@unidirectX@wopt\@empty
-\let\pxcz@unidirectX@lopt\@gobble
-\ifnum\pxcz@directunicode<\pxcz@directunicode@otf\else
-\def\pxcz@unidirect#1-#2-#3{\pxcz@cmap@directuni}
-\def\pxcz@unidirect@wopt{ -w 1}
-\fi
-\ifnum\pxcz@directunicode<\pxcz@directunicode@all\else
-\let\pxcz@unidirectX\pxcz@unidirect
-\let\pxcz@unidirectX@wopt\pxcz@unidirect@wopt
-\fi
-\ifnum\pxcz@directunicode<\pxcz@directunicode@full\else
-\def\pxcz@unidirectX@lopt#1{ -l #1}
-\fi
-%% secondary macros
-\def\pxcz@entry@UniJIS{\@+\pxcz@pfx@unijis}%
-\def\pxcz@entry@@hwid{\@l{hwid}}%
-\def\pxcz@entry@@fwid{\@l{fwid}}%
-\def\pxcz@entry@@jp#1#2{\@l{jp#1#2}}%
-\ifpxcz@mmivjis
-\def\pxcz@entry@@jpXX{\@l{jp04}}
+%% \pxcz@force@xcjis@font
+\@onlypreamble\pxcz@force@xcjis@font
+\ifpxcz@switch@font@mmivjis
+  \def\pxcz@force@xcjis@font{%
+    \let\pxcz@tmpa\pxcz@font \pxcz@lower\pxcz@tmpa
+    \pxcz@csletcs{pxcz@tmpa}{pxcz@S4/\pxcz@tmpa}%
+    \ifx\pxcz@tmpa\relax\else
+      \edef\pxcz@font{\pxcz@tmpa{\pxcz@font}}%
+    \fi}
+  \def\do#1{\@namedef{pxcz@S4/#1}}
+  \do{:0:mogam.ttc}{\pxcz@sidx3}
+  \do{:1:mogam.ttc}{\pxcz@sidx4}
+  \do{:0:mogamb.ttc}{\pxcz@sidx3}
+  \do{:1:mogamb.ttc}{\pxcz@sidx4}
+  \do{:0:mogag.ttc}{\pxcz@sidx2}
+  \do{:1:mogag.ttc}{\pxcz@sidx3}
+  \do{:0:mogagb.ttc}{\pxcz@sidx2}
+  \do{:1:mogagb.ttc}{\pxcz@sidx3}
+  \do{:0:mobog.ttc}{\pxcz@sidx2}
+  \do{:1:mobog.ttc}{\pxcz@sidx3}
+  \do{:0:mobogb.ttc}{\pxcz@sidx2}
+  \do{:1:mobogb.ttc}{\pxcz@sidx3}
 \else
-\def\pxcz@entry@@jpXX{\@l{jp90}}
+  \let\pxcz@force@xcjis@font\relax
 \fi
-\ifpxcz@uniquify
-\let\pxcz@entry@@hwid\pxcz@entry@@jpXX
-\let\pxcz@entry@@fwid\pxcz@entry@@jpXX
-\fi
+
+%% \pxcz@inspect@font@type{<font>}
+\@onlypreamble\pxcz@inspect@font@type
+\def\pxcz@inspect@font@type#1{%
+  \edef\pxcz@tmpb{?#1}\pxcz@lower\pxcz@tmpb
+  \let\pxcz@font@type\@empty
+  \pxcz@split{?sourcehan}{\pxcz@tmpb}%
+  \ifx\pxcz@pre\relax\else \def\pxcz@font@type{sourcehan}\fi
+  \pxcz@split{:sourcehan}{\pxcz@tmpb}%
+  \ifx\pxcz@pre\relax\else \def\pxcz@font@type{sourcehanC}\fi
+  \pxcz@split{?noto}{\pxcz@tmpb}%
+  \ifx\pxcz@pre\relax\else \def\pxcz@font@type{noto}\fi
+  \pxcz@split{:noto}{\pxcz@tmpb}%
+  \ifx\pxcz@pre\relax\else \def\pxcz@font@type{notoC}\fi
+  \ifpxcz@switch@font@yuwinx
+    \pxcz@split{?yumin}{\pxcz@tmpb}%
+    \ifx\pxcz@pre\relax\else \def\pxcz@font@type{yumin}\fi
+    \pxcz@split{:yugoth}{\pxcz@tmpb}%
+    \ifx\pxcz@pre\relax\else \def\pxcz@font@type{yugoth}\fi
+  \fi}
+
+%% \pxcz@switch@font@for@feature{<feature>}
+\def\pxcz@switch@font@for@feature#1{%
+  \pxcz@inspect@font@type\pxcz@font
+  \pxcz@csletcs{pxcz@tmpb}{pxcz@switch@font@@\pxcz@font@type @#1}%
+  \ifx\pxcz@tmpb\relax\else
+    \edef\pxcz@font{\expandafter\pxcz@tmpb\pxcz@font}%
+  \fi}
+\def\pxcz@switch@font@@sourcehanC@fwid#1:0:{:2:}
+\def\pxcz@switch@font@@sourcehanC@hwid#1:0:{:1:}
+\def\pxcz@switch@font@@sourcehan@fwid#1-{#1SC-}
+\def\pxcz@switch@font@@sourcehan@hwid#1-{#1K-}
+\def\pxcz@switch@font@@notoC@fwid#1:0:{:2:}
+\def\pxcz@switch@font@@notoC@hwid#1:0:{:1:}
+\def\pxcz@switch@font@@noto@fwid#1jp{#1sc}
+\def\pxcz@switch@font@@noto@hwid#1jp{#1kr}
+\def\pxcz@switch@font@@yugoth@fwid#1:0:{:1:}
+\def\pxcz@switch@font@@yumin@fwid#1.ttf{%
+  \@nameuse{pxcz@YMG/#1.ttf}}
+\def\do#1{\@namedef{pxcz@YMG/#1}}
+\do{yuminl.ttf}{:1:YuGothL.ttc}
+\do{yumin.ttf}{:1:YuGothR.ttc}
+\do{yumindb.ttf}{:1:YuGothM.ttc}
+
+%% \pxcz@declare@entry@modifier{<name>}
+\@onlypreamble\pxcz@declare@entry@modifier
+\def\pxcz@declare@entry@modifier#1{%
+  \expandafter\@onlypreamble\csname pxcz@MEM/#1\endcsname
+  \expandafter\def\csname pxcz@MEM/#1\endcsname}
+%% entry modifiers
+% Uni: Changes cmap to 'unicode' if directunicode.
+\pxcz@declare@entry@modifier{Uni}{%
+  \ifnum\pxcz@directunicode<\pxcz@directunicode@otf\else
+    \ifx\pxcz@font\pxcz@noembed\else
+      \let\pxcz@cmap\pxcz@cmap@directuni
+    \fi
+  \fi}
+% Uni*: Changes cmap to 'unicode' if directunicode*.
+\pxcz@declare@entry@modifier{Uni*}{%
+  \ifnum\pxcz@directunicode<\pxcz@directunicode@all\else
+    \ifx\pxcz@font\pxcz@noembed\else
+      \let\pxcz@cmap\pxcz@cmap@directuni
+    \fi
+  \fi}
+% Switch
+\pxcz@declare@entry@modifier{Switch}{%
+  \ifpxcz@mmivjis
+    \pxcz@force@mmiv@cmap
+  \else
+    \pxcz@force@xcjis@font
+  \fi
+  \pxcz@add@lopt{\pxcz@@jpXX}}
+% 04
+\pxcz@declare@entry@modifier{04}{%
+  \pxcz@add@lopt{jp04}}
+% 90
+\pxcz@declare@entry@modifier{90}{%
+  \pxcz@force@xcjis@font
+  \pxcz@add@lopt{jp90}}
+% HWid
+\pxcz@declare@entry@modifier{HWid}{%
+  \ifx\pxcz@font\pxcz@noembed
+    \let\pxcz@cmap\pxcz@cmap@hwuni
+  \else
+    \let\pxcz@cmap\pxcz@cmap@uni
+    \pxcz@switch@font@for@feature{hwid}%
+  \fi
+  \pxcz@add@lopt{hwid}%
+  \ifx\pxcz@sym\pxcz@sym@@mgr
+    \let\pxcz@font\@empty
+  \fi}
+% FWid
+\pxcz@declare@entry@modifier{FWid}{%
+    \pxcz@switch@font@for@feature{fwid}%
+  \pxcz@add@lopt{fwid}}
+% AJ16/AK12/AG14/AC14
+\pxcz@declare@entry@modifier{AJ16}{\def\pxcz@csi{AJ16}}
+\pxcz@declare@entry@modifier{AK12}{\def\pxcz@csi{AK12}}
+\pxcz@declare@entry@modifier{AG14}{\def\pxcz@csi{AG14}}
+\pxcz@declare@entry@modifier{AC14}{\def\pxcz@csi{AC14}}
+% V: Adds '-w 1' if cmap is 'unicode'.
+\pxcz@declare@entry@modifier{V}{%
+  \ifx\pxcz@cmap\pxcz@cmap@directuni
+    \edef\pxcz@mopts{ -w 1\pxcz@mopts}%
+  \fi}
+% Fin: final step
+\pxcz@declare@entry@modifier{Fin}{%
+  \ifx\pxcz@csi\relax\else
+    \edef\pxcz@mopts{/\pxcz@csi}%
+  \fi}
+
 
 %% \pxcz@spec
 \let\pxcz@spec\@empty
@@ -470,41 +604,37 @@
 %% \pxcz@addtospec{<id>}
 \@onlypreamble\pxcz@addtospec
 \def\pxcz@addtospec#1{%
-  \bgroup \let\Entry\pxcz@Entry
-    \let\ \space \let\*\pxcz@pfx@jis
-    \let\UniJIS\pxcz@entry@UniJIS
-    \let\@hwid\pxcz@entry@@hwid \let\@fwid\pxcz@entry@@fwid
-    \let\@jp\pxcz@entry@@jp \let\@jpXX\pxcz@entry@@jpXX
-    \@nameuse{pxcz@ME/#1}\egroup}
+  \begingroup
+    \chardef\pxcz@entry@type\z@
+    \let\Entry\pxcz@Entry
+    \@nameuse{pxcz@ME/#1}%
+  \endgroup}
+%% \Entry{<sym>}{<tfm>}{<cmap>}{<modify>,...}
 \@onlypreamble\pxcz@Entry
-\def\pxcz@Entry#1{%
-  \def\pxcz@entry@sym{#1}%
-  \expandafter\let\expandafter\FONT\csname pxcz@FS/#1\endcsname
-  \let\FONTo\FONT \let\FONTs\FONT
-  \ifx\FONT\pxcz@noembed
-    \let\UniCMap\pxcz@cmap@hwuni
-    \let\+\@empty \let\w\@empty \def\@+{}\let\@w\@empty
-    \let\@l\@gobble
-    \edef\FONT{!\@nameuse{pxcz@NEF/#1}}%
-    \let\FONTo\FONT \let\FONTs\FONT
-  \else\ifx\FONT\@empty\else
-    \let\UniCMap\pxcz@cmap@uni
-    \let\+\pxcz@unidirect \let\w\pxcz@unidirect@wopt
-    \def\@+{\pxcz@unidirectX}\let\@w\pxcz@unidirectX@wopt
-    \let\@l\pxcz@unidirectX@lopt
-    \pxcz@switch@realfont
-  \fi\fi
-  \ifx\FONT\@empty \expandafter\@gobbletwo
-  \else \expandafter\pxcz@entry@a \fi}
-\@onlypreamble\pxcz@entry@a
-\def\pxcz@entry@a#1#2{%
-  \chardef\pxcz@entry@type=#1\relax
-  \ifnum\pxcz@entry@type=\@ne\ifx\pxcz@cmap@uni\pxcz@cmap@hwuni
-    \let\@l\@gobble
-  \fi\fi
-  \pxcz@check@entry \ifpxcz@ok
-    \xdef\pxcz@spec{%
-      \pxcz@spec\noexpand\special{\pxcz@mapline{#2}}}%
+\def\pxcz@Entry#1#2#3#4{%
+  \def\pxcz@sym{#1}\def\pxcz@cmap{#3}%
+  \let\pxcz@csi\relax \let\pxcz@mopts\@empty \let\pxcz@lopts\@empty
+  \edef\pxcz@font{\@nameuse{pxcz@FS/\pxcz@sym}}%
+  \@for\pxcz@tmpx:=#4,Fin\do{%
+    \ifx\pxcz@font\@empty\else
+      \@nameuse{pxcz@MEM/\pxcz@tmpx}%
+    \fi}%
+  \ifx\pxcz@font\pxcz@noembed
+    \edef\pxcz@font{!\@nameuse{pxcz@NEF/\pxcz@sym}}%
+  \fi
+  \ifnum\pxcz@directunicode<\pxcz@directunicode@full\else
+    \ifx\pxcz@cmap\pxcz@cmap@directuni
+      \ifpxcz@uniquify
+        \pxcz@uniquify@lopts{t}{\pxcz@@jpXX}%
+      \fi
+      \ifx\pxcz@lopts\@empty\else
+        \edef\pxcz@mopts{\pxcz@mopts\space -l \pxcz@lopts}%
+      \fi
+    \fi
+  \fi
+  \ifx\pxcz@font\@empty\else
+    \xdef\pxcz@spec{\pxcz@spec\noexpand\special{%
+      \pxcz@mapline{#2 \pxcz@cmap\space\pxcz@font\pxcz@mopts}}}%
   \fi}
 
 %% \pxcz@check@entry
@@ -513,7 +643,7 @@
 \def\pxcz@check@entry{%
   \pxcz@oktrue
   \ifnum\pxcz@entry@type=\@ne
-    \ifx\pxcz@entry@sym\pxcz@sym@@mgr
+    \ifx\pxcz@sym\pxcz@sym@@mgr
       \expandafter\ifx\csname pxcz@FS/gtr\endcsname\relax\else
         \pxcz@okfalse \fi
     \fi
@@ -560,187 +690,187 @@
 % \w: '-w 1' if directunicode
 % \@w: '-w 1' if directunicode*
 \pxcz@mapentry{STD}{%
-\Entry{mnr}0{rml             \*H                     \FONTs}%
-\Entry{mnr}0{rmlv            \*V                     \FONTs}%
-\Entry{gtu}0{gbm             \*H                     \FONTs}%
-\Entry{gtu}0{gbmv            \*V                     \FONTs}%
+\Entry{mnr}{rml}           {H}                   {Switch}%
+\Entry{mnr}{rmlv}          {V}                   {Switch,V}%
+\Entry{gtu}{gbm}           {H}                   {Switch}%
+\Entry{gtu}{gbmv}          {V}                   {Switch,V}%
 }
 \pxcz@mapentry{ALPHA}{%
-\Entry{mnl}1{r-cfjar-l-@PXcjk0@ \UniCMap\            \FONT\@hwid}%
-\Entry{mnr}1{r-cfjar-r-@PXcjk0@ \UniCMap\            \FONT\@hwid}%
-\Entry{mnb}1{r-cfjar-b-@PXcjk0@ \UniCMap\            \FONT\@hwid}%
-\Entry{gtr}1{r-cfjas-r-@PXcjk0@ \UniCMap\            \FONT\@hwid}%
-\Entry{gtb}1{r-cfjas-b-@PXcjk0@ \UniCMap\            \FONT\@hwid}%
-\Entry{gtx}1{r-cfjas-x-@PXcjk0@ \UniCMap\            \FONT\@hwid}%
-\Entry{mgr}1{r-cfjas-r-@PXcjk0@ \UniCMap\            \FONT\@hwid}%
+\Entry{mnl}{r-cfjar-l-@PXcjk0@}{unicode}         {HWid}%
+\Entry{mnr}{r-cfjar-r-@PXcjk0@}{unicode}         {HWid}%
+\Entry{mnb}{r-cfjar-b-@PXcjk0@}{unicode}         {HWid}%
+\Entry{gtr}{r-cfjas-r-@PXcjk0@}{unicode}         {HWid}%
+\Entry{gtb}{r-cfjas-b-@PXcjk0@}{unicode}         {HWid}%
+\Entry{gtx}{r-cfjas-x-@PXcjk0@}{unicode}         {HWid}%
+\Entry{mgr}{r-cfjas-r-@PXcjk0@}{unicode}         {HWid}%
 }
 \pxcz@mapentry{UTF}{%
-\Entry{mnr}0{unijmin-h       \UniJIS-UTF16-H         \FONTs\@jpXX}%
-\Entry{mnr}0{unijmin-v       \UniJIS-UTF16-V         \FONTs\@w\@jpXX}%
-\Entry{mnr}0{cidmin-h        Identity-H              \FONT/AJ16}%
-\Entry{mnr}0{cidmin-v        Identity-V              \FONT/AJ16}%
-\Entry{mnr}0{hmr             \*H                     \FONTs}%
-\Entry{mnr}0{hmrv            \*V                     \FONTs}%
-\Entry{gtu}0{unijgoth-h      \UniJIS-UTF16-H         \FONTs\@jpXX}%
-\Entry{gtu}0{unijgoth-v      \UniJIS-UTF16-V         \FONTs\@w\@jpXX}%
-\Entry{gtu}0{cidgoth-h       Identity-H              \FONT/AJ16}%
-\Entry{gtu}0{cidgoth-v       Identity-V              \FONT/AJ16}%
-\Entry{gtu}0{hkb             \*H                     \FONTs}%
-\Entry{gtu}0{hkbv            \*V                     \FONTs}%
+\Entry{mnr}{unijmin-h}     {UniJIS-UTF16-H}      {Uni*,Switch}%
+\Entry{mnr}{unijmin-v}     {UniJIS-UTF16-V}      {Uni*,Switch,V}%
+\Entry{mnr}{cidmin-h}      {Identity-H}          {AJ16}%
+\Entry{mnr}{cidmin-v}      {Identity-V}          {AJ16,V}%
+\Entry{mnr}{hmr}           {H}                   {Switch}%
+\Entry{mnr}{hmrv}          {V}                   {Switch,V}%
+\Entry{gtu}{unijgoth-h}    {UniJIS-UTF16-H}      {Uni*,Switch}%
+\Entry{gtu}{unijgoth-v}    {UniJIS-UTF16-V}      {Uni*,Switch,V}%
+\Entry{gtu}{cidgoth-h}     {Identity-H}          {AJ16}%
+\Entry{gtu}{cidgoth-v}     {Identity-V}          {AJ16,V}%
+\Entry{gtu}{hkb}           {H}                   {Switch}%
+\Entry{gtu}{hkbv}          {V}                   {Switch,V}%
 }
 \pxcz@mapentry{OTF}{%
-\Entry{mnl}0{otf-ujml-h      \+UniJIS-UTF16-H        \FONTo\@jp90}%
-\Entry{mnl}0{otf-ujml-v      \+UniJIS-UTF16-V        \FONTo\w\@jp90}%
-\Entry{mnl}0{otf-cjml-h      Identity-H              \FONT/AJ16}%
-\Entry{mnl}0{otf-cjml-v      Identity-V              \FONT/AJ16}%
-\Entry{mnl}0{hminl-h         H                       \FONTo}%
-\Entry{mnl}0{hminl-v         V                       \FONTo}%
-\Entry{mnl}0{otf-ujmln-h     \+UniJIS2004-UTF16-H    \FONT\@jp04}%
-\Entry{mnl}0{otf-ujmln-v     \+UniJIS2004-UTF16-V    \FONT\w\@jp04}%
-\Entry{mnl}0{hminln-h        H                       \FONT}%
-\Entry{mnl}0{hminln-v        V                       \FONT}%
-\Entry{mnr}0{otf-ujmr-h      \+UniJIS-UTF16-H        \FONTo\@jp90}%
-\Entry{mnr}0{otf-ujmr-v      \+UniJIS-UTF16-V        \FONTo\w\@jp90}%
-\Entry{mnr}0{otf-cjmr-h      Identity-H              \FONT/AJ16}%
-\Entry{mnr}0{otf-cjmr-v      Identity-V              \FONT/AJ16}%
-\Entry{mnr}0{hminr-h         H                       \FONTo}%
-\Entry{mnr}0{hminr-v         V                       \FONTo}%
-\Entry{mnr}0{otf-ujmrn-h     \+UniJIS2004-UTF16-H    \FONT\@jp04}%
-\Entry{mnr}0{otf-ujmrn-v     \+UniJIS2004-UTF16-V    \FONT\w\@jp04}%
-\Entry{mnr}0{hminrn-h        H                       \FONT}%
-\Entry{mnr}0{hminrn-v        V                       \FONT}%
-\Entry{mnb}0{otf-ujmb-h      \+UniJIS-UTF16-H        \FONTo\@jp90}%
-\Entry{mnb}0{otf-ujmb-v      \+UniJIS-UTF16-V        \FONTo\w\@jp90}%
-\Entry{mnb}0{otf-cjmb-h      Identity-H              \FONT/AJ16}%
-\Entry{mnb}0{otf-cjmb-v      Identity-V              \FONT/AJ16}%
-\Entry{mnb}0{hminb-h         H                       \FONTo}%
-\Entry{mnb}0{hminb-v         V                       \FONTo}%
-\Entry{mnb}0{otf-ujmbn-h     \+UniJIS2004-UTF16-H    \FONT\@jp04}%
-\Entry{mnb}0{otf-ujmbn-v     \+UniJIS2004-UTF16-V    \FONT\w\@jp04}%
-\Entry{mnb}0{hminbn-h        H                       \FONT}%
-\Entry{mnb}0{hminbn-v        V                       \FONT}%
-\Entry{gtr}0{otf-ujgr-h      \+UniJIS-UTF16-H        \FONTo\@jp90}%
-\Entry{gtr}0{otf-ujgr-v      \+UniJIS-UTF16-V        \FONTo\w\@jp90}%
-\Entry{gtr}0{otf-cjgr-h      Identity-H              \FONT/AJ16}%
-\Entry{gtr}0{otf-cjgr-v      Identity-V              \FONT/AJ16}%
-\Entry{gtr}0{hgothr-h        H                       \FONTo}%
-\Entry{gtr}0{hgothr-v        V                       \FONTo}%
-\Entry{gtr}0{otf-ujgrn-h     \+UniJIS2004-UTF16-H    \FONT\@jp04}%
-\Entry{gtr}0{otf-ujgrn-v     \+UniJIS2004-UTF16-V    \FONT\w\@jp04}%
-\Entry{gtr}0{hgothrn-h       H                       \FONT}%
-\Entry{gtr}0{hgothrn-v       V                       \FONT}%
-\Entry{gtb}0{otf-ujgb-h      \+UniJIS-UTF16-H        \FONTo\@jp90}%
-\Entry{gtb}0{otf-ujgb-v      \+UniJIS-UTF16-V        \FONTo\w\@jp90}%
-\Entry{gtb}0{otf-cjgb-h      Identity-H              \FONT/AJ16}%
-\Entry{gtb}0{otf-cjgb-v      Identity-V              \FONT/AJ16}%
-\Entry{gtb}0{hgothb-h        H                       \FONTo}%
-\Entry{gtb}0{hgothb-v        V                       \FONTo}%
-\Entry{gtb}0{otf-ujgbn-h     \+UniJIS2004-UTF16-H    \FONT\@jp04}%
-\Entry{gtb}0{otf-ujgbn-v     \+UniJIS2004-UTF16-V    \FONT\w\@jp04}%
-\Entry{gtb}0{hgothbn-h       H                       \FONT}%
-\Entry{gtb}0{hgothbn-v       V                       \FONT}%
-\Entry{gtx}0{otf-ujge-h      \+UniJIS-UTF16-H        \FONTo\@jp90}%
-\Entry{gtx}0{otf-ujge-v      \+UniJIS-UTF16-V        \FONTo\w\@jp90}%
-\Entry{gtx}0{otf-cjge-h      Identity-H              \FONT/AJ16}%
-\Entry{gtx}0{otf-cjge-v      Identity-V              \FONT/AJ16}%
-\Entry{gtx}0{hgotheb-h       H                       \FONTo}%
-\Entry{gtx}0{hgotheb-v       V                       \FONTo}%
-\Entry{gtx}0{otf-ujgen-h     \+UniJIS2004-UTF16-H    \FONT\@jp04}%
-\Entry{gtx}0{otf-ujgen-v     \+UniJIS2004-UTF16-V    \FONT\w\@jp04}%
-\Entry{gtx}0{hgothebn-h      H                       \FONT}%
-\Entry{gtx}0{hgothebn-v      V                       \FONT}%
-\Entry{mgr}0{otf-ujmgr-h     \+UniJIS-UTF16-H        \FONTo\@jp90}%
-\Entry{mgr}0{otf-ujmgr-v     \+UniJIS-UTF16-V        \FONTo\w\@jp90}%
-\Entry{mgr}0{otf-cjmgr-h     Identity-H              \FONT/AJ16}%
-\Entry{mgr}0{otf-cjmgr-v     Identity-V              \FONT/AJ16}%
-\Entry{mgr}0{hmgothr-h       H                       \FONTo}%
-\Entry{mgr}0{hmgothr-v       V                       \FONTo}%
-\Entry{mgr}0{otf-ujmgrn-h    \+UniJIS2004-UTF16-H    \FONT\@jp04}%
-\Entry{mgr}0{otf-ujmgrn-v    \+UniJIS2004-UTF16-V    \FONT\w\@jp04}%
-\Entry{mgr}0{hmgothrn-h      H                       \FONT}%
-\Entry{mgr}0{hmgothrn-v      V                       \FONT}%
+\Entry{mnl}{otf-ujml-h}    {UniJIS-UTF16-H}      {Uni,90}%
+\Entry{mnl}{otf-ujml-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{mnl}{otf-cjml-h}    {Identity-H}          {AJ16}%
+\Entry{mnl}{otf-cjml-v}    {Identity-V}          {AJ16,V}%
+\Entry{mnl}{hminl-h}       {H}                   {90}%
+\Entry{mnl}{hminl-v}       {V}                   {90,V}%
+\Entry{mnl}{otf-ujmln-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
+\Entry{mnl}{otf-ujmln-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{mnl}{hminln-h}      {H}                   {}%
+\Entry{mnl}{hminln-v}      {V}                   {V}%
+\Entry{mnr}{otf-ujmr-h}    {UniJIS-UTF16-H}      {Uni,90}%
+\Entry{mnr}{otf-ujmr-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{mnr}{otf-cjmr-h}    {Identity-H}          {AJ16}%
+\Entry{mnr}{otf-cjmr-v}    {Identity-V}          {AJ16,V}%
+\Entry{mnr}{hminr-h}       {H}                   {90}%
+\Entry{mnr}{hminr-v}       {V}                   {90,V}%
+\Entry{mnr}{otf-ujmrn-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
+\Entry{mnr}{otf-ujmrn-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{mnr}{hminrn-h}      {H}                   {}%
+\Entry{mnr}{hminrn-v}      {V}                   {V}%
+\Entry{mnb}{otf-ujmb-h}    {UniJIS-UTF16-H}      {Uni,90}%
+\Entry{mnb}{otf-ujmb-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{mnb}{otf-cjmb-h}    {Identity-H}          {AJ16}%
+\Entry{mnb}{otf-cjmb-v}    {Identity-V}          {AJ16,V}%
+\Entry{mnb}{hminb-h}       {H}                   {90}%
+\Entry{mnb}{hminb-v}       {V}                   {90,V}%
+\Entry{mnb}{otf-ujmbn-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
+\Entry{mnb}{otf-ujmbn-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{mnb}{hminbn-h}      {H}                   {}%
+\Entry{mnb}{hminbn-v}      {V}                   {V}%
+\Entry{gtr}{otf-ujgr-h}    {UniJIS-UTF16-H}      {Uni,90}%
+\Entry{gtr}{otf-ujgr-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{gtr}{otf-cjgr-h}    {Identity-H}          {AJ16}%
+\Entry{gtr}{otf-cjgr-v}    {Identity-V}          {AJ16,V}%
+\Entry{gtr}{hgothr-h}      {H}                   {90}%
+\Entry{gtr}{hgothr-v}      {V}                   {90,V}%
+\Entry{gtr}{otf-ujgrn-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
+\Entry{gtr}{otf-ujgrn-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{gtr}{hgothrn-h}     {H}                   {}%
+\Entry{gtr}{hgothrn-v}     {V}                   {V}%
+\Entry{gtb}{otf-ujgb-h}    {UniJIS-UTF16-H}      {Uni,90}%
+\Entry{gtb}{otf-ujgb-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{gtb}{otf-cjgb-h}    {Identity-H}          {AJ16}%
+\Entry{gtb}{otf-cjgb-v}    {Identity-V}          {AJ16,V}%
+\Entry{gtb}{hgothb-h}      {H}                   {90}%
+\Entry{gtb}{hgothb-v}      {V}                   {90,V}%
+\Entry{gtb}{otf-ujgbn-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
+\Entry{gtb}{otf-ujgbn-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{gtb}{hgothbn-h}     {H}                   {}%
+\Entry{gtb}{hgothbn-v}     {V}                   {V}%
+\Entry{gtx}{otf-ujge-h}    {UniJIS-UTF16-H}      {Uni,90}%
+\Entry{gtx}{otf-ujge-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{gtx}{otf-cjge-h}    {Identity-H}          {AJ16}%
+\Entry{gtx}{otf-cjge-v}    {Identity-V}          {AJ16,V}%
+\Entry{gtx}{hgotheb-h}     {H}                   {90}%
+\Entry{gtx}{hgotheb-v}     {V}                   {90,V}%
+\Entry{gtx}{otf-ujgen-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
+\Entry{gtx}{otf-ujgen-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{gtx}{hgothebn-h}    {H}                   {}%
+\Entry{gtx}{hgothebn-v}    {V}                   {V}%
+\Entry{mgr}{otf-ujmgr-h}   {UniJIS-UTF16-H}      {Uni,90}%
+\Entry{mgr}{otf-ujmgr-v}   {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{mgr}{otf-cjmgr-h}   {Identity-H}          {AJ16}%
+\Entry{mgr}{otf-cjmgr-v}   {Identity-V}          {AJ16,V}%
+\Entry{mgr}{hmgothr-h}     {H}                   {90}%
+\Entry{mgr}{hmgothr-v}     {V}                   {90,V}%
+\Entry{mgr}{otf-ujmgrn-h}  {UniJIS2004-UTF16-H}  {Uni,04}%
+\Entry{mgr}{otf-ujmgrn-v}  {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{mgr}{hmgothrn-h}    {H}                   {}%
+\Entry{mgr}{hmgothrn-v}    {V}                   {V}%
 %
 \ifpxcz@otf@multi
-\Entry{kom}0{otf-ukmr-h      \+UniKS-UTF16-H         \FONT}%
-\Entry{kom}0{otf-ukmr-v      \+UniKS-UTF16-V         \FONT\w}%
-\Entry{kom}0{otf-ckmr-h      Identity-H              \FONT/AK12}%
-\Entry{kom}0{otf-ckmr-v      Identity-V              \FONT/AK12}%
-\Entry{kog}0{otf-ukgr-h      \+UniKS-UTF16-H         \FONT}%
-\Entry{kog}0{otf-ukgr-v      \+UniKS-UTF16-V         \FONT\w}%
-\Entry{kog}0{otf-ckgr-h      Identity-H              \FONT/AK12}%
-\Entry{kog}0{otf-ckgr-v      Identity-V              \FONT/AK12}%
-\Entry{scm}0{otf-ucmr-h      \+UniGB-UTF16-H         \FONT}%
-\Entry{scm}0{otf-ucmr-v      \+UniGB-UTF16-V         \FONT\w}%
-\Entry{scm}0{otf-ccmr-h      Identity-H              \FONT/AG14}%
-\Entry{scm}0{otf-ccmr-v      Identity-V              \FONT/AG14}%
-\Entry{scg}0{otf-ucgr-h      \+UniGB-UTF16-H         \FONT}%
-\Entry{scg}0{otf-ucgr-v      \+UniGB-UTF16-V         \FONT\w}%
-\Entry{scg}0{otf-ccgr-h      Identity-H              \FONT/AG14}%
-\Entry{scg}0{otf-ccgr-v      Identity-V              \FONT/AG14}%
-\Entry{tcm}0{otf-utmr-h      \+UniCNS-UTF16-H        \FONT}%
-\Entry{tcm}0{otf-utmr-v      \+UniCNS-UTF16-V        \FONT\w}%
-\Entry{tcm}0{otf-ctmr-h      Identity-H              \FONT/AC14}%
-\Entry{tcm}0{otf-ctmr-v      Identity-V              \FONT/AC14}%
-\Entry{tcg}0{otf-utgr-h      \+UniCNS-UTF16-H        \FONT}%
-\Entry{tcg}0{otf-utgr-v      \+UniCNS-UTF16-V        \FONT\w}%
-\Entry{tcg}0{otf-ctgr-h      Identity-H              \FONT/AC14}%
-\Entry{tcg}0{otf-ctgr-v      Identity-V              \FONT/AC14}%
+\Entry{kom}{otf-ukmr-h}    {UniKS-UTF16-H}       {Uni}%
+\Entry{kom}{otf-ukmr-v}    {UniKS-UTF16-V}       {Uni,V}%
+\Entry{kom}{otf-ckmr-h}    {Identity-H}          {AK12}%
+\Entry{kom}{otf-ckmr-v}    {Identity-V}          {AK12,V}%
+\Entry{kog}{otf-ukgr-h}    {UniKS-UTF16-H}       {Uni}%
+\Entry{kog}{otf-ukgr-v}    {UniKS-UTF16-V}       {Uni,V}%
+\Entry{kog}{otf-ckgr-h}    {Identity-H}          {AK12}%
+\Entry{kog}{otf-ckgr-v}    {Identity-V}          {AK12,V}%
+\Entry{scm}{otf-ucmr-h}    {UniGB-UTF16-H}       {Uni}%
+\Entry{scm}{otf-ucmr-v}    {UniGB-UTF16-V}       {Uni,V}%
+\Entry{scm}{otf-ccmr-h}    {Identity-H}          {AG14}%
+\Entry{scm}{otf-ccmr-v}    {Identity-V}          {AG14,V}%
+\Entry{scg}{otf-ucgr-h}    {UniGB-UTF16-H}       {Uni}%
+\Entry{scg}{otf-ucgr-v}    {UniGB-UTF16-V}       {Uni,V}%
+\Entry{scg}{otf-ccgr-h}    {Identity-H}          {AG14}%
+\Entry{scg}{otf-ccgr-v}    {Identity-V}          {AG14,V}%
+\Entry{tcm}{otf-utmr-h}    {UniCNS-UTF16-H}      {Uni}%
+\Entry{tcm}{otf-utmr-v}    {UniCNS-UTF16-V}      {Uni,V}%
+\Entry{tcm}{otf-ctmr-h}    {Identity-H}          {AC14}%
+\Entry{tcm}{otf-ctmr-v}    {Identity-V}          {AC14,V}%
+\Entry{tcg}{otf-utgr-h}    {UniCNS-UTF16-H}      {Uni}%
+\Entry{tcg}{otf-utgr-v}    {UniCNS-UTF16-V}      {Uni,V}%
+\Entry{tcg}{otf-ctgr-h}    {Identity-H}          {AC14}%
+\Entry{tcg}{otf-ctgr-v}    {Identity-V}          {AC14,V}%
 \fi
 }
 \pxcz@mapentry{UPSTD}{%
-\Entry{mnr}0{uprml-h         \UniJIS-UTF16-H         \FONTs\@jpXX}%
-\Entry{mnr}0{uprml-v         \UniJIS-UTF16-V         \FONTs\@w\@jpXX}%
-\Entry{mnr}2{uprml-hq        \@+UniJIS-UCS2-H        \FONT\@fwid}%
-\Entry{gtu}0{upgbm-h         \UniJIS-UTF16-H         \FONTs\@jpXX}%
-\Entry{gtu}0{upgbm-v         \UniJIS-UTF16-V         \FONTs\@w\@jpXX}%
-\Entry{gtu}2{upgbm-hq        \@+UniJIS-UCS2-H        \FONT\@fwid}%
-\Entry{mnr}0{urml            \UniJIS-UTF16-H         \FONTs\@jpXX}%
-\Entry{mnr}0{urmlv           \UniJIS-UTF16-V         \FONTs\@w\@jpXX}%
-\Entry{gtu}0{ugbm            \UniJIS-UTF16-H         \FONTs\@jpXX}%
-\Entry{gtu}0{ugbmv           \UniJIS-UTF16-V         \FONTs\@w\@jpXX}%
+\Entry{mnr}{uprml-h}       {UniJIS-UTF16-H}      {Uni*,Switch}%
+\Entry{mnr}{uprml-v}       {UniJIS-UTF16-V}      {Uni*,Switch,V}%
+\Entry{mnr}{uprml-hq}      {UniJIS-UCS2-H}       {Uni*,FWid}%
+\Entry{gtu}{upgbm-h}       {UniJIS-UTF16-H}      {Uni*,Switch}%
+\Entry{gtu}{upgbm-v}       {UniJIS-UTF16-V}      {Uni*,Switch,V}%
+\Entry{gtu}{upgbm-hq}      {UniJIS-UCS2-H}       {Uni*,FWid}%
+\Entry{mnr}{urml}          {UniJIS-UTF16-H}      {Uni*,Switch}%
+\Entry{mnr}{urmlv}         {UniJIS-UTF16-V}      {Uni*,Switch,V}%
+\Entry{gtu}{ugbm}          {UniJIS-UTF16-H}      {Uni*,Switch}%
+\Entry{gtu}{ugbmv}         {UniJIS-UTF16-V}      {Uni*,Switch,V}%
 %
-\Entry{kom}0{uphysmjm-h      \@+UniKS-UTF16-H        \FONT}%
-\Entry{kom}0{uphysmjm-v      \@+UniKS-UTF16-V        \FONT\@w}%
-\Entry{kog}0{uphygt-h        \@+UniKS-UTF16-H        \FONT}%
-\Entry{kog}0{uphygt-v        \@+UniKS-UTF16-V        \FONT\@w}%
-\Entry{scm}0{upstsl-h        \@+UniGB-UTF16-H        \FONT}%
-\Entry{scm}0{upstsl-v        \@+UniGB-UTF16-V        \FONT\@w}%
-\Entry{scg}0{upstht-h        \@+UniGB-UTF16-H        \FONT}%
-\Entry{scg}0{upstht-v        \@+UniGB-UTF16-V        \FONT\@w}%
-\Entry{tcm}0{upmsl-h         \@+UniCNS-UTF16-H       \FONT}%
-\Entry{tcm}0{upmsl-v         \@+UniCNS-UTF16-V       \FONT\@w}%
-\Entry{tcg}0{upmhm-h         \@+UniCNS-UTF16-H       \FONT}%
-\Entry{tcg}0{upmhm-v         \@+UniCNS-UTF16-V       \FONT\@w}%
+\Entry{kom}{uphysmjm-h}    {UniKS-UTF16-H}       {Uni*}%
+\Entry{kom}{uphysmjm-v}    {UniKS-UTF16-V}       {Uni*,V}%
+\Entry{kog}{uphygt-h}      {UniKS-UTF16-H}       {Uni*}%
+\Entry{kog}{uphygt-v}      {UniKS-UTF16-V}       {Uni*,V}%
+\Entry{scm}{upstsl-h}      {UniGB-UTF16-H}       {Uni*}%
+\Entry{scm}{upstsl-v}      {UniGB-UTF16-V}       {Uni*,V}%
+\Entry{scg}{upstht-h}      {UniGB-UTF16-H}       {Uni*}%
+\Entry{scg}{upstht-v}      {UniGB-UTF16-V}       {Uni*,V}%
+\Entry{tcm}{upmsl-h}       {UniCNS-UTF16-H}      {Uni*}%
+\Entry{tcm}{upmsl-v}       {UniCNS-UTF16-V}      {Uni*,V}%
+\Entry{tcg}{upmhm-h}       {UniCNS-UTF16-H}      {Uni*}%
+\Entry{tcg}{upmhm-v}       {UniCNS-UTF16-V}      {Uni*,V}%
 }
 \pxcz@mapentry{UPOTF}{%
-\Entry{mnl}0{uphminl-h       \@+UniJIS-UTF16-H       \FONTo\@jp90}%
-\Entry{mnl}0{uphminl-v       \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
-\Entry{mnl}0{uphminln-h      \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
-\Entry{mnl}0{uphminln-v      \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
-\Entry{mnr}0{uphminr-h       \@+UniJIS-UTF16-H       \FONTo\@jp90}%
-\Entry{mnr}0{uphminr-v       \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
-\Entry{mnr}0{uphminrn-h      \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
-\Entry{mnr}0{uphminrn-v      \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
-\Entry{mnb}0{uphminb-h       \@+UniJIS-UTF16-H       \FONTo\@jp90}%
-\Entry{mnb}0{uphminb-v       \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
-\Entry{mnb}0{uphminbn-h      \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
-\Entry{mnb}0{uphminbn-v      \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
-\Entry{gtr}0{uphgothr-h      \@+UniJIS-UTF16-H       \FONTo\@jp90}%
-\Entry{gtr}0{uphgothr-v      \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
-\Entry{gtr}0{uphgothrn-h     \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
-\Entry{gtr}0{uphgothrn-v     \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
-\Entry{gtb}0{uphgothb-h      \@+UniJIS-UTF16-H       \FONTo\@jp90}%
-\Entry{gtb}0{uphgothb-v      \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
-\Entry{gtb}0{uphgothbn-h     \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
-\Entry{gtb}0{uphgothbn-v     \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
-\Entry{gtx}0{uphgotheb-h     \@+UniJIS-UTF16-H       \FONTo\@jp90}%
-\Entry{gtx}0{uphgotheb-v     \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
-\Entry{gtx}0{uphgothebn-h    \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
-\Entry{gtx}0{uphgothebn-v    \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
-\Entry{mgr}0{uphmgothr-h     \@+UniJIS-UTF16-H       \FONTo\@jp90}%
-\Entry{mgr}0{uphmgothr-v     \@+UniJIS-UTF16-V       \FONTo\@w\@jp90}%
-\Entry{mgr}0{uphmgothrn-h    \@+UniJIS2004-UTF16-H   \FONT\@jp04}%
-\Entry{mgr}0{uphmgothrn-v    \@+UniJIS2004-UTF16-V   \FONT\@w\@jp04}%
+\Entry{mnl}{uphminl-h}     {UniJIS-UTF16-H}      {Uni*,90}%
+\Entry{mnl}{uphminl-v}     {UniJIS-UTF16-V}      {Uni*,90,V}%
+\Entry{mnl}{uphminln-h}    {UniJIS2004-UTF16-H}  {Uni*,04}%
+\Entry{mnl}{uphminln-v}    {UniJIS2004-UTF16-V}  {Uni*,04,V}%
+\Entry{mnr}{uphminr-h}     {UniJIS-UTF16-H}      {Uni*,90}%
+\Entry{mnr}{uphminr-v}     {UniJIS-UTF16-V}      {Uni*,90,V}%
+\Entry{mnr}{uphminrn-h}    {UniJIS2004-UTF16-H}  {Uni*,04}%
+\Entry{mnr}{uphminrn-v}    {UniJIS2004-UTF16-V}  {Uni*,04,V}%
+\Entry{mnb}{uphminb-h}     {UniJIS-UTF16-H}      {Uni*,90}%
+\Entry{mnb}{uphminb-v}     {UniJIS-UTF16-V}      {Uni*,90,V}%
+\Entry{mnb}{uphminbn-h}    {UniJIS2004-UTF16-H}  {Uni*,04}%
+\Entry{mnb}{uphminbn-v}    {UniJIS2004-UTF16-V}  {Uni*,04,V}%
+\Entry{gtr}{uphgothr-h}    {UniJIS-UTF16-H}      {Uni*,90}%
+\Entry{gtr}{uphgothr-v}    {UniJIS-UTF16-V}      {Uni*,90,V}%
+\Entry{gtr}{uphgothrn-h}   {UniJIS2004-UTF16-H}  {Uni*,04}%
+\Entry{gtr}{uphgothrn-v}   {UniJIS2004-UTF16-V}  {Uni*,04,V}%
+\Entry{gtb}{uphgothb-h}    {UniJIS-UTF16-H}      {Uni*,90}%
+\Entry{gtb}{uphgothb-v}    {UniJIS-UTF16-V}      {Uni*,90,V}%
+\Entry{gtb}{uphgothbn-h}   {UniJIS2004-UTF16-H}  {Uni*,04}%
+\Entry{gtb}{uphgothbn-v}   {UniJIS2004-UTF16-V}  {Uni*,04,V}%
+\Entry{gtx}{uphgotheb-h}   {UniJIS-UTF16-H}      {Uni*,90}%
+\Entry{gtx}{uphgotheb-v}   {UniJIS-UTF16-V}      {Uni*,90,V}%
+\Entry{gtx}{uphgothebn-h}  {UniJIS2004-UTF16-H}  {Uni*,04}%
+\Entry{gtx}{uphgothebn-v}  {UniJIS2004-UTF16-V}  {Uni*,04,V}%
+\Entry{mgr}{uphmgothr-h}   {UniJIS-UTF16-H}      {Uni*,90}%
+\Entry{mgr}{uphmgothr-v}   {UniJIS-UTF16-V}      {Uni*,90,V}%
+\Entry{mgr}{uphmgothrn-h}  {UniJIS2004-UTF16-H}  {Uni*,04}%
+\Entry{mgr}{uphmgothrn-v}  {UniJIS2004-UTF16-V}  {Uni*,04,V}%
 }
 \pxcz@mapentry{PXOTF}{%
 }
@@ -944,7 +1074,7 @@
     % if mnr is replaced but gtr is not then ...
     \expandafter\ifx\csname pxcz@FS/gtr\endcsname\@empty
       {\expandafter\let\csname pxcz@FS/gtr\endcsname\pxcz@x
-        \pxcz@Entry{gtr}1{r-cfjas-r-@PXcjk0@ \pxcz@cmap@uni\space \FONT}}%
+        \relax\relax}%
   \fi\fi
   \@ifpackagewith{otf}{deluxe}{\pxcz@err@dxotf{otf}}{}%
   \@ifpackagewith{pxotf}{deluxe}{\pxcz@err@dxotf{pxotf}}{}%
@@ -1177,20 +1307,14 @@
   \pxcz@multiweight{ipaexm.ttf}{ipaexm.ttf}{:0:hgrme.ttc}%
   {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{ipaexg.ttf}{hgrsmp.ttf}}
 \pxcz@declare@preset{moga-mobo}{%
-  \pxcz@enable@switch@realfont
-  \pxcz@multiweight{\pxcz@MI03:mogam.ttc}{\pxcz@MI03:mogam.ttc}%
-  {\pxcz@MI03:mogamb.ttc}{\pxcz@MI02:mogag.ttc}{\pxcz@MI02:mogagb.ttc}%
-  {\pxcz@MI02:mogagb.ttc}{\pxcz@MI02:mogag.ttc}{\pxcz@MI02:mobog.ttc}}
+  \pxcz@multiweight{:0:mogam.ttc}{:0:mogam.ttc}{:0:mogamb.ttc}%
+  {:0:mogag.ttc}{:0:mogagb.ttc}{:0:mogagb.ttc}{:0:mogag.ttc}{:0:mobog.ttc}}
 \pxcz@declare@preset{moga-mobo-ex}{%
-  \pxcz@enable@switch@realfont
-  \pxcz@multiweight{\pxcz@MI14:mogam.ttc}{\pxcz@MI14:mogam.ttc}%
-  {\pxcz@MI14:mogamb.ttc}{\pxcz@MI13:mogag.ttc}{\pxcz@MI13:mogagb.ttc}%
-  {\pxcz@MI13:mogagb.ttc}{\pxcz@MI13:mogag.ttc}{\pxcz@MI13:mobog.ttc}}
+  \pxcz@multiweight{:1:mogam.ttc}{:1:mogam.ttc}{:1:mogamb.ttc}%
+  {:1:mogag.ttc}{:1:mogagb.ttc}{:1:mogagb.ttc}{:1:mogag.ttc}{:1:mobog.ttc}}
 \pxcz@declare@preset{moga-maruberi}{%
-  \pxcz@enable@switch@realfont
-  \pxcz@multiweight{\pxcz@MI03:mogam.ttc}{\pxcz@MI03:mogam.ttc}%
-  {\pxcz@MI03:mogamb.ttc}{\pxcz@MI02:mogag.ttc}{\pxcz@MI02:mogagb.ttc}%
-  {\pxcz@MI02:mogagb.ttc}{\pxcz@MI02:mogag.ttc}{MTLmr3m.ttf}}
+  \pxcz@multiweight{:0:mogam.ttc}{:0:mogam.ttc}{:0:mogamb.ttc}%
+  {:0:mogag.ttc}{:0:mogagb.ttc}{:0:mogagb.ttc}{:0:mogag.ttc}{MTLmr3m.ttf}}
 \pxcz@declare@preset{kozuka-pro}{%
   \usecmapforalphabet
   \pxcz@multiweight{KozMinPro-Light.otf}{KozMinPro-Regular.otf}%
@@ -1247,9 +1371,10 @@
    {yumindb.ttf}{:0:YuGothR.ttc}{:0:YuGothB.ttc}%
    {:0:YuGothB.ttc}{:0:YuGothM.ttc}{:0:YuGothM.ttc}}
 \pxcz@declare@preset{yu-win10+}{%
-  \pxcz@multiweight{\pxcz@YW/yuminl.ttf}{\pxcz@YW/yumin.ttf}%
-   {\pxcz@YW/yumindb.ttf}{\pxcz@YW:0:YuGothR.ttc}{\pxcz@YW:0:YuGothB.ttc}%
-   {\pxcz@YW:0:YuGothB.ttc}{\pxcz@YW:0:YuGothM.ttc}{\pxcz@YW:0:YuGothM.ttc}}
+  \pxcz@switch@font@yuwinxtrue
+  \pxcz@multiweight{yuminl.ttf}{yumin.ttf}%
+   {yumindb.ttf}{:0:YuGothR.ttc}{:0:YuGothB.ttc}%
+   {:0:YuGothB.ttc}{:0:YuGothM.ttc}{:0:YuGothM.ttc}}
 \pxcz@declare@preset{yu-osx}{%
   \usecmapforalphabet
   \pxcz@multiweight{YuMin-Medium.otf}{YuMin-Medium.otf}%
@@ -1257,44 +1382,32 @@
    {YuGo-Bold.otf}{YuGo-Medium.otf}{YuGo-Medium.otf}}
 % Source Han Sans/Serif, "OTC"
 \pxcz@declare@preset{sourcehan-otc}{%
-  \pxcz@multiweight{\pxcz@SH:0:SourceHanSerif-Light.ttc}%
-   {\pxcz@SH:0:SourceHanSerif-Regular.ttc}%
-   {\pxcz@SH:0:SourceHanSerif-Bold.ttc}%
-   {\pxcz@SH:0:SourceHanSans-Regular.ttc}%
-   {\pxcz@SH:0:SourceHanSans-Bold.ttc}%
-   {\pxcz@SH:0:SourceHanSans-Heavy.ttc}%
-   {\pxcz@SH:0:SourceHanSans-Medium.ttc}%
-   {\pxcz@SH:0:SourceHanSans-Medium.ttc}}
+  \pxcz@multiweight{:0:SourceHanSerif-Light.ttc}%
+   {:0:SourceHanSerif-Regular.ttc}{:0:SourceHanSerif-Bold.ttc}%
+   {:0:SourceHanSans-Regular.ttc}{:0:SourceHanSans-Bold.ttc}%
+   {:0:SourceHanSans-Heavy.ttc}{:0:SourceHanSans-Medium.ttc}%
+   {:0:SourceHanSans-Medium.ttc}}
 % Source Han Sans/Serif, "Language-specific OTF"
 \pxcz@declare@preset{sourcehan}{%
-  \pxcz@multiweight{\pxcz@SH/SourceHanSerif-Light.otf}%
-  {\pxcz@SH/SourceHanSerif-Regular.otf}%
-   {\pxcz@SH/SourceHanSerif-Bold.otf}%
-   {\pxcz@SH/SourceHanSans-Regular.otf}%
-   {\pxcz@SH/SourceHanSans-Bold.otf}%
-   {\pxcz@SH/SourceHanSans-Heavy.otf}%
-   {\pxcz@SH/SourceHanSans-Medium.otf}%
-   {\pxcz@SH/SourceHanSans-Medium.otf}}
+  \pxcz@multiweight{SourceHanSerif-Light.otf}%
+   {SourceHanSerif-Regular.otf}{SourceHanSerif-Bold.otf}%
+   {SourceHanSans-Regular.otf}{SourceHanSans-Bold.otf}%
+   {SourceHanSans-Heavy.otf}{SourceHanSans-Medium.otf}%
+   {SourceHanSans-Medium.otf}}
 % Noto Sans/Serif CJK, "OpenType/CFF Collection (OTC)"
 \pxcz@declare@preset{noto-otc}{%
-  \pxcz@multiweight{\pxcz@NC:0:NotoSerifCJK-Light.ttc}%
-   {\pxcz@NC:0:NotoSerifCJK-Regular.ttc}%
-   {\pxcz@NC:0:NotoSerifCJK-Bold.ttc}%
-   {\pxcz@NC:0:NotoSansCJK-Regular.ttc}%
-   {\pxcz@NC:0:NotoSansCJK-Bold.ttc}%
-   {\pxcz@NC:0:NotoSansCJK-Black.ttc}%
-   {\pxcz@NC:0:NotoSansCJK-Medium.ttc}%
-   {\pxcz@NC:0:NotoSansCJK-Medium.ttc}}
+  \pxcz@multiweight{:0:NotoSerifCJK-Light.ttc}%
+   {:0:NotoSerifCJK-Regular.ttc}{:0:NotoSerifCJK-Bold.ttc}%
+   {:0:NotoSansCJK-Regular.ttc}{:0:NotoSansCJK-Bold.ttc}%
+   {:0:NotoSansCJK-Black.ttc}{:0:NotoSansCJK-Medium.ttc}%
+   {:0:NotoSansCJK-Medium.ttc}}
 % Noto Sans/Serif CJK, "Language-specific OpenType/CFF (OTF)"
 \pxcz@declare@preset{noto}{%
-  \pxcz@multiweight{\pxcz@NC/NotoSerifCJKjp-Light.otf}%
-   {\pxcz@NC/NotoSerifCJKjp-Regular.otf}%
-   {\pxcz@NC/NotoSerifCJKjp-Bold.otf}%
-   {\pxcz@NC/NotoSansCJKjp-Regular.otf}%
-   {\pxcz@NC/NotoSansCJKjp-Bold.otf}%
-   {\pxcz@NC/NotoSansCJKjp-Black.otf}%
-   {\pxcz@NC/NotoSansCJKjp-Medium.otf}%
-   {\pxcz@NC/NotoSansCJKjp-Medium.otf}}
+  \pxcz@multiweight{NotoSerifCJKjp-Light.otf}%
+   {NotoSerifCJKjp-Regular.otf}{NotoSerifCJKjp-Bold.otf}%
+   {NotoSansCJKjp-Regular.otf}{NotoSansCJKjp-Bold.otf}%
+   {NotoSansCJKjp-Black.otf}{NotoSansCJKjp-Medium.otf}%
+   {NotoSansCJKjp-Medium.otf}}
 %(obsolete)
 \pxcz@declare@depre@preset{ipa-otf}{%
   \pxcz@uniweight{ipam.otf}{ipag.otf}}
