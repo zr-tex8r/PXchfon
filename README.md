@@ -38,7 +38,14 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
-  * Version 1.0  ‹2017/06/19›
+  * Version 1.0b ‹2017/06/29›
+      - Bug fix.
+  * Version 1.0a ‹2017/06/19›
+      - Driver options.
+      - Options `dumpmap` and `dumpmaptl`.
+      - Alias `jis2004` for the option `prefer2004jis`.
+      - (experimental) Preset `yu-win10+`.
+  * Version 1.0  ‹2017/05/31›
       - The long-deprecated presets are now abolished.
       - The package pxjafont is deprecated.
       - Now `directunicode*` does not need japanese-otf.
