@@ -1,6 +1,6 @@
-
+%%
 %% This is file 'pxchfon.sty'.
-%% 
+%%
 %% Copyright (c) 2017 Takayuki YATO (aka. "ZR")
 %%   GitHub:   https://github.com/zr-tex8r
 %%   Twitter:  @zr_tex8r
@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2017/07/04 v1.0c]
+\ProvidesPackage{pxchfon}[2017/07/01 v1.1-pre]
 \def\pxcz@pkgname{pxchfon}
 
 %% preparations
@@ -33,6 +33,16 @@
 %% \pxcz@csletcs{<cs1>}{<cs2>}
 \def\pxcz@csletcs#1#2{%
   \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
+
+%% \pxcz@cond\ifXXX...\fi{<true>}{<false>}
+\@gobbletwo\if\if \def\pxcz@cond#1\fi{%
+  #1\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
+
+%% \pxcz@csuse@or{<csname>}{<default>}
+\def\pxcz@csuse@or#1#2{%
+  \expandafter\ifx\csname#1\endcsname\relax \expandafter\@firstoftwo
+  \else \expandafter\@secondoftwo
+  \fi{#2}{\csname#1\endcsname}}
 
 %% \pxcz@lower\CS
 \def\pxcz@lower#1{%
@@ -102,8 +112,11 @@
 \newif\ifpxcz@rel
 \newif\ifpxcz@dumpmap
 \newif\ifpxcz@dumpmap@tl
-\newif\ifpxcz@switch@font@mmivjis \pxcz@switch@font@mmivjistrue
+\newif\ifpxcz@switch@font \pxcz@switch@fonttrue
+\newif\ifpxcz@switch@font@xwid
+\newif\ifpxcz@switch@font@xjis
 \let\pxcz@strict@csi\relax
+\newif\ifpxcz@directunicode@default
 
 %% process options
 % drivers
@@ -140,7 +153,6 @@
 \chardef\pxcz@directunicode@otf=1
 \chardef\pxcz@directunicode@all=2
 \chardef\pxcz@directunicode@full=3
-\let\pxcz@directunicode\pxcz@directunicode@none
 \DeclareOption{directunicode*}{\let\pxcz@directunicode\pxcz@directunicode@all}
 \DeclareOption{directunicode}{\let\pxcz@directunicode\pxcz@directunicode@otf}
 \DeclareOption{nodirectunicode}{\let\pxcz@directunicode\pxcz@directunicode@none}
@@ -150,9 +162,9 @@
 % (no)dumpmaptl
 \DeclareOption{dumpmaptl}{\pxcz@dumpmap@tltrue}
 \DeclareOption{nodumpmaptl}{\pxcz@dumpmap@tlfalse}
-% (no)switchfont2004jis
-\DeclareOption{switchfont2004jis}{\pxcz@switch@font@mmivjistrue}
-\DeclareOption{noswitchfont2004jis}{\pxcz@switch@font@mmivjisfalse}
+% (no)switchfont
+\DeclareOption{switchfont}{\pxcz@switch@fonttrue}
+\DeclareOption{noswitchfont}{\pxcz@switch@fontfalse}
 % (no)strictcsi
 \DeclareOption{strictcsi}{\let\pxcz@strict@csi=t}
 \DeclareOption{nostrictcsi}{\let\pxcz@strict@csi=f}
@@ -215,6 +227,12 @@
 \RequirePackage{atbegshi}
 \fi
 
+%% set 'pxcz@directunicode@default'
+\ifx\pxcz@directunicode\relax
+  \let\pxcz@directunicode\pxcz@directunicode@none
+  \pxcz@directunicode@defaulttrue
+\fi
+
 %% set 'pxcz@alpha'
 \@tempswafalse
 \if\pxcz@main@preset\relax
@@ -264,37 +282,51 @@
     \PackageWarning\pxcz@pkgname
      {The option 'strictcsi' cannot be used, because\MessageBreak
       the engine does not support '\string\pdffiledump'}
+    \let\pxcz@strict@csi=f
   \fi
+\fi
+
+%% apply 'switch@font'
+\ifpxcz@switch@font
+  \pxcz@switch@font@xjistrue
+\else
+  \let\pxcz@switch@font@xwidtrue\pxcz@switch@font@xwidfalse
+  \let\pxcz@switch@font@xjistrue\pxcz@switch@font@xjisfalse
 \fi
 
 %--------------------------------------- preset-triggered setup
 
-%% \pxcz@if@main@preset{<name>}{<code>}
-\@onlypreamble\pxcz@if@main@preset
-\def\pxcz@if@main@preset#1{%
-  \edef\pxcz@tmpa{#1}%
-  \ifx\pxcz@main@preset\pxcz@tmpa \expandafter\@firstofone
-  \else \expandafter\@gobble
-  \fi}
-%% setup
-\def\pxcz@preset@setup@sourcehan{%
-  \ifnum\pxcz@directunicode=\pxcz@directunicode@otf
-  \else\ifnum\pxcz@directunicode=\pxcz@directunicode@all
-  \else
+%% \pxcz@apply@opt@unicode
+% Forces the 'unicode' setup (unless a directunicode option was given).
+\@onlypreamble\pxcz@apply@opt@unicode
+\def\pxcz@apply@opt@unicode{%
+  \pxcz@switch@font@xwidtrue % NOTE: transitional
+  \ifnum0\ifpxcz@directunicode@default1\fi\ifpxcz@uniquify1\fi>\z@
     \let\pxcz@directunicode\pxcz@directunicode@full
     \pxcz@uniquifyfalse
-  \fi\fi}
-\pxcz@if@main@preset{sourcehan}{%
-  \pxcz@preset@setup@sourcehan}
-\pxcz@if@main@preset{sourcehan-otc}{%
-  \pxcz@preset@setup@sourcehan}
-\pxcz@if@main@preset{noto}{%
-  \pxcz@preset@setup@sourcehan}
-\pxcz@if@main@preset{noto-otc}{%
-  \pxcz@preset@setup@sourcehan}
-\pxcz@if@main@preset{yu-win10+}{%
+  \fi}
+%% \pxcz@apply@opt@unicodeP
+% Forces the 'unicode+' setup.
+\@onlypreamble\pxcz@apply@opt@unicodeP
+\def\pxcz@apply@opt@unicodeP{%
   \let\pxcz@directunicode\pxcz@directunicode@full
-  \pxcz@uniquifyfalse}
+  \pxcz@uniquifyfalse
+  \pxcz@switch@font@xwidtrue}
+
+%% the setup
+\def\pxcz@do#1{%
+  \edef\pxcz@tmpa{#1}%
+  \pxcz@cond\ifx\pxcz@main@preset\pxcz@tmpa\fi
+      {\@firstofone}{\@gobble}}
+\pxcz@do{sourcehan}{\pxcz@apply@opt@unicode}
+\pxcz@do{sourcehan-otc}{\pxcz@apply@opt@unicode}
+\pxcz@do{noto}{\pxcz@apply@opt@unicode}
+\pxcz@do{noto-otc}{\pxcz@apply@opt@unicode}
+\pxcz@do{sourcehan+}{\pxcz@apply@opt@unicodeP}
+\pxcz@do{sourcehan-otc+}{\pxcz@apply@opt@unicodeP}
+\pxcz@do{noto+}{\pxcz@apply@opt@unicodeP}
+\pxcz@do{noto-otc+}{\pxcz@apply@opt@unicodeP}
+\pxcz@do{yu-win10+}{\pxcz@apply@opt@unicodeP}
 
 %--------------------------------------- user interface
 
@@ -321,12 +353,22 @@
 \newcommand*\settchinesegothicfont{\pxcz@setfont{tcg}}
 \@onlypreamble\pxcz@setfont
 \def\pxcz@setfont#1{\@ifnextchar[%]
-  {\pxcz@setfont@a{#1}}{\pxcz@setfont@a{#1}[]}}
+  {\pxcz@setfont@a{#1}}{\pxcz@setfont@a{#1}[0]}}
 \@onlypreamble\pxcz@setfont@a
 \def\pxcz@setfont@a#1[#2]#3{%
-  \@for\pxcz@x:={#1}\do{%
-    \ifx @#2@\@namedef{pxcz@FS/\pxcz@x}{#3}%
-    \else\@namedef{pxcz@FS/\pxcz@x}{:#2:#3}\fi}}
+  \edef\pxcz@tmpa{#3}\pxcz@lower\pxcz@tmpa
+  \pxcz@split{?:}{?\pxcz@tmpa}%
+  \ifx\pxcz@pre\relax
+    \pxcz@split{tc?}{\pxcz@tmpa?}%
+    \ifx\pxcz@pre\relax \pxcz@setfont@b{#1}{#3}%
+    \else \pxcz@setfont@b{#1}{:#2:#3}%
+    \fi
+  \else \pxcz@setfont@b{#1}{#3}%
+  \fi}
+\@onlypreamble\pxcz@setfont@b
+\def\pxcz@setfont@b#1#2{%
+  \@for\pxcz@tmpx:=#1\do{%
+    \@namedef{pxcz@FS/\pxcz@tmpx}{#2}}}
 \@for\pxcz@x:=\pxcz@sym@list\do{%
   \@namedef{pxcz@FS/\pxcz@x}{}}
 
@@ -434,7 +476,7 @@
 \let\pxcz@csi\relax
 \let\pxcz@lopts\relax
 \let\pxcz@mopts\relax
-\newif\ifpxcz@switch@font@yuwinx
+\let\pxcz@font@tribe\relax
 
 %% \pxcz@@jpXX
 \edef\pxcz@@jpXX{%
@@ -454,12 +496,6 @@
   \ifpxcz@ok
     \edef\pxcz@lopts{#2}%
   \fi}
-
-%% \pxcz@sidx
-\@onlypreamble\pxcz@sidx
-\def\pxcz@sidx#1#2{%
-  \expandafter\pxcz@sidx@a#2\pxcz@end{#1}}
-\def\pxcz@sidx@a:#1:#2\pxcz@end#3{:#3:#2}
 
 %% \pxcz@is@jis@cmap
 \@onlypreamble\pxcz@is@jis@cmap
@@ -481,74 +517,91 @@
     \fi
   \fi}
 
-%% \pxcz@force@xcjis@font
-\@onlypreamble\pxcz@force@xcjis@font
-\ifpxcz@switch@font@mmivjis
-  \def\pxcz@force@xcjis@font{%
-    \let\pxcz@tmpa\pxcz@font \pxcz@lower\pxcz@tmpa
-    \pxcz@csletcs{pxcz@tmpa}{pxcz@S4/\pxcz@tmpa}%
-    \ifx\pxcz@tmpa\relax\else
-      \edef\pxcz@font{\pxcz@tmpa{\pxcz@font}}%
-    \fi}
-  \def\do#1{\@namedef{pxcz@S4/#1}}
-  \do{:0:mogam.ttc}{\pxcz@sidx3}
-  \do{:1:mogam.ttc}{\pxcz@sidx4}
-  \do{:0:mogamb.ttc}{\pxcz@sidx3}
-  \do{:1:mogamb.ttc}{\pxcz@sidx4}
-  \do{:0:mogag.ttc}{\pxcz@sidx2}
-  \do{:1:mogag.ttc}{\pxcz@sidx3}
-  \do{:0:mogagb.ttc}{\pxcz@sidx2}
-  \do{:1:mogagb.ttc}{\pxcz@sidx3}
-  \do{:0:mobog.ttc}{\pxcz@sidx2}
-  \do{:1:mobog.ttc}{\pxcz@sidx3}
-  \do{:0:mobogb.ttc}{\pxcz@sidx2}
-  \do{:1:mobogb.ttc}{\pxcz@sidx3}
-\else
-  \let\pxcz@force@xcjis@font\relax
-\fi
-
-%% \pxcz@inspect@font@type{<font>}
-\@onlypreamble\pxcz@inspect@font@type
-\def\pxcz@inspect@font@type#1{%
-  \edef\pxcz@tmpb{?#1}\pxcz@lower\pxcz@tmpb
-  \let\pxcz@font@type\@empty
-  \pxcz@split{?sourcehan}{\pxcz@tmpb}%
-  \ifx\pxcz@pre\relax\else \def\pxcz@font@type{sourcehan}\fi
-  \pxcz@split{:sourcehan}{\pxcz@tmpb}%
-  \ifx\pxcz@pre\relax\else \def\pxcz@font@type{sourcehanC}\fi
-  \pxcz@split{?noto}{\pxcz@tmpb}%
-  \ifx\pxcz@pre\relax\else \def\pxcz@font@type{noto}\fi
-  \pxcz@split{:noto}{\pxcz@tmpb}%
-  \ifx\pxcz@pre\relax\else \def\pxcz@font@type{notoC}\fi
-  \ifpxcz@switch@font@yuwinx
-    \pxcz@split{?yumin}{\pxcz@tmpb}%
-    \ifx\pxcz@pre\relax\else \def\pxcz@font@type{yumin}\fi
-    \pxcz@split{:yugoth}{\pxcz@tmpb}%
-    \ifx\pxcz@pre\relax\else \def\pxcz@font@type{yugoth}\fi
+%% \pxcz@inspect@font@tribe
+\@onlypreamble\pxcz@inspect@font@tribe
+\def\pxcz@inspect@font@tribe{%
+  \let\pxcz@font@tribe\@empty
+  \ifx\pxcz@font\@empty
+  \else\ifx\pxcz@font\pxcz@noembed
+  \else
+    \pxcz@inspect@font@tribe@a{?SourceHanSerif-}{.otf?}{sourcehan}%
+    \pxcz@inspect@font@tribe@a{?SourceHanSans-}{.otf?}{sourcehan}%
+    \pxcz@inspect@font@tribe@a{?:0:SourceHanSerif-}{.ttc?}{sourcehanC}%
+    \pxcz@inspect@font@tribe@a{?:0:SourceHanSans-}{.ttc?}{sourcehanC}%
+    \pxcz@inspect@font@tribe@a{?NotoSerifCJKjp-}{.otf?}{noto}%
+    \pxcz@inspect@font@tribe@a{?NotoSansCJKjp-}{.otf?}{noto}%
+    \pxcz@inspect@font@tribe@a{?:0:NotoSerifCJK-}{.ttc?}{notoC}%
+    \pxcz@inspect@font@tribe@a{?:0:NotoSansCJK-}{.ttc?}{notoC}%
+    \pxcz@inspect@font@tribe@a{?yumin}{.ttf?}{yumin}%
+    \pxcz@inspect@font@tribe@a{?YUMIN}{.TTF?}{yuminU}%
+    \pxcz@inspect@font@tribe@a{:YuGoth}{.ttc?}{yugoth}%
+    \pxcz@inspect@font@tribe@a{:YUGOTH}{.TTC?}{yugoth}%
+    \pxcz@inspect@font@tribe@a{:moga}{.ttc?}{mogamobo}%
+    \pxcz@inspect@font@tribe@a{:mobo}{.ttc?}{mogamobo}%
+  \fi\fi
+  \ifx\pxcz@font@tribe\@empty\else
+    \PackageInfo\pxcz@pkgname
+     {Font tribe is '\pxcz@font@tribe':\MessageBreak
+      \@spaces\pxcz@font\@gobble}%
+  \fi}
+\@onlypreamble\pxcz@inspect@font@tribe@a
+\def\pxcz@inspect@font@tribe@a#1#2#3{%
+  \pxcz@split{#1}{?\pxcz@font}%
+  \ifx\pxcz@pre\relax\else
+    \pxcz@split{#2}{\pxcz@font?}%
+    \ifx\pxcz@pre\relax\else
+      \def\pxcz@font@tribe{#3}%
+    \fi
   \fi}
 
-%% \pxcz@switch@font@for@feature{<feature>}
-\def\pxcz@switch@font@for@feature#1{%
-  \pxcz@inspect@font@type\pxcz@font
-  \pxcz@csletcs{pxcz@tmpb}{pxcz@switch@font@@\pxcz@font@type @#1}%
+%% \pxcz@switch@font@for{<feature>}
+% Modifies \pxcz@font, assuming \pxcz@font@tribe is properly set.
+\def\pxcz@switch@font@for#1{%
+  \pxcz@csletcs{pxcz@tmpb}{pxcz@switch@font@@\pxcz@font@tribe @#1}%
   \ifx\pxcz@tmpb\relax\else
+%\typeout{#1:\pxcz@font-->\expandafter\pxcz@tmpb\pxcz@font}%
     \edef\pxcz@font{\expandafter\pxcz@tmpb\pxcz@font}%
   \fi}
-\def\pxcz@switch@font@@sourcehanC@fwid#1:0:{:2:}
-\def\pxcz@switch@font@@sourcehanC@hwid#1:0:{:1:}
-\def\pxcz@switch@font@@sourcehan@fwid#1-{#1SC-}
-\def\pxcz@switch@font@@sourcehan@hwid#1-{#1K-}
-\def\pxcz@switch@font@@notoC@fwid#1:0:{:2:}
-\def\pxcz@switch@font@@notoC@hwid#1:0:{:1:}
-\def\pxcz@switch@font@@noto@fwid#1jp{#1sc}
-\def\pxcz@switch@font@@noto@hwid#1jp{#1kr}
-\def\pxcz@switch@font@@yugoth@fwid#1:0:{:1:}
-\def\pxcz@switch@font@@yumin@fwid#1.ttf{%
-  \@nameuse{pxcz@YMG/#1.ttf}}
-\def\do#1{\@namedef{pxcz@YMG/#1}}
-\do{yuminl.ttf}{:1:YuGothL.ttc}
-\do{yumin.ttf}{:1:YuGothR.ttc}
-\do{yumindb.ttf}{:1:YuGothM.ttc}
+% entries
+\ifpxcz@switch@font@xwid
+  \def\pxcz@switch@font@@sourcehanC@fwid#1:0:{:2:}
+  \def\pxcz@switch@font@@sourcehanC@hwid#1:0:{:1:}
+  \def\pxcz@switch@font@@sourcehan@fwid#1-{#1SC-}
+  \def\pxcz@switch@font@@sourcehan@hwid#1-{#1K-}
+  \def\pxcz@switch@font@@notoC@fwid#1:0:{:2:}
+  \def\pxcz@switch@font@@notoC@hwid#1:0:{:1:}
+  \def\pxcz@switch@font@@noto@fwid#1jp{#1sc}
+  \def\pxcz@switch@font@@noto@hwid#1jp{#1kr}
+  \def\pxcz@switch@font@@yugoth@fwid#1:0:{:1:}
+  \def\pxcz@switch@font@@yumin@fwid#1.ttf{%
+    \@nameuse{pxcz@SFYM/#1.ttf}}
+  \def\pxcz@switch@font@@yuminU@fwid#1.TTF{%
+    \@nameuse{pxcz@SFYM/#1.TTF}}
+  \def\pxcz@do#1{\@namedef{pxcz@SFYM/#1}}
+  \pxcz@do{yuminl.ttf}{:1:YuGothL.ttc}
+  \pxcz@do{yumin.ttf}{:1:YuGothR.ttc}
+  \pxcz@do{yumindb.ttf}{:1:YuGothM.ttc}
+  \pxcz@do{YUMINL.TTF}{:1:YUGOTHL.TTC}
+  \pxcz@do{YUMIN.TTF}{:1:YUGOTHR.TTC}
+  \pxcz@do{YUMINDB.TTF}{:1:YUGOTHM.TTC}
+\fi
+\ifpxcz@switch@font@xjis
+  \@namedef{pxcz@switch@font@@mogamobo@jp90}#1.ttc{%
+    \pxcz@csuse@or{pxcz@SFMG/#1.ttc}{#1.ttc}}
+  \def\pxcz@do#1#2#3{\@namedef{pxcz@SFMG/:#1:#3}{:#2:#3}}
+  \pxcz@do{0}{3}{mogam.ttc}
+  \pxcz@do{1}{4}{mogam.ttc}
+  \pxcz@do{0}{3}{mogamb.ttc}
+  \pxcz@do{1}{4}{mogamb.ttc}
+  \pxcz@do{0}{2}{mogag.ttc}
+  \pxcz@do{1}{3}{mogag.ttc}
+  \pxcz@do{0}{2}{mogagb.ttc}
+  \pxcz@do{1}{3}{mogagb.ttc}
+  \pxcz@do{0}{2}{mobog.ttc}
+  \pxcz@do{1}{3}{mobog.ttc}
+  \pxcz@do{0}{2}{mobogb.ttc}
+  \pxcz@do{1}{3}{mobogb.ttc}
+\fi
 
 %% \pxcz@declare@entry@modifier{<name>}
 \@onlypreamble\pxcz@declare@entry@modifier
@@ -575,7 +628,7 @@
   \ifpxcz@mmivjis
     \pxcz@force@mmiv@cmap
   \else
-    \pxcz@force@xcjis@font
+    \pxcz@switch@font@for{jp90}%
   \fi
   \pxcz@add@lopt{\pxcz@@jpXX}}
 % 04
@@ -583,7 +636,7 @@
   \pxcz@add@lopt{jp04}}
 % 90
 \pxcz@declare@entry@modifier{90}{%
-  \pxcz@force@xcjis@font
+  \pxcz@switch@font@for{jp90}%
   \pxcz@add@lopt{jp90}}
 % HWid
 \pxcz@declare@entry@modifier{HWid}{%
@@ -591,15 +644,15 @@
     \let\pxcz@cmap\pxcz@cmap@hwuni
   \else
     \let\pxcz@cmap\pxcz@cmap@uni
-    \pxcz@switch@font@for@feature{hwid}%
+    \pxcz@switch@font@for{hwid}%
   \fi
   \pxcz@add@lopt{hwid}%
-  \ifx\pxcz@sym\pxcz@sym@@mgr
+  \def\pxcz@tmpa{mgr}\ifx\pxcz@sym\pxcz@tmpa
     \let\pxcz@font\@empty
   \fi}
 % FWid
 \pxcz@declare@entry@modifier{FWid}{%
-    \pxcz@switch@font@for@feature{fwid}%
+  \pxcz@switch@font@for{fwid}%
   \pxcz@add@lopt{fwid}}
 % AJ16/AK12/AG14/AC14
 \pxcz@declare@entry@modifier{AJ16}{\def\pxcz@csi{AJ16}}
@@ -616,11 +669,10 @@
   \ifx\pxcz@csi\relax\else
     \expandafter\ifx\csname pxcz@OT/\pxcz@sym\endcsname\relax
       \edef\pxcz@mopts{/\pxcz@csi}%
-    \else
+    \else % omit CSI part for CFF fonts
       \let\pxcz@mopts\@empty
     \fi
   \fi}
-
 
 %% \pxcz@spec
 \let\pxcz@spec\@empty
@@ -629,7 +681,6 @@
 \@onlypreamble\pxcz@addtospec
 \def\pxcz@addtospec#1{%
   \begingroup
-    \chardef\pxcz@entry@type\z@
     \let\Entry\pxcz@Entry
     \@nameuse{pxcz@ME/#1}%
   \endgroup}
@@ -639,6 +690,7 @@
   \def\pxcz@sym{#1}\def\pxcz@cmap{#3}%
   \let\pxcz@csi\relax \let\pxcz@mopts\@empty \let\pxcz@lopts\@empty
   \edef\pxcz@font{\@nameuse{pxcz@FS/\pxcz@sym}}%
+  \pxcz@inspect@font@tribe
   \@for\pxcz@tmpx:=#4,Fin\do{%
     \ifx\pxcz@font\@empty\else
       \@nameuse{pxcz@MEM/\pxcz@tmpx}%
@@ -659,18 +711,6 @@
   \ifx\pxcz@font\@empty\else
     \xdef\pxcz@spec{\pxcz@spec\noexpand\special{%
       \pxcz@mapline{#2 \pxcz@cmap\space\pxcz@font\pxcz@mopts}}}%
-  \fi}
-
-%% \pxcz@check@entry
-\@onlypreamble\pxcz@check@entry
-\def\pxcz@sym@@mgr{mgr}
-\def\pxcz@check@entry{%
-  \pxcz@oktrue
-  \ifnum\pxcz@entry@type=\@ne
-    \ifx\pxcz@sym\pxcz@sym@@mgr
-      \expandafter\ifx\csname pxcz@FS/gtr\endcsname\relax\else
-        \pxcz@okfalse \fi
-    \fi
   \fi}
 
 %% \pxcz@do@file@preset
@@ -1098,7 +1138,7 @@
     % if mnr is replaced but gtr is not then ...
     \expandafter\ifx\csname pxcz@FS/gtr\endcsname\@empty
       {\expandafter\let\csname pxcz@FS/gtr\endcsname\pxcz@x
-        \relax\relax}%
+        \pxcz@Entry{gtr}{r-cfjas-r-@PXcjk0@}{unicode}{HWid}}%
   \fi\fi
   \@ifpackagewith{otf}{deluxe}{\pxcz@err@dxotf{otf}}{}%
   \@ifpackagewith{pxotf}{deluxe}{\pxcz@err@dxotf{pxotf}}{}%
@@ -1312,7 +1352,6 @@
 % Sets \[pxcz@OT/<sym>].
 \@onlypreamble\pxcz@inspect@flavor@all
 \def\pxcz@inspect@flavor@all{%
-  \chardef\pxcz@entry@type\z@
   \@for\pxcz@tmpa:=\pxcz@sym@list\do{%
     \edef\pxcz@tmpa{{\pxcz@tmpa}{\@nameuse{pxcz@FS/\pxcz@tmpa}}}%
     \expandafter\pxcz@inspect@flavor@all@a\pxcz@tmpa}}
@@ -1536,11 +1575,6 @@
   \pxcz@multiweight{yuminl.ttf}{yumin.ttf}%
    {yumindb.ttf}{:0:YuGothR.ttc}{:0:YuGothB.ttc}%
    {:0:YuGothB.ttc}{:0:YuGothM.ttc}{:0:YuGothM.ttc}}
-\pxcz@declare@preset{yu-win10+}{%
-  \pxcz@switch@font@yuwinxtrue
-  \pxcz@multiweight{yuminl.ttf}{yumin.ttf}%
-   {yumindb.ttf}{:0:YuGothR.ttc}{:0:YuGothB.ttc}%
-   {:0:YuGothB.ttc}{:0:YuGothM.ttc}{:0:YuGothM.ttc}}
 \pxcz@declare@preset{yu-osx}{%
   \usecmapforalphabet
   \pxcz@multiweight{YuMin-Medium.otf}{YuMin-Medium.otf}%
@@ -1604,6 +1638,12 @@
 \pxcz@declare@preset@alias{kozuka}{kozuka-pro}
 \pxcz@declare@preset@alias{hiragino-elcapitan}{hiragino-elcapitan-pro}
 \pxcz@declare@preset@alias{morisawa}{morisawa-pro}
+%(plus-variants)
+\pxcz@declare@preset@alias{sourcehan+}{sourcehan}
+\pxcz@declare@preset@alias{sourcehan-otc+}{sourcehan-otc}
+\pxcz@declare@preset@alias{noto+}{noto}
+\pxcz@declare@preset@alias{noto-otc+}{noto-otc}
+\pxcz@declare@preset@alias{yu-win10+}{yu-win10}
 
 %% ... and invokes the specified one!
 \if\pxcz@main@preset\relax\else
