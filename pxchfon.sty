@@ -224,10 +224,12 @@
   \fi}
 %% setup
 \def\pxcz@preset@setup@sourcehan{%
-  \ifnum\pxcz@directunicode=\pxcz@directunicode@all \else
+  \ifnum\pxcz@directunicode=\pxcz@directunicode@otf
+  \else\ifnum\pxcz@directunicode=\pxcz@directunicode@all
+  \else
     \let\pxcz@directunicode\pxcz@directunicode@full
     \pxcz@uniquifyfalse
-  \fi}
+  \fi\fi}
 \pxcz@if@main@preset{sourcehan}{%
   \pxcz@preset@setup@sourcehan}
 \pxcz@if@main@preset{sourcehan-otc}{%
