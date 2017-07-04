@@ -117,6 +117,8 @@
 \newif\ifpxcz@switch@font@xjis
 \let\pxcz@strict@csi\relax
 \newif\ifpxcz@directunicode@default
+\newif\ifpxcz@only@ufont
+\newif\ifpxcz@force@ufont
 
 %% process options
 % drivers
@@ -168,6 +170,12 @@
 % (no)strictcsi
 \DeclareOption{strictcsi}{\let\pxcz@strict@csi=t}
 \DeclareOption{nostrictcsi}{\let\pxcz@strict@csi=f}
+% (no)onlyufont
+\DeclareOption{onlyufont}{\pxcz@only@ufonttrue}
+\DeclareOption{noonlyufont}{\pxcz@only@ufontfalse}
+% (no)forceufont
+\DeclareOption{forceufont}{\pxcz@force@ufonttrue}
+\DeclareOption{noforceufont}{\pxcz@force@ufontfalse}
 % preset spec options
 \def\pxcz@all@main@preset{%
   noembed,%
@@ -293,6 +301,19 @@
   \let\pxcz@switch@font@xwidtrue\pxcz@switch@font@xwidfalse
   \let\pxcz@switch@font@xjistrue\pxcz@switch@font@xjisfalse
 \fi
+
+%% 'force@ufont' implies 'only@ufont'
+\ifpxcz@force@ufont
+  \IfFileExists{pxufont.sty}{%
+    \pxcz@only@ufonttrue
+  }{%else
+    \PackageError\pxcz@pkgname
+     {The option 'forceufont' requires 'pxufont' package,\MessageBreak
+      but it is not installed}%
+     {\@ehc}
+  }%
+\fi
+
 
 %--------------------------------------- preset-triggered setup
 
@@ -691,13 +712,16 @@
   \let\pxcz@csi\relax \let\pxcz@mopts\@empty \let\pxcz@lopts\@empty
   \edef\pxcz@font{\@nameuse{pxcz@FS/\pxcz@sym}}%
   \pxcz@inspect@font@tribe
+  % apply modifiers
   \@for\pxcz@tmpx:=#4,Fin\do{%
     \ifx\pxcz@font\@empty\else
       \@nameuse{pxcz@MEM/\pxcz@tmpx}%
     \fi}%
+  % resolve no-embed font spec
   \ifx\pxcz@font\pxcz@noembed
     \edef\pxcz@font{!\@nameuse{pxcz@NEF/\pxcz@sym}}%
   \fi
+  % apply layout options when using 'unicode'
   \ifnum\pxcz@directunicode<\pxcz@directunicode@full\else
     \ifx\pxcz@cmap\pxcz@cmap@directuni
       \ifpxcz@uniquify
@@ -708,6 +732,13 @@
       \fi
     \fi
   \fi
+  % apply 'onlyufont'
+  \ifpxcz@only@ufont
+    \ifx\pxcz@cmap\pxcz@cmap@directuni\else
+      \let\pxcz@font\@empty
+    \fi
+  \fi
+  % output it
   \ifx\pxcz@font\@empty\else
     \xdef\pxcz@spec{\pxcz@spec\noexpand\special{%
       \pxcz@mapline{#2 \pxcz@cmap\space\pxcz@font\pxcz@mopts}}}%
@@ -1648,6 +1679,11 @@
 %% ... and invokes the specified one!
 \if\pxcz@main@preset\relax\else
 \pxcz@use@preset{\pxcz@main@preset}
+\fi
+
+%% load pxufont
+\ifpxcz@force@ufont
+  \RequirePackage{pxufont}[]
 \fi
 
 %--------------------------------------- all done
