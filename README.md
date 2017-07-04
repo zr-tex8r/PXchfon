@@ -38,6 +38,7 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.1  ‹2017/07/05›
   * Version 1.0c ‹2017/07/04›
       - Bug fix.
   * Version 1.0b ‹2017/06/29›
