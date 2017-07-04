@@ -38,6 +38,13 @@
 \@gobbletwo\if\if \def\pxcz@cond#1\fi{%
   #1\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
 
+%% \pxcz@onlypreamble@csdef{<csname>}
+\def\pxcz@onlypreamble@csdef#1{%
+  \expandafter\pxcz@onlypreamble@def\csname#1\endcsname}
+%% \pxcz@onlypreamble@def\CS
+\def\pxcz@onlypreamble@def#1{%
+  \@onlypreamble#1\def#1}
+
 %% \pxcz@csuse@or{<csname>}{<default>}
 \def\pxcz@csuse@or#1#2{%
   \expandafter\ifx\csname#1\endcsname\relax \expandafter\@firstoftwo
@@ -73,11 +80,9 @@
 % and in addition cause pxjafont to abort immediately.
 \@ifpackageloaded{pxjafont}{%
   \ifx\pxAliasedPxjafont\@undefined
-    \pxcz@error{Package 'pxjafont' is of incompatible version}%
-    {You must use version 0.5 of pxjafont.}%
-    \DeclareOption{noalphabet}{}\ProcessOptions
-    \let\pxjf@main@preset\relax % make pxjafont bombout
-  \endinput\fi}{}
+    \PackageError\pxcz@pkgname
+     {FATAL: Old 'pxjafont' is loaded}{\@ehc}
+  \expandafter\@@end\fi}{}
 
 %% \ifpxcz@uptex
 \newif\ifpxcz@uptex \pxcz@uptexfalse
@@ -118,8 +123,7 @@
 \newif\ifpxcz@switch@font@xjis
 \let\pxcz@strict@csi\relax
 \newif\ifpxcz@directunicode@default
-\newif\ifpxcz@only@ufont
-\newif\ifpxcz@force@ufont
+\let\pxcz@legacycode\relax
 
 %% process options
 % drivers
@@ -171,12 +175,15 @@
 % (no)strictcsi
 \DeclareOption{strictcsi}{\let\pxcz@strict@csi=t}
 \DeclareOption{nostrictcsi}{\let\pxcz@strict@csi=f}
-% (no)onlyufont
-\DeclareOption{onlyufont}{\pxcz@only@ufonttrue}
-\DeclareOption{noonlyufont}{\pxcz@only@ufontfalse}
-% (no)forceufont
-\DeclareOption{forceufont}{\pxcz@force@ufonttrue}
-\DeclareOption{noforceufont}{\pxcz@force@ufontfalse}
+% XXXXX-legacycode
+\chardef\pxcz@legacycode@apply=0
+\chardef\pxcz@legacycode@ignore=1
+\chardef\pxcz@legacycode@suppress=2
+\chardef\pxcz@legacycode@replace=3
+\DeclareOption{apply-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@apply}
+\DeclareOption{ignore-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@ignore}
+\DeclareOption{suppress-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@suppress}
+\DeclareOption{replace-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@replace}
 % preset spec options
 \def\pxcz@all@main@preset{%
   noembed,%
@@ -198,19 +205,23 @@
 \@for\pxcz@x:=\pxcz@all@main@preset\do{%
   \expandafter\pxcz@do\expandafter{\pxcz@x}}
 % others
-\@namedef{pxcz@opth/unicode}{%
+% The 'unicode' option means a Unicode-oriented mapping, and requires
+% dvipdfmx of version 20170627 or later. The 'unicode-fwid' is a variant.
+% The 'unicode*(-fwid)' option is a transitional (deteriorated) version
+% of 'unicode(-fwid)' and can work with dvipdfmx of version 20170318.
+\@namedef{pxcz@POPT/unicode}{%
   \let\pxcz@directunicode\pxcz@directunicode@full}
-\@namedef{pxcz@opth/unicode*}{%
+\@namedef{pxcz@POPT/unicode*}{%
   \pxcz@uniquifytrue
   \let\pxcz@directunicode\pxcz@directunicode@full}
-\@namedef{pxcz@opth/unicode-fwid}{%
+\@namedef{pxcz@POPT/unicode-fwid}{%
   \pxcz@fullwidthtrue
   \let\pxcz@directunicode\pxcz@directunicode@full}
-\@namedef{pxcz@opth/unicode*-fwid}{%
+\@namedef{pxcz@POPT/unicode*-fwid}{%
   \pxcz@fullwidthtrue \pxcz@uniquifytrue
   \let\pxcz@directunicode\pxcz@directunicode@full}
 \DeclareOption*{%
-  \pxcz@csuse@or{pxcz@opth/\CurrentOption}{%
+  \pxcz@csuse@or{pxcz@POPT/\CurrentOption}{%
     \pxcz@parse@opt\CurrentOption
     \ifpxcz@ok\else \@unknownoptionerror \fi}}
 \@onlypreamble\pxcz@parse@opt
@@ -234,12 +245,13 @@
   \edef\pxcz@file@preset{#2}}
 % dispatch
 \ProcessOptions*
+
 %% 'everypage' needs 'atbegshi' package
 \ifpxcz@everypage
 \RequirePackage{atbegshi}
 \fi
 
-%% set 'pxcz@directunicode@default'
+%% apply default value for \pxcz@directunicode
 \ifx\pxcz@directunicode\relax
   \let\pxcz@directunicode\pxcz@directunicode@none
   \pxcz@directunicode@defaulttrue
@@ -283,13 +295,15 @@
 \else \pxcz@alphafontfalse
 \fi\fi
 
-%% resolve \pxcz@strict@csi
+%% apply default for \pxcz@strict@csi
 \ifx\pxcz@strict@csi\relax
+  % 'dumpmap(tl)' changes the 'strictcsi' default to true.
   \let\pxcz@strict@csi=f
   \ifpxcz@dumpmap \let\pxcz@strict@csi=t \fi
   \ifpxcz@dumpmap@tl \let\pxcz@strict@csi=t \fi
 \fi
 \if t\pxcz@strict@csi
+  % 'strictcsi' requires some pdfTeX feature.
   \ifx\pdffiledump\@undefined
     \PackageWarning\pxcz@pkgname
      {The option 'strictcsi' cannot be used, because\MessageBreak
@@ -306,43 +320,48 @@
   \let\pxcz@switch@font@xjistrue\pxcz@switch@font@xjisfalse
 \fi
 
-%% 'force@ufont' implies 'only@ufont'
-\ifpxcz@force@ufont
-  \IfFileExists{pxufont.sty}{%
-    \pxcz@only@ufonttrue
-  }{%else
-    \PackageError\pxcz@pkgname
-     {The option 'forceufont' requires 'pxufont' package,\MessageBreak
-      but it is not installed}%
-     {\@ehc}
-  }%
-\fi
-
-
 %--------------------------------------- preset-triggered setup
 
 %% \pxcz@apply@opt@unicode
 % Forces the 'unicode' setup (unless a directunicode option was given).
 \@onlypreamble\pxcz@apply@opt@unicode
 \def\pxcz@apply@opt@unicode{%
-  \pxcz@switch@font@xwidtrue % NOTE: transitional
-  \ifnum0\ifpxcz@directunicode@default1\fi\ifpxcz@uniquify1\fi>\z@
+  \ifpxcz@directunicode@default %  default -> unicode+
+    \pxcz@warn@unicode % NOTE: will change to unicode in future
     \let\pxcz@directunicode\pxcz@directunicode@full
-    \pxcz@uniquifyfalse
-  \fi}
+    \pxcz@switch@font@xwidtrue \pxcz@uniquifyfalse
+  \else\ifnum\pxcz@directunicode=\pxcz@directunicode@full
+    \ifpxcz@uniquify % unicode* -> unicode+
+      \pxcz@switch@font@xwidtrue \pxcz@uniquifyfalse
+    \fi % unicode -> (unchanged)
+  \else \pxcz@uniquifyfalse % otherwise, enable switch-font
+  \fi\fi}
 %% \pxcz@apply@opt@unicodeP
-% Forces the 'unicode+' setup.
+% Forces the 'unicode+' setup, which is a 'unicode' with switch-font
+% enabled on the width features.
 \@onlypreamble\pxcz@apply@opt@unicodeP
 \def\pxcz@apply@opt@unicodeP{%
-  \let\pxcz@directunicode\pxcz@directunicode@full
   \pxcz@uniquifyfalse
-  \pxcz@switch@font@xwidtrue}
+  \pxcz@switch@font@xwidtrue % 'unicode+'
+  \ifnum\pxcz@directunicode=\pxcz@directunicode@full\else
+    \pxcz@warn@unicode
+    \let\pxcz@directunicode\pxcz@directunicode@full
+  \fi}
+%% \pxcz@warn@unicode
+\@onlypreamble\pxcz@warn@unicode
+\def\pxcz@warn@unicode{%
+  \PackageWarningNoLine\pxcz@pkgname
+   {The option 'unicode(*)' is enforced, because the\MessageBreak
+    preset '\pxcz@main@preset' is selected.}}
 
 %% the setup
 \def\pxcz@do#1{%
   \edef\pxcz@tmpa{#1}%
   \pxcz@cond\ifx\pxcz@main@preset\pxcz@tmpa\fi
       {\@firstofone}{\@gobble}}
+% A 'XXXX+' preset forces 'unicode+' setting.
+% 'sourcehan(-otc)' and 'noto(-otc)' should force 'unicode', but currently
+% equivalent to the corresponding 'XXXX+' preset.
 \pxcz@do{sourcehan}{\pxcz@apply@opt@unicode}
 \pxcz@do{sourcehan-otc}{\pxcz@apply@opt@unicode}
 \pxcz@do{noto}{\pxcz@apply@opt@unicode}
@@ -352,6 +371,25 @@
 \pxcz@do{noto+}{\pxcz@apply@opt@unicodeP}
 \pxcz@do{noto-otc+}{\pxcz@apply@opt@unicodeP}
 \pxcz@do{yu-win10+}{\pxcz@apply@opt@unicodeP}
+
+%% apply default for \pxcz@legacycode
+\ifx\pxcz@legacycode\relax
+  \ifnum\pxcz@directunicode=\pxcz@directunicode@full
+    \let\pxcz@legacycode\pxcz@legacycode@replace
+  \else \let\pxcz@legacycode\pxcz@legacycode@apply
+  \fi
+\fi
+
+%% 'replace-lecacycode' requires the 'pxufont' package
+\ifnum\pxcz@legacycode=\pxcz@legacycode@replace
+  \IfFileExists{pxufont.sty}{}{%else
+    \PackageError\pxcz@pkgname
+     {The option 'replace-lecacycode' requires the 'pxufont'\MessageBreak
+       package, but it is not installed}%
+     {The option 'suprress-lecacycode' is applied as fallback.\MessageBreak
+      \@ehc}
+    \let\pxcz@legacycode\pxcz@legacycode@suppress}%
+\fi
 
 %--------------------------------------- user interface
 
@@ -422,6 +460,9 @@
 % The value given to \set...font to mean 'no-embed'.
 \def\pxcz@noembed{*}
 
+%% \pxcz@kill@mapping
+\def\pxcz@kill@mapping{!}
+
 %% \pxcz@cmap@directuni
 % CMap symbol for "direct unicode".
 \def\pxcz@cmap@directuni{unicode}
@@ -431,9 +472,9 @@
 \def\pxcz@cmap@hwuni{UniJIS-UCS2-HW-H}
 
 %%<*> \usecmapforalphabet/\nousecmapforalphabet
-\def\usecmapforalphabet{%
+\newcommand*\usecmapforalphabet{%
   \global\let\pxcz@cmap@uni\pxcz@cmap@hwuni}
-\def\nousecmapforalphabet{%
+\newcommand*\nousecmapforalphabet{%
   \global\let\pxcz@cmap@uni\pxcz@cmap@directuni}
 \ifpxcz@cmap@alpha \usecmapforalphabet
 \else \nousecmapforalphabet \fi
@@ -443,8 +484,7 @@
   \def\pxcz@tmpb{#2}%
   \@for\pxcz@tmpa:=#1\do{%
     \expandafter\let\csname pxcz@NEF/\pxcz@tmpa\endcsname\pxcz@tmpb
-  }%
-}
+  }}
 \pxcz@do{mnl,mnr,mnb}{Ryumin-Light}
 \pxcz@do{gtr,gtb,gtx,gtu,mgr}{GothicBBB-Medium}
 \pxcz@do{kom}{HYSMyeongJo-Medium}
@@ -499,6 +539,7 @@
 \let\pxcz@cmap\relax
 \let\pxcz@font\relax
 \let\pxcz@csi\relax
+\newif\ifpxcz@ext
 \let\pxcz@lopts\relax
 \let\pxcz@mopts\relax
 \let\pxcz@font@tribe\relax
@@ -527,6 +568,7 @@
 \def\pxcz@is@jis@cmap{%
   \pxcz@okfalse
   \expandafter\pxcz@is@jis@cmap@a\pxcz@cmap\pxcz@end}
+\@onlypreamble\pxcz@is@jis@cmap@a
 \def\pxcz@is@jis@cmap@a#1#2\pxcz@end{%
   \ifx\pxcz@mt#2\pxcz@mt \pxcz@oktrue \fi}
 
@@ -581,6 +623,7 @@
 
 %% \pxcz@switch@font@for{<feature>}
 % Modifies \pxcz@font, assuming \pxcz@font@tribe is properly set.
+\@onlypreamble\pxcz@switch@font@for
 \def\pxcz@switch@font@for#1{%
   \pxcz@csletcs{pxcz@tmpb}{pxcz@switch@font@@\pxcz@font@tribe @#1}%
   \ifx\pxcz@tmpb\relax\else
@@ -631,8 +674,7 @@
 %% \pxcz@declare@entry@modifier{<name>}
 \@onlypreamble\pxcz@declare@entry@modifier
 \def\pxcz@declare@entry@modifier#1{%
-  \expandafter\@onlypreamble\csname pxcz@MEM/#1\endcsname
-  \expandafter\def\csname pxcz@MEM/#1\endcsname}
+  \pxcz@onlypreamble@csdef{pxcz@MEM/#1}}
 %% entry modifiers
 % Uni: Changes cmap to 'unicode' if directunicode.
 \pxcz@declare@entry@modifier{Uni}{%
@@ -681,9 +723,9 @@
   \pxcz@add@lopt{fwid}}
 % AJ16/AK12/AG14/AC14
 \pxcz@declare@entry@modifier{AJ16}{\def\pxcz@csi{AJ16}}
-\pxcz@declare@entry@modifier{AK12}{\def\pxcz@csi{AK12}}
-\pxcz@declare@entry@modifier{AG14}{\def\pxcz@csi{AG14}}
-\pxcz@declare@entry@modifier{AC14}{\def\pxcz@csi{AC14}}
+\pxcz@declare@entry@modifier{AK12}{\def\pxcz@csi{AK12}\pxcz@exttrue}
+\pxcz@declare@entry@modifier{AG14}{\def\pxcz@csi{AG14}\pxcz@exttrue}
+\pxcz@declare@entry@modifier{AC14}{\def\pxcz@csi{AC14}\pxcz@exttrue}
 % V: Adds '-w 1' if cmap is 'unicode'.
 \pxcz@declare@entry@modifier{V}{%
   \ifx\pxcz@cmap\pxcz@cmap@directuni
@@ -714,6 +756,7 @@
 \def\pxcz@Entry#1#2#3#4{%
   \def\pxcz@sym{#1}\def\pxcz@cmap{#3}%
   \let\pxcz@csi\relax \let\pxcz@mopts\@empty \let\pxcz@lopts\@empty
+  \pxcz@extfalse
   \edef\pxcz@font{\@nameuse{pxcz@FS/\pxcz@sym}}%
   \pxcz@inspect@font@tribe
   % apply modifiers
@@ -745,17 +788,23 @@
       \fi
     \fi
   \fi
-  % apply 'onlyufont'
-  \ifpxcz@only@ufont
-    \ifx\pxcz@cmap\pxcz@cmap@directuni\else
-      \let\pxcz@font\@empty
-    \fi
-  \fi
+  % suppress legacy-code mappings unless 'apply-legacycode'
+  \ifx\pxcz@cmap\pxcz@cmap@directuni\else \ifpxcz@ext\else
+    \ifnum\pxcz@legacycode=\pxcz@legacycode@apply % no-op
+    \else\ifnum\pxcz@legacycode=\pxcz@legacycode@ignore
+      \let\pxcz@font\@empty % skip
+    \else\ifx\pxcz@font\@empty\else
+      \let\pxcz@font\pxcz@kill@mapping % kill
+    \fi\fi\fi
+  \fi\fi
   % output it
-  \ifx\pxcz@font\@empty\else
+  \ifx\pxcz@font\pxcz@kill@mapping
+    \xdef\pxcz@spec{\pxcz@spec\noexpand\special{%
+      \pxcz@mapline{-#2}}}%
+  \else\ifx\pxcz@font\@empty\else
     \xdef\pxcz@spec{\pxcz@spec\noexpand\special{%
       \pxcz@mapline{#2 \pxcz@cmap\space\pxcz@font\pxcz@mopts}}}%
-  \fi}
+  \fi\fi}
 
 %% \pxcz@do@file@preset
 \@onlypreamble\pxcz@do@file@preset
@@ -783,20 +832,11 @@
 %--------------------------------------- map entry definitions
 
 %% \pxcz@mapentry{<id>}{<text>}
+\@onlypreamble\pxcz@mapentry
 \def\pxcz@mapentry#1{%
-  \expandafter\pxcz@mapentry@a\csname pxcz@ME/#1\endcsname}
-\def\pxcz@mapentry@a#1{\@onlypreamble#1\def#1}
+  \pxcz@onlypreamble@csdef{pxcz@ME/#1}}
 
 %% map entries
-% \FONT: file name for the 2004JIS font
-% \FONTo: file name for the 90JIS font
-% \FONTs: \FONT if prefer2004jis, \FONTo otherwise
-% \*H: 2004-H if prefer2004jis, H otherwise
-% \UniJIS: UniJIS2004 if prefer2004jis, UniJIS otherwise
-% \+Uni...-H: replaced by 'unicode' if directunicode
-% \@+Uni...-H: replaced by 'unicode' if directunicode*
-% \w: '-w 1' if directunicode
-% \@w: '-w 1' if directunicode*
 \pxcz@mapentry{STD}{%
 \Entry{mnr}{rml}           {H}                   {Switch}%
 \Entry{mnr}{rmlv}          {V}                   {Switch,V}%
@@ -1445,7 +1485,11 @@
 \def\pxcz@dump@special@a#1 #2\bxcz@end{%
   \@nameuse{pxcz@dump@special@#1}\@gobble{#2}}
 \@namedef{pxcz@dump@special@pdf:mapline}#1#2{%
-  \pxcz@add@to@dump@text{#2^^J}}
+  \pxcz@add@to@dump@text{\pxcz@rmin#2^^J}}
+
+%% \pxcz@rmin
+\def\pxcz@rmin#1{%
+  \ifx-#1\@percentchar\else#1\fi}
 
 %% \pxcz@dump@spec@to{<file-name>}
 \@onlypreamble\pxcz@dump@spec@to
@@ -1488,8 +1532,7 @@
 %% \pxcz@declare@preset{<name>}{<text>}
 \@onlypreamble\pxcz@declare@preset
 \def\pxcz@declare@preset#1{%
-  \expandafter\pxcz@decl@preset@a\csname pxcz@the@preset@#1\endcsname}
-\def\pxcz@decl@preset@a#1{\@onlypreamble#1\def#1}
+  \pxcz@onlypreamble@csdef{pxcz@the@preset@#1}}
 
 %% \pxcz@declare@preset@alias{<name1>}{<name2>}
 \@onlypreamble\pxcz@declare@preset@alias
@@ -1695,7 +1738,7 @@
 \fi
 
 %% load pxufont
-\ifpxcz@force@ufont
+\ifnum\pxcz@legacycode=\pxcz@legacycode@replace
   \RequirePackage{pxufont}[]
 \fi
 
