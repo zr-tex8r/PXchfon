@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2017/07/05 v1.1]
+\ProvidesPackage{pxchfon}[2017/07/07 v1.1a-pre]
 \def\pxcz@pkgname{pxchfon}
 
 %% preparations
@@ -104,6 +104,7 @@
 \newif\ifpxcz@everypage
 \newif\ifpxcz@oneweight
 \newif\ifpxcz@uniquify
+\newif\ifpxcz@fullwidth
 \let\pxcz@directunicode\relax
 \let\pxcz@main@preset\relax
 \let\pxcz@file@preset\relax
@@ -197,18 +198,21 @@
 \@for\pxcz@x:=\pxcz@all@main@preset\do{%
   \expandafter\pxcz@do\expandafter{\pxcz@x}}
 % others
-\def\pxcz@opt@@unicode{unicode}
-\def\pxcz@opt@@unicodeS{unicode*}
+\@namedef{pxcz@opth/unicode}{%
+  \let\pxcz@directunicode\pxcz@directunicode@full}
+\@namedef{pxcz@opth/unicode*}{%
+  \pxcz@uniquifytrue
+  \let\pxcz@directunicode\pxcz@directunicode@full}
+\@namedef{pxcz@opth/unicode-fwid}{%
+  \pxcz@fullwidthtrue
+  \let\pxcz@directunicode\pxcz@directunicode@full}
+\@namedef{pxcz@opth/unicode*-fwid}{%
+  \pxcz@fullwidthtrue \pxcz@uniquifytrue
+  \let\pxcz@directunicode\pxcz@directunicode@full}
 \DeclareOption*{%
-  \ifx\CurrentOption\pxcz@opt@@unicode
-    \let\pxcz@directunicode\pxcz@directunicode@full
-  \else\ifx\CurrentOption\pxcz@opt@@unicodeS
-    \pxcz@uniquifytrue
-    \let\pxcz@directunicode\pxcz@directunicode@full
-  \else
+  \pxcz@csuse@or{pxcz@opth/\CurrentOption}{%
     \pxcz@parse@opt\CurrentOption
-    \ifpxcz@ok\else \@unknownoptionerror \fi
-  \fi\fi}
+    \ifpxcz@ok\else \@unknownoptionerror \fi}}
 \@onlypreamble\pxcz@parse@opt
 \def\pxcz@parse@opt#1{%
   \expandafter\pxcz@parse@opt@a#1\@nnil}
@@ -726,6 +730,15 @@
     \ifx\pxcz@cmap\pxcz@cmap@directuni
       \ifpxcz@uniquify
         \pxcz@uniquify@lopts{t}{\pxcz@@jpXX}%
+        \ifpxcz@fullwidth
+          \pxcz@add@lopt{fwid}%
+        \fi
+      \else
+        \ifpxcz@fullwidth
+          \pxcz@split{wid}\pxcz@lopts\ifx\pxcz@pre\relax
+            \pxcz@add@lopt{fwid}%
+          \fi
+        \fi
       \fi
       \ifx\pxcz@lopts\@empty\else
         \edef\pxcz@mopts{\pxcz@mopts\space -l \pxcz@lopts}%
@@ -814,100 +827,100 @@
 \Entry{gtu}{hkbv}          {V}                   {Switch,V}%
 }
 \pxcz@mapentry{OTF}{%
-\Entry{mnl}{otf-ujml-h}    {UniJIS-UTF16-H}      {Uni,90}%
-\Entry{mnl}{otf-ujml-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{mnl}{otf-ujml-h}    {UniJIS-UTF16-H}      {Uni,90,FWid}%
+\Entry{mnl}{otf-ujml-v}    {UniJIS-UTF16-V}      {Uni,90,FWid,V}%
 \Entry{mnl}{otf-cjml-h}    {Identity-H}          {AJ16}%
 \Entry{mnl}{otf-cjml-v}    {Identity-V}          {AJ16,V}%
 \Entry{mnl}{hminl-h}       {H}                   {90}%
 \Entry{mnl}{hminl-v}       {V}                   {90,V}%
-\Entry{mnl}{otf-ujmln-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
-\Entry{mnl}{otf-ujmln-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{mnl}{otf-ujmln-h}   {UniJIS2004-UTF16-H}  {Uni,04,FWid}%
+\Entry{mnl}{otf-ujmln-v}   {UniJIS2004-UTF16-V}  {Uni,04,FWid,V}%
 \Entry{mnl}{hminln-h}      {H}                   {}%
 \Entry{mnl}{hminln-v}      {V}                   {V}%
-\Entry{mnr}{otf-ujmr-h}    {UniJIS-UTF16-H}      {Uni,90}%
-\Entry{mnr}{otf-ujmr-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{mnr}{otf-ujmr-h}    {UniJIS-UTF16-H}      {Uni,90,FWid}%
+\Entry{mnr}{otf-ujmr-v}    {UniJIS-UTF16-V}      {Uni,90,FWid,V}%
 \Entry{mnr}{otf-cjmr-h}    {Identity-H}          {AJ16}%
 \Entry{mnr}{otf-cjmr-v}    {Identity-V}          {AJ16,V}%
 \Entry{mnr}{hminr-h}       {H}                   {90}%
 \Entry{mnr}{hminr-v}       {V}                   {90,V}%
-\Entry{mnr}{otf-ujmrn-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
-\Entry{mnr}{otf-ujmrn-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{mnr}{otf-ujmrn-h}   {UniJIS2004-UTF16-H}  {Uni,04,FWid}%
+\Entry{mnr}{otf-ujmrn-v}   {UniJIS2004-UTF16-V}  {Uni,04,FWid,V}%
 \Entry{mnr}{hminrn-h}      {H}                   {}%
 \Entry{mnr}{hminrn-v}      {V}                   {V}%
-\Entry{mnb}{otf-ujmb-h}    {UniJIS-UTF16-H}      {Uni,90}%
-\Entry{mnb}{otf-ujmb-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{mnb}{otf-ujmb-h}    {UniJIS-UTF16-H}      {Uni,90,FWid}%
+\Entry{mnb}{otf-ujmb-v}    {UniJIS-UTF16-V}      {Uni,90,FWid,V}%
 \Entry{mnb}{otf-cjmb-h}    {Identity-H}          {AJ16}%
 \Entry{mnb}{otf-cjmb-v}    {Identity-V}          {AJ16,V}%
 \Entry{mnb}{hminb-h}       {H}                   {90}%
 \Entry{mnb}{hminb-v}       {V}                   {90,V}%
-\Entry{mnb}{otf-ujmbn-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
-\Entry{mnb}{otf-ujmbn-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{mnb}{otf-ujmbn-h}   {UniJIS2004-UTF16-H}  {Uni,04,FWid}%
+\Entry{mnb}{otf-ujmbn-v}   {UniJIS2004-UTF16-V}  {Uni,04,FWid,V}%
 \Entry{mnb}{hminbn-h}      {H}                   {}%
 \Entry{mnb}{hminbn-v}      {V}                   {V}%
-\Entry{gtr}{otf-ujgr-h}    {UniJIS-UTF16-H}      {Uni,90}%
-\Entry{gtr}{otf-ujgr-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{gtr}{otf-ujgr-h}    {UniJIS-UTF16-H}      {Uni,90,FWid}%
+\Entry{gtr}{otf-ujgr-v}    {UniJIS-UTF16-V}      {Uni,90,FWid,V}%
 \Entry{gtr}{otf-cjgr-h}    {Identity-H}          {AJ16}%
 \Entry{gtr}{otf-cjgr-v}    {Identity-V}          {AJ16,V}%
 \Entry{gtr}{hgothr-h}      {H}                   {90}%
 \Entry{gtr}{hgothr-v}      {V}                   {90,V}%
-\Entry{gtr}{otf-ujgrn-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
-\Entry{gtr}{otf-ujgrn-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{gtr}{otf-ujgrn-h}   {UniJIS2004-UTF16-H}  {Uni,04,FWid}%
+\Entry{gtr}{otf-ujgrn-v}   {UniJIS2004-UTF16-V}  {Uni,04,FWid,V}%
 \Entry{gtr}{hgothrn-h}     {H}                   {}%
 \Entry{gtr}{hgothrn-v}     {V}                   {V}%
-\Entry{gtb}{otf-ujgb-h}    {UniJIS-UTF16-H}      {Uni,90}%
-\Entry{gtb}{otf-ujgb-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{gtb}{otf-ujgb-h}    {UniJIS-UTF16-H}      {Uni,90,FWid}%
+\Entry{gtb}{otf-ujgb-v}    {UniJIS-UTF16-V}      {Uni,90,FWid,V}%
 \Entry{gtb}{otf-cjgb-h}    {Identity-H}          {AJ16}%
 \Entry{gtb}{otf-cjgb-v}    {Identity-V}          {AJ16,V}%
 \Entry{gtb}{hgothb-h}      {H}                   {90}%
 \Entry{gtb}{hgothb-v}      {V}                   {90,V}%
-\Entry{gtb}{otf-ujgbn-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
-\Entry{gtb}{otf-ujgbn-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{gtb}{otf-ujgbn-h}   {UniJIS2004-UTF16-H}  {Uni,04,FWid}%
+\Entry{gtb}{otf-ujgbn-v}   {UniJIS2004-UTF16-V}  {Uni,04,FWid,V}%
 \Entry{gtb}{hgothbn-h}     {H}                   {}%
 \Entry{gtb}{hgothbn-v}     {V}                   {V}%
-\Entry{gtx}{otf-ujge-h}    {UniJIS-UTF16-H}      {Uni,90}%
-\Entry{gtx}{otf-ujge-v}    {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{gtx}{otf-ujge-h}    {UniJIS-UTF16-H}      {Uni,90,FWid}%
+\Entry{gtx}{otf-ujge-v}    {UniJIS-UTF16-V}      {Uni,90,FWid,V}%
 \Entry{gtx}{otf-cjge-h}    {Identity-H}          {AJ16}%
 \Entry{gtx}{otf-cjge-v}    {Identity-V}          {AJ16,V}%
 \Entry{gtx}{hgotheb-h}     {H}                   {90}%
 \Entry{gtx}{hgotheb-v}     {V}                   {90,V}%
-\Entry{gtx}{otf-ujgen-h}   {UniJIS2004-UTF16-H}  {Uni,04}%
-\Entry{gtx}{otf-ujgen-v}   {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{gtx}{otf-ujgen-h}   {UniJIS2004-UTF16-H}  {Uni,04,FWid}%
+\Entry{gtx}{otf-ujgen-v}   {UniJIS2004-UTF16-V}  {Uni,04,FWid,V}%
 \Entry{gtx}{hgothebn-h}    {H}                   {}%
 \Entry{gtx}{hgothebn-v}    {V}                   {V}%
-\Entry{mgr}{otf-ujmgr-h}   {UniJIS-UTF16-H}      {Uni,90}%
-\Entry{mgr}{otf-ujmgr-v}   {UniJIS-UTF16-V}      {Uni,90,V}%
+\Entry{mgr}{otf-ujmgr-h}   {UniJIS-UTF16-H}      {Uni,90,FWid}%
+\Entry{mgr}{otf-ujmgr-v}   {UniJIS-UTF16-V}      {Uni,90,FWid,V}%
 \Entry{mgr}{otf-cjmgr-h}   {Identity-H}          {AJ16}%
 \Entry{mgr}{otf-cjmgr-v}   {Identity-V}          {AJ16,V}%
 \Entry{mgr}{hmgothr-h}     {H}                   {90}%
 \Entry{mgr}{hmgothr-v}     {V}                   {90,V}%
-\Entry{mgr}{otf-ujmgrn-h}  {UniJIS2004-UTF16-H}  {Uni,04}%
-\Entry{mgr}{otf-ujmgrn-v}  {UniJIS2004-UTF16-V}  {Uni,04,V}%
+\Entry{mgr}{otf-ujmgrn-h}  {UniJIS2004-UTF16-H}  {Uni,04,FWid}%
+\Entry{mgr}{otf-ujmgrn-v}  {UniJIS2004-UTF16-V}  {Uni,04,FWid,V}%
 \Entry{mgr}{hmgothrn-h}    {H}                   {}%
 \Entry{mgr}{hmgothrn-v}    {V}                   {V}%
 %
 \ifpxcz@otf@multi
-\Entry{kom}{otf-ukmr-h}    {UniKS-UTF16-H}       {Uni}%
-\Entry{kom}{otf-ukmr-v}    {UniKS-UTF16-V}       {Uni,V}%
+\Entry{kom}{otf-ukmr-h}    {UniKS-UTF16-H}       {Uni,FWid}%
+\Entry{kom}{otf-ukmr-v}    {UniKS-UTF16-V}       {Uni,FWid,V}%
 \Entry{kom}{otf-ckmr-h}    {Identity-H}          {AK12}%
 \Entry{kom}{otf-ckmr-v}    {Identity-V}          {AK12,V}%
-\Entry{kog}{otf-ukgr-h}    {UniKS-UTF16-H}       {Uni}%
-\Entry{kog}{otf-ukgr-v}    {UniKS-UTF16-V}       {Uni,V}%
+\Entry{kog}{otf-ukgr-h}    {UniKS-UTF16-H}       {Uni,FWid}%
+\Entry{kog}{otf-ukgr-v}    {UniKS-UTF16-V}       {Uni,FWid,V}%
 \Entry{kog}{otf-ckgr-h}    {Identity-H}          {AK12}%
 \Entry{kog}{otf-ckgr-v}    {Identity-V}          {AK12,V}%
-\Entry{scm}{otf-ucmr-h}    {UniGB-UTF16-H}       {Uni}%
-\Entry{scm}{otf-ucmr-v}    {UniGB-UTF16-V}       {Uni,V}%
+\Entry{scm}{otf-ucmr-h}    {UniGB-UTF16-H}       {Uni,FWid}%
+\Entry{scm}{otf-ucmr-v}    {UniGB-UTF16-V}       {Uni,FWid,V}%
 \Entry{scm}{otf-ccmr-h}    {Identity-H}          {AG14}%
 \Entry{scm}{otf-ccmr-v}    {Identity-V}          {AG14,V}%
-\Entry{scg}{otf-ucgr-h}    {UniGB-UTF16-H}       {Uni}%
-\Entry{scg}{otf-ucgr-v}    {UniGB-UTF16-V}       {Uni,V}%
+\Entry{scg}{otf-ucgr-h}    {UniGB-UTF16-H}       {Uni,FWid}%
+\Entry{scg}{otf-ucgr-v}    {UniGB-UTF16-V}       {Uni,FWid,V}%
 \Entry{scg}{otf-ccgr-h}    {Identity-H}          {AG14}%
 \Entry{scg}{otf-ccgr-v}    {Identity-V}          {AG14,V}%
-\Entry{tcm}{otf-utmr-h}    {UniCNS-UTF16-H}      {Uni}%
-\Entry{tcm}{otf-utmr-v}    {UniCNS-UTF16-V}      {Uni,V}%
+\Entry{tcm}{otf-utmr-h}    {UniCNS-UTF16-H}      {Uni,FWid}%
+\Entry{tcm}{otf-utmr-v}    {UniCNS-UTF16-V}      {Uni,FWid,V}%
 \Entry{tcm}{otf-ctmr-h}    {Identity-H}          {AC14}%
 \Entry{tcm}{otf-ctmr-v}    {Identity-V}          {AC14,V}%
-\Entry{tcg}{otf-utgr-h}    {UniCNS-UTF16-H}      {Uni}%
-\Entry{tcg}{otf-utgr-v}    {UniCNS-UTF16-V}      {Uni,V}%
+\Entry{tcg}{otf-utgr-h}    {UniCNS-UTF16-H}      {Uni,FWid}%
+\Entry{tcg}{otf-utgr-v}    {UniCNS-UTF16-V}      {Uni,FWid,V}%
 \Entry{tcg}{otf-ctgr-h}    {Identity-H}          {AC14}%
 \Entry{tcg}{otf-ctgr-v}    {Identity-V}          {AC14,V}%
 \fi
