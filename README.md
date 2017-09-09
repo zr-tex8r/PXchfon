@@ -38,7 +38,13 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.1a ‹2017/09/09›
+      - Options `unicode(*)-fwid`.
+      - (experimental) Some“legacycode”-related options.
   * Version 1.1  ‹2017/07/05›
+      - Revise the logic of generating map lines.
+      - Option `(no)strictcsi`.
+      - (transitional) Presets `sourcehan(-otc)+` and `noto(-otc)+`.
   * Version 1.0c ‹2017/07/04›
       - Bug fix.
   * Version 1.0b ‹2017/06/29›
@@ -47,13 +53,13 @@ Revision History
       - Driver options.
       - Options `dumpmap` and `dumpmaptl`.
       - Alias `jis2004` for the option `prefer2004jis`.
-      - (experimental) Preset `yu-win10+`.
+      - (transitional) Preset `yu-win10+`.
   * Version 1.0  ‹2017/05/31›
       - The long-deprecated presets are now abolished.
       - The package pxjafont is deprecated.
       - Now `directunicode*` does not need japanese-otf.
-      - (experimental) Option `unicode*`.
-      - (experimental) Presets `sourcehan(-otc)` and `noto(-otc)`.
+      - Option `unicode*`.
+      - Presets `sourcehan(-otc)` and `noto(-otc)`.
   * Version 0.9  ‹2017/04/08›
       - Option `directunicode*`.
   * Version 0.8  ‹2017/01/13›

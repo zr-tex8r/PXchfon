@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2017/07/07 v1.1a-pre]
+\ProvidesPackage{pxchfon}[2017/09/09 v1.1a]
 \def\pxcz@pkgname{pxchfon}
 
 %% preparations
@@ -76,8 +76,7 @@
 
 %% check for 'pxjafont' package
 % if old version of pxjafont is loaded (probably this package is
-% required from pxjafont), then I abort here with an error message
-% and in addition cause pxjafont to abort immediately.
+% required from pxjafont), then I abort here with an error message.
 \@ifpackageloaded{pxjafont}{%
   \ifx\pxAliasedPxjafont\@undefined
     \PackageError\pxcz@pkgname
