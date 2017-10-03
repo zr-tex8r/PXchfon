@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2017/09/09 v1.1a]
+\ProvidesPackage{pxchfon}[2017/10/04 v1.1b]
 \def\pxcz@pkgname{pxchfon}
 
 %% preparations
@@ -1251,7 +1251,8 @@
   \@for\pxcz@x:={#1}\do{%
     \expandafter\ifx\csname pxcz@FS/\pxcz@x\endcsname\@empty
       \pxcz@okfalse \fi}}
-\AtBeginDocument{%
+\@onlypreamble\pxcz@doc@hook
+\def\pxcz@doc@hook{%
   \pxcz@user@hook
   \ifx\pxcz@file@preset\relax\else
     \pxcz@do@file@preset
@@ -1279,15 +1280,22 @@
     \ifpxcz@ok \pxcz@decl@relfont\gtdefault{cfjas}{eb}\fi
     \pxcz@addtospec{ALPHA}%
   \fi
-  \ifpxcz@uptex \pxcz@addtospec{UPSTD}%
-  \else         \pxcz@addtospec{STD}%
+  \ifpxcz@uptex\else
+    \pxcz@addtospec{STD}%
+  \fi
+  \ifnum0\ifnum\pxcz@legacycode=\pxcz@legacycode@replace 1\fi
+         \ifpxcz@uptex 1\fi >\z@
+    \pxcz@addtospec{UPSTD}%
   \fi
   \ifpxcz@otf
     \@ifpackageloaded{otf}{\pxcz@otftrue}{\pxcz@otffalse}%
     \@ifpackageloaded{utf}{\pxcz@utftrue}{\pxcz@utffalse}%
   \fi
   \ifpxcz@otf
-    \ifpxcz@uptex \pxcz@addtospec{UPOTF}\fi
+    \ifnum0\ifnum\pxcz@legacycode=\pxcz@legacycode@replace 1\fi
+           \ifpxcz@uptex 1\fi >\z@
+      \pxcz@addtospec{UPOTF}%
+    \fi
     \pxcz@addtospec{OTF}%
   \fi
   \ifpxcz@utf \pxcz@addtospec{UTF}%
@@ -1312,6 +1320,7 @@
     \pxcz@do@dumpmap@tl
   \fi
 }
+\AtBeginDocument{\pxcz@doc@hook}
 
 %% \pxcz@decl@relfont
 \@onlypreamble\pxcz@decl@relfont

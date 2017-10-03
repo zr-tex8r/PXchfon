@@ -38,6 +38,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.1b ‹2017/10/04›
+      - Bug fix.
   * Version 1.1a ‹2017/09/09›
       - Options `unicode(*)-fwid`.
       - (experimental) Some“legacycode”-related options.
