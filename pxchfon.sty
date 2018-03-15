@@ -325,10 +325,10 @@
 % Forces the 'unicode' setup (unless a directunicode option was given).
 \@onlypreamble\pxcz@apply@opt@unicode
 \def\pxcz@apply@opt@unicode{%
-  \ifpxcz@directunicode@default %  default -> unicode+
-    \pxcz@warn@unicode % NOTE: will change to unicode in future
+  \ifpxcz@directunicode@default %  default -> unicode
+    \pxcz@warn@unicode
     \let\pxcz@directunicode\pxcz@directunicode@full
-    \pxcz@switch@font@xwidtrue \pxcz@uniquifyfalse
+    \pxcz@uniquifyfalse
   \else\ifnum\pxcz@directunicode=\pxcz@directunicode@full
     \ifpxcz@uniquify % unicode* -> unicode+
       \pxcz@switch@font@xwidtrue \pxcz@uniquifyfalse
