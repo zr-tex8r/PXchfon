@@ -10,8 +10,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.1b}
-\newcommand{\PkgDate}{2017/10/04}
+\newcommand{\PkgVersion}{1.2a}
+\newcommand{\PkgDate}{2018/03/17}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -562,6 +562,15 @@ dvipdfmx専用である。
 \setmarugothic{MTLmr3m.ttf}        % モトヤLマルベリ3等幅
 \end{verbatim}\end{quote}
 
+\item |ume|\Means
+   梅フォント。
+\begin{quote}\small\begin{verbatim}
+\setminchofont{ume-tmo3.ttf}       % 梅明朝
+\setgothicfont{ume-tgo5.ttf}       % 梅ゴシックO5
+\setmediumgothicfont{ume-tgo4.ttf} % 梅ゴシック
+\setmarugothic{ume-tgo5.ttf}       % 梅ゴシックO5
+\end{verbatim}\end{quote}
+
 \item |kozuka-pro|\Means
   小塚フォント（Pro版）。
 \begin{quote}\small\begin{verbatim}
@@ -668,7 +677,7 @@ dvipdfmx専用である。
 \setgothicfont{A-OTF-GothicBBBPr6N-Medium.otf}     % A-OTF 中ゴシックBBB Pr6N
 \setboldgothicfont{A-OTF-FutoGoB101Pr6N-Bold.otf}  % A-OTF 太ゴB101 Pr6N
 \setxboldgothicfont{A-OTF-MidashiGoPr6N-MB31.otf}  % A-OTF 見出ゴMB31 Pr6N
-\setmarugothicfont{A-OTFJun101Pr6N-Light.otf}      % A-OTF じゅん Pr6N 101
+\setmarugothicfont{A-OTFJun101Pro-Light.otf}      % A-OTF じゅん Pro 101
 \end{verbatim}\end{quote}
 
 \item |yu-win|\Means
@@ -688,7 +697,7 @@ dvipdfmx専用である。
   \Note フォントの性質のため、この設定では欧文引用符
   “\,”‘\,’の出力が不正になる。
   この不具合は |unicode| オプションを指定する
-  （dvipdfmxの20170627版が必要）、
+  （dvipdfmxの20170918版が必要）、
   または代わりに |yu-win10+| プリセットを指定する
   （dvipdfmxの20170318版が必要）ことで回避できる。
   詳細については\ref{sec:DirectUnicode}節を参照されたい。
@@ -785,16 +794,10 @@ dvipdfmx専用である。
 \begin{itemize}
 \item |noEmbed|\Means |noembed| の別名。
 \item |kozuka|\Means |kozuka-pro| の別名。
+\item |hiragino|\Means |hiragino-pro| の別名。
 \item |hiragino-elcapitan|\Means |hiragino-elcapitan-pro| の別名。
 \item |morisawa|\Means |morisawa-pro| の別名。
 \end{itemize}
-
-\Note なお、|hiragino-pro| と同義の\Pkg{ptex-fontmaps}のプリセット名
-は |hiragino| であるが、本パッケージの |hiragino| は旧版の非推奨の
-設定であり |hiragino-pro| とは異なる。
-\footnote{%
-  1.0版で旧版の |hiragino| は廃止になるので、将来的には |hiragino|
-  は\Pkg{ptex-fontmaps}のものと同義になる予定である。}
 
 %-------------------
 \subsection{廃止されたオプション}
@@ -807,7 +810,7 @@ dvipdfmx専用である。
 \item |ipa-otf|\Means
   「拡張子が |.otf| の」IPAフォント。
   \Note 代替のプリセットはない。
-\item |ipa-dx|\Means
+\item |ipa-otf-dx|\Means
   「拡張子が |.otf| の」IPAフォント + HGフォント。
   \Note 代替のプリセットはない。
 \item |kozuka4|\Means
@@ -822,6 +825,7 @@ dvipdfmx専用である。
 \item |hiragino|\Means
   ヒラギノフォントの単ウェイト使用。
   \Note |hiragino-pro|＋|oneweight| オプションで代替可能。
+  \Note 1.2a版以降で、|hiragino-pro| の別名として再定義された。
 \item |ms-dx|\Means |ms-hg| の別名。
 \item |ipa-ttf|\Means |ipa| の別名。
 \item |ipa-ttf-dx|\Means |ipa-hg| の別名。
@@ -943,7 +947,7 @@ Unicode直接指定が有効になる。
 \item |unicode|\Means
   全般的にUnicode直接指定を利用する。
   最も理想的な設定であるが、現存の{\TeX} Live 2017では利用できない。
-  \Note dvipdfmxの20170627版以降（{\TeX} Live 2018以降）が必要。
+  \Note dvipdfmxの20170918版以降（{\TeX} Live 2018以降）が必要。
 \item |unicode*|\Means
   |unicode| と同じだが、{\TeX} Live 2017のdvipdfmaに対応するために
   妥協を入れた（過渡的な）設定。

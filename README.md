@@ -38,6 +38,10 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.2a ‹2018/03/17›
+      - Preset `ume`.
+      - Preset `hiragino` alias to `hiragino-pro`.
+      - Bug fix.
   * Version 1.2  ‹2018/03/15›
       - Presets `sourcehan`/`noto` turns on `unicode` by default.
   * Version 1.1b ‹2017/10/04›
