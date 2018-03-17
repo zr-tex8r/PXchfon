@@ -184,7 +184,7 @@
 \DeclareOption{suppress-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@suppress}
 \DeclareOption{replace-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@replace}
 % preset spec options
-\def\pxcz@all@main@preset{%
+\pxcz@onlypreamble@def\pxcz@all@main@preset{%
   noembed,%
   %(uniweight)
   ms,ipa,ipaex,%
@@ -195,14 +195,17 @@
   morisawa-pro,morisawa-pr6n,yu-win,yu-win10,yu-win10+,yu-osx,%
   sourcehan-otc,sourcehan,noto-otc,noto,%
   sourcehan-otc+,sourcehan+,noto-otc+,noto+,%
-  %(obsolete)
-  ipa-otf,ipa-otf-dx,kozuka4,kozuka6,kozuka6n,hiragino,%
   %(alias)
-  ms-dx,ipa-ttf,ipa-ttf-dx,ipav2,ipav2-dx,ipa-dx,hiragino-dx,%
+  hiragino,%
   noEmbed,kozuka,hiragino-elcapitan,morisawa}
+\pxcz@onlypreamble@def\pxcz@all@abolished@preset{%
+  ipa-otf,ipa-otf-dx,kozuka4,kozuka6,kozuka6n,
+  ms-dx,ipa-ttf,ipa-ttf-dx,ipav2,ipav2-dx,ipa-dx,hiragino-dx}
   % But note, 'hiragino' != 'hiragino-pro'
 \def\pxcz@do#1{\DeclareOption{#1}{\def\pxcz@main@preset{#1}}}
 \@for\pxcz@x:=\pxcz@all@main@preset\do{%
+  \expandafter\pxcz@do\expandafter{\pxcz@x}}
+\@for\pxcz@x:=\pxcz@all@abolished@preset\do{%
   \expandafter\pxcz@do\expandafter{\pxcz@x}}
 % others
 % The 'unicode' option means a Unicode-oriented mapping, and requires
@@ -1550,19 +1553,13 @@
   \expandafter\endcsname\csname pxcz@the@preset@#2\endcsname}
 \def\pxcz@decl@preset@alias@a#1#2{\@onlypreamble#1\let#1#2}
 
-%% \pxcz@declare@depre@preset
-\@onlypreamble\pxcz@declare@depre@preset
-\def\pxcz@declare@depre@preset#1{%
-  \pxcz@declare@deprecated{#1}%
-  \pxcz@declare@preset{#1}}
-%% \pxcz@declare@depre@preset@alias
-\@onlypreamble\pxcz@declare@depre@preset@alias
-\def\pxcz@declare@depre@preset@alias#1{%
-  \pxcz@declare@deprecated{#1}%
-  \pxcz@declare@preset@alias{#1}}
-%% \pxcz@declare@deprecated{<name>}
-\def\pxcz@declare@deprecated#1{%
-  \expandafter\let\csname pxcz@depre@preset@#1\endcsname=t}
+%% \pxcz@abolished@preset
+\pxcz@onlypreamble@def\pxcz@abolished@preset{%
+  \PackageError\pxcz@pkgname
+   {The old preset '\pxcz@main@preset' is *abolished*}{\@ehc}%
+  \pxcz@uniweight{ERROR.ttf}{ERROR.ttf}}
+\@for\pxcz@x:=\pxcz@all@abolished@preset\do{%
+  \pxcz@onlypreamble@csdef{pxcz@the@preset@\pxcz@x}{\pxcz@abolished@preset}}
 
 %% \pxcz@uniweight{<font-mn>}{<font-gt>}
 \@onlypreamble\pxcz@uniweight
@@ -1580,11 +1577,7 @@
   \fi}
 
 %% \pxcz@use@preset{<name>}
-\def\pxcz@use@preset#1{%
-  \expandafter\ifx\csname pxcz@depre@preset@#1\endcsname t%
-    \pxcz@error{The old preset '#1' is *abolished*}
-      {\@ehc}%
-  \fi
+\pxcz@onlypreamble@def\pxcz@use@preset#1{%
   \csname pxcz@the@preset@#1\endcsname}
 
 %% definitions of main preset mappings
@@ -1704,32 +1697,8 @@
    {NotoSansCJKjp-Regular.otf}{NotoSansCJKjp-Bold.otf}%
    {NotoSansCJKjp-Black.otf}{NotoSansCJKjp-Medium.otf}%
    {NotoSansCJKjp-Medium.otf}}
-%(obsolete)
-\pxcz@declare@depre@preset{ipa-otf}{%
-  \pxcz@uniweight{ipam.otf}{ipag.otf}}
-\pxcz@declare@depre@preset{ipa-otf-dx}{%
-  \pxcz@multiweight{ipam.otf}{:0:hgrme.ttc}%
-  {:0:hgrgm.ttc}{:0:hgrge.ttc}{:0:hgrsgu.ttc}{hgrsmp.ttf}}
-\pxcz@declare@depre@preset{kozuka4}{%
-  \usecmapforalphabet
-  \pxcz@uniweight{KozMinPro-Regular-Acro.otf}{KozGoPro-Medium-Acro.otf}}
-\pxcz@declare@depre@preset{kozuka6}{%
-  \usecmapforalphabet
-  \pxcz@uniweight{KozMinProVI-Regular.otf}{KozGoProVI-Medium.otf}}
-\pxcz@declare@depre@preset{kozuka6n}{%
-  \usecmapforalphabet
-  \pxcz@uniweight{KozMinPr6N-Regular.otf}{KozGoPr6N-Medium.otf}}
-\pxcz@declare@depre@preset{hiragino}{%
-  \usecmapforalphabet
-  \pxcz@uniweight{HiraMinPro-W3.otf}{HiraKakuPro-W6.otf}}
 %(alias)
-\pxcz@declare@depre@preset@alias{ms-dx}{ms-hg}
-\pxcz@declare@depre@preset@alias{ipa-ttf}{ipa}
-\pxcz@declare@depre@preset@alias{ipa-ttf-dx}{ipa-hg}
-\pxcz@declare@depre@preset@alias{ipav2}{ipa}
-\pxcz@declare@depre@preset@alias{ipav2-dx}{ipa-hg}
-\pxcz@declare@depre@preset@alias{ipa-dx}{ipa-hg}
-\pxcz@declare@depre@preset@alias{hiragino-dx}{hiragino-pro}
+\pxcz@declare@preset@alias{hiragino}{hiragino-pro}
 \pxcz@declare@preset@alias{noEmbed}{noembed}
 \pxcz@declare@preset@alias{kozuka}{kozuka-pro}
 \pxcz@declare@preset@alias{hiragino-elcapitan}{hiragino-elcapitan-pro}
