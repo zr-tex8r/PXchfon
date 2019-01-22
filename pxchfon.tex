@@ -10,8 +10,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.2a}
-\newcommand{\PkgDate}{2018/03/17}
+\newcommand{\PkgVersion}{1.2b}
+\newcommand{\PkgDate}{2019/01/21}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -55,6 +55,7 @@ dvipdfmx専用である。
 \item 前提パッケージ\Means
   \begin{itemize}
   \item \Pkg{atbegshi}パッケージ（|everypage| オプション使用時）
+  \item \Pkg{pxufont}パッケージ（|unicode| オプション使用時）
   \end{itemize}
 \end{itemize}
 
@@ -94,8 +95,8 @@ dvipdfmx専用である。
 \item |noalphabet|\Means
   |alphabet| の否定。
   欧文フォントは変更しない。
-  インストール時に欧文用の設定をしていない場合は必ずこれを
-  指定する必要がある。
+%  インストール時に欧文用の設定をしていない場合は必ずこれを
+%  指定する必要がある。
   \textbf{プリセット指定オプション使用の場合はこちらが既定で有効になる。}
 \item |otf|（既定）\Means
   \Pkg{japanese-otf}パッケージの使用時に、
@@ -374,9 +375,9 @@ dvipdfmx専用である。
   和文フォントを、「Unicodeを用いてフォントのグリフにアクセスする」
   状態に切り替える（宣言型命令）。
   これにより、全角幅の任意の文字が出力可能となる。
-  \footnote{\texttt{directunicode} オプションはBMP内でしか
-    効かないが、この命令の効果はBMP外の文字にも及ぶ。
-    つまり本当に任意の文字が扱える。}%
+%  \footnote{\texttt{directunicode} オプションはBMP内でしか
+%    効かないが、この命令の効果はBMP外の文字にも及ぶ。
+%    つまり本当に任意の文字が扱える。}%
   その代わり、この状態では、約物の周りの空き調整が無効になる。
   詳細については\ref{sec:Loading}節の |directunicode| オプションの
   説明を参照されたい。
@@ -666,18 +667,19 @@ dvipdfmx専用である。
 \setgothicfont{A-OTF-GothicBBBPro-Medium.otf}     % A-OTF 中ゴシックBBB Pro
 \setboldgothicfont{A-OTF-FutoGoB101Pro-Bold.otf}  % A-OTF 太ゴB101 Pro
 \setxboldgothicfont{A-OTF-MidashiGoPro-MB31.otf}  % A-OTF 見出ゴMB31 Pro
-\setmarugothicfont{A-OTFJun101Pro-Light.otf}      % A-OTF じゅん Pro 101
+\setmarugothicfont{A-OTF-Jun101Pro-Light.otf}     % A-OTF じゅん Pro 101
 \end{verbatim}\end{quote}
 
 \item |morisawa-pr6n|\Means
-  モリサワフォント基本7書体（Pr6N版）。
+  モリサワフォント基本7書体（Pr6N版
+  \footnote{「じゅん」はPr6N版が存在しないためPro版が使われる。}）。
 \begin{quote}\small\begin{verbatim}
 \setminchofont{A-OTF-RyuminPr6N-Light.otf}         % A-OTF リュウミン Pr6N L-KL
 \setboldminchofont{A-OTF-FutoMinA101Pr6N-Bold.otf} % A-OTF 太ミンA101 Pr6N
 \setgothicfont{A-OTF-GothicBBBPr6N-Medium.otf}     % A-OTF 中ゴシックBBB Pr6N
 \setboldgothicfont{A-OTF-FutoGoB101Pr6N-Bold.otf}  % A-OTF 太ゴB101 Pr6N
 \setxboldgothicfont{A-OTF-MidashiGoPr6N-MB31.otf}  % A-OTF 見出ゴMB31 Pr6N
-\setmarugothicfont{A-OTFJun101Pro-Light.otf}      % A-OTF じゅん Pro 101
+\setmarugothicfont{A-OTF-Jun101Pro-Light.otf}      % A-OTF じゅん Pro 101
 \end{verbatim}\end{quote}
 
 \item |yu-win|\Means
@@ -971,15 +973,10 @@ Unicode直接指定が有効になる。
 以下に挙げるプリセット設定は“AJ1でない”OpenTypeフォントを
 利用するものである。
 そのため、これらのプリセットを指定した場合は、
-自動的に |unicode| が（既定として）指定される。
-
-\Note …というのが本来の仕様であるが、現状では{\TeX} Liveの
-dvipdfmxで |unicode| が使えないため、{\TeX} Live 2018のリリースまでの
-暫定措置として、これらのプリセット指定は、|+| 付きの名前の
-特殊プリセットに自動的に振り返られるようにする。
-つまり、|noto| は |noto+| と等価になる。
-ただし、Unicode直接指定のオプション（|unicode| 等）が明示された
-場合は、この振り替え措置は行われなくなる。
+自動的に |unicode| が（既定として）指定される%
+\footnote{1.0～1.1b版では{\TeX} Live 2017のための暫定措置として
+「|+|付の特殊プリセットへの自動振替」が行われていたが、
+1.2版から本来の仕様が適用される。}。
 
 \begin{itemize}
 \item |sourcehan|
@@ -1044,12 +1041,15 @@ DVI文書の全てのページにフォントマップ情報を書き出すの�
 指定された和文フォントの半角部分からなる欧文フォントファミリとして
 OT1/cfjar（明朝）とOT1/cfjas（ゴシック）を定義し、
 既定の欧文ファミリに設定している
-（明朝→|\rmdefault|；ゴシック→|\sfdefault|）。
+（明朝→|\rmdefault|；ゴシック→|\sfdefault|）
+\footnote{従って、欧文フォントの置換（\texttt{alphabet}や
+\texttt{relfont}オプション）を利用する場合は、欧文エンコーディングが
+OT1である必要がある。}。
 その上で、この欧文ファミリに対するマップ指定を和文と同じ方法で行っている。
 
-従って、例えば一時的に従来の CM フォントに切り替えたい場合はファミリ
-を cmr に変更すればよい。なお、この cfjar と cfjas フォントは内部では
-OT1 として扱われるが、実際には OT1 の一部のグリフしか持っていない。
+従って、例えば一時的に従来のCMフォントに切り替えたい場合はファミリ
+をcmrに変更すればよい。なお、このcfjarとcfjasフォントは内部では
+OT1として扱われるが、実際にはOT1の一部のグリフしか持っていない。
 
 %===========================================================
 \section{注意事項}
@@ -1178,12 +1178,11 @@ r-cfjas-x-@PXcjk0@     msgothic.ttc FontIndex=0
 \item プリセット指定は中国語・韓国語のフォントについては何も指定しない。
 従って、上記の命令を用いない場合は、これらのフォントのマップ再設定が
 行われることはない。
-\item |directunicode(*)| 指定は中国語・韓国語のフォントに対しても
+\item 「Unicode直接指定オプション」は中国語・韓国語のフォントに対しても
 有効である。
-効果の範囲は日本語の場合と同様で、
-|directunicode| では「\Pkg{japanese-otf}パッケージのUnicode入力命令」
+|directunicode| の場合は「\Pkg{japanese-otf}パッケージのUnicode入力命令」
 （|\UTFK|、|\UTFM|、等）が対象となり、
-|directunicode*| ではこれに加えて{\upTeX}標準のフォントも
+それ以外はこれに加えて{\upTeX}標準のフォントも
 対象になる。
 \end{itemize}
 

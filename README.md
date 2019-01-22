@@ -38,6 +38,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.2b ‹2019/01/21›
+      - Fix the file name for font “Jun 101”.
   * Version 1.2a ‹2018/03/17›
       - Preset `ume`.
       - Preset `hiragino` alias to `hiragino-pro`.
