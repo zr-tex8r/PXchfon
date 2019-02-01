@@ -542,7 +542,7 @@
 \let\pxcz@cmap\relax
 \let\pxcz@font\relax
 \let\pxcz@csi\relax
-\newif\ifpxcz@ext
+\newif\ifpxcz@retain
 \let\pxcz@lopts\relax
 \let\pxcz@mopts\relax
 \let\pxcz@font@tribe\relax
@@ -727,9 +727,9 @@
   \pxcz@add@lopt{fwid}}
 % AJ16/AK12/AG14/AC14
 \pxcz@declare@entry@modifier{AJ16}{\def\pxcz@csi{AJ16}}
-\pxcz@declare@entry@modifier{AK12}{\def\pxcz@csi{AK12}\pxcz@exttrue}
-\pxcz@declare@entry@modifier{AG14}{\def\pxcz@csi{AG14}\pxcz@exttrue}
-\pxcz@declare@entry@modifier{AC14}{\def\pxcz@csi{AC14}\pxcz@exttrue}
+\pxcz@declare@entry@modifier{AK12}{\def\pxcz@csi{AK12}\pxcz@retaintrue}
+\pxcz@declare@entry@modifier{AG14}{\def\pxcz@csi{AG14}\pxcz@retaintrue}
+\pxcz@declare@entry@modifier{AC14}{\def\pxcz@csi{AC14}\pxcz@retaintrue}
 % V: Adds '-w 1' if cmap is 'unicode'.
 \pxcz@declare@entry@modifier{V}{%
   \ifx\pxcz@cmap\pxcz@cmap@directuni
@@ -760,7 +760,7 @@
 \def\pxcz@Entry#1#2#3#4{%
   \def\pxcz@sym{#1}\def\pxcz@cmap{#3}%
   \let\pxcz@csi\relax \let\pxcz@mopts\@empty \let\pxcz@lopts\@empty
-  \pxcz@extfalse
+  \pxcz@retainfalse
   \edef\pxcz@font{\@nameuse{pxcz@FS/\pxcz@sym}}%
   \pxcz@inspect@font@tribe
   % apply modifiers
@@ -793,7 +793,7 @@
     \fi
   \fi
   % suppress legacy-code mappings unless 'apply-legacycode'
-  \ifx\pxcz@cmap\pxcz@cmap@directuni\else \ifpxcz@ext\else
+  \ifx\pxcz@cmap\pxcz@cmap@directuni\else \ifpxcz@retain\else
     \ifnum\pxcz@legacycode=\pxcz@legacycode@apply % no-op
     \else\ifnum\pxcz@legacycode=\pxcz@legacycode@ignore
       \let\pxcz@font\@empty % skip
