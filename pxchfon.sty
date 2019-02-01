@@ -308,7 +308,7 @@
 \if t\pxcz@strict@csi
   % 'strictcsi' requires some pdfTeX feature.
   \ifx\pdffiledump\@undefined
-    \PackageWarning\pxcz@pkgname
+    \PackageWarningNoLine\pxcz@pkgname
      {The option 'strictcsi' cannot be used, because\MessageBreak
       the engine does not support '\string\pdffiledump'}
     \let\pxcz@strict@csi=f
@@ -678,6 +678,7 @@
 \@onlypreamble\pxcz@declare@entry@modifier
 \def\pxcz@declare@entry@modifier#1{%
   \pxcz@onlypreamble@csdef{pxcz@MEM/#1}}
+
 %% entry modifiers
 % Uni: Changes cmap to 'unicode' if directunicode.
 \pxcz@declare@entry@modifier{Uni}{%
@@ -693,7 +694,7 @@
       \let\pxcz@cmap\pxcz@cmap@directuni
     \fi
   \fi}
-% Switch
+% Switch: Selects 90 or 04 (according to mmivjis)
 \pxcz@declare@entry@modifier{Switch}{%
   \ifpxcz@mmivjis
     \pxcz@force@mmiv@cmap
@@ -1091,7 +1092,7 @@
   \edef\pxcz@du@scale{\ifx\jsc@JYn\@undefined 0.962216\else 0.924715\fi}%
 \fi
 
-%% \pxcz@du@decl@shape{<fam>}{<ser>}{<font>}
+%% \pxcz@du@decl@shape{<fam>}{<ser>}<sw>{<tfmname>}{<suffix>}
 \@onlypreamble\pxcz@du@decl@shape
 \def\pxcz@du@decl@shape#1#2#3#4#5{%
 \DeclareFontShape{JY2}{#1}{#2}{diruni}{<->%
