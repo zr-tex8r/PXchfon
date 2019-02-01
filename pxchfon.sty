@@ -123,6 +123,7 @@
 \let\pxcz@strict@csi\relax
 \newif\ifpxcz@directunicode@default
 \let\pxcz@legacycode\relax
+\let\pxcz@expert\relax
 \newif\ifpxcz@glyphid
 
 %% process options
@@ -184,6 +185,9 @@
 \DeclareOption{ignore-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@ignore}
 \DeclareOption{suppress-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@suppress}
 \DeclareOption{replace-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@replace}
+% (no)expert
+\DeclareOption{expert}{\let\pxcz@expert=t}
+\DeclareOption{noexpert}{\let\pxcz@expert=f}
 % (no)glyphid
 \DeclareOption{glyphid}{\pxcz@glyphidtrue}
 \DeclareOption{noglyphid}{\pxcz@glyphidfalse}
@@ -411,7 +415,28 @@
      {\@ehc}
     \pxcz@glyphidfalse
   \fi
+  \if t\pxcz@expert % explicitly given
+    \PackageError\pxcz@pkgname
+     {The option 'expert' cannot be used here. You must\MessageBreak
+      use upLaTeX and the 'unicode' option}
+     {\@ehc}
+  \fi
+  \let\pxcz@expert=f
 \fi
+
+%% apply default for \pxcz@expert
+\@ifpackagewith{otf}{expert}{%
+  \ifx\pxcz@expert\relax
+    \let\pxcz@expert=t
+  \fi
+}{%else
+  \if t\pxcz@expert
+    \PackageWarningNoLine\pxcz@pkgname
+     {The 'expert' option will be ignored, since the\MessageBreak
+      expert mode of the 'otf' package is not enabled}
+  \fi
+  \let\pxcz@expert=f
+}
 
 %--------------------------------------- user interface
 
@@ -561,6 +586,7 @@
 \let\pxcz@cmap\relax
 \let\pxcz@font\relax
 \let\pxcz@csi\relax
+\newif\ifpxcz@vert
 \newif\ifpxcz@retain
 \newif\ifpxcz@retain@csi
 \let\pxcz@lopts\relax
@@ -746,15 +772,29 @@
   \pxcz@switch@font@for{fwid}%
   \pxcz@add@lopt{fwid}}
 % AJ16/AK12/AG14/AC14
-\pxcz@declare@entry@modifier{AJ16}{\def\pxcz@csi{AJ16}}
+\pxcz@declare@entry@modifier{AJ16}{%
+  \def\pxcz@csi{AJ16}%
+  \if t\pxcz@expert \ifnum\pxcz@directunicode<\pxcz@directunicode@all\else
+      \ifx\pxcz@font\pxcz@noembed\else
+    \let\pxcz@cmap\pxcz@cmap@directuni \let\pxcz@csi\relax
+    \pxcz@add@lopt{ruby}%
+  \fi\fi\fi}
 \pxcz@declare@entry@modifier{AK12}{\def\pxcz@csi{AK12}\pxcz@retaintrue}
 \pxcz@declare@entry@modifier{AG14}{\def\pxcz@csi{AG14}\pxcz@retaintrue}
 \pxcz@declare@entry@modifier{AC14}{\def\pxcz@csi{AC14}\pxcz@retaintrue}
 % V: Adds '-w 1' if cmap is 'unicode'.
 \pxcz@declare@entry@modifier{V}{%
+  \pxcz@verttrue
   \ifx\pxcz@cmap\pxcz@cmap@directuni
     \edef\pxcz@mopts{ -w 1\pxcz@mopts}%
   \fi}
+% Exp: Adds 'hkna/vkna' if cmap is 'unicode'.
+\pxcz@declare@entry@modifier{Exp}{%
+  \if t\pxcz@expert \ifx\pxcz@cmap\pxcz@cmap@directuni
+    \ifpxcz@vert \pxcz@add@lopt{vkna}%
+    \else \pxcz@add@lopt{hkna}%
+    \fi
+  \fi\fi}
 % SubG
 \pxcz@declare@entry@modifier{SubG}{%
   \ifpxcz@glyphid
@@ -788,7 +828,7 @@
 \def\pxcz@Entry#1#2#3#4{%
   \def\pxcz@sym{#1}\def\pxcz@cmap{#3}%
   \let\pxcz@csi\relax \let\pxcz@mopts\@empty \let\pxcz@lopts\@empty
-  \pxcz@retainfalse \pxcz@retain@csifalse
+  \pxcz@retainfalse \pxcz@retain@csifalse \pxcz@vertfalse
   \edef\pxcz@font{\@nameuse{pxcz@FS/\pxcz@sym}}%
   \pxcz@inspect@font@tribe
   % apply modifiers
@@ -1023,34 +1063,34 @@
 \Entry{tcg}{upmhm-v}       {UniCNS-UTF16-V}      {Uni*,V}%
 }
 \pxcz@mapentry{UPOTF}{%
-\Entry{mnl}{uphminl-h}     {UniJIS-UTF16-H}      {Uni*,90}%
-\Entry{mnl}{uphminl-v}     {UniJIS-UTF16-V}      {Uni*,90,V}%
-\Entry{mnl}{uphminln-h}    {UniJIS2004-UTF16-H}  {Uni*,04}%
-\Entry{mnl}{uphminln-v}    {UniJIS2004-UTF16-V}  {Uni*,04,V}%
-\Entry{mnr}{uphminr-h}     {UniJIS-UTF16-H}      {Uni*,90}%
-\Entry{mnr}{uphminr-v}     {UniJIS-UTF16-V}      {Uni*,90,V}%
-\Entry{mnr}{uphminrn-h}    {UniJIS2004-UTF16-H}  {Uni*,04}%
-\Entry{mnr}{uphminrn-v}    {UniJIS2004-UTF16-V}  {Uni*,04,V}%
-\Entry{mnb}{uphminb-h}     {UniJIS-UTF16-H}      {Uni*,90}%
-\Entry{mnb}{uphminb-v}     {UniJIS-UTF16-V}      {Uni*,90,V}%
-\Entry{mnb}{uphminbn-h}    {UniJIS2004-UTF16-H}  {Uni*,04}%
-\Entry{mnb}{uphminbn-v}    {UniJIS2004-UTF16-V}  {Uni*,04,V}%
-\Entry{gtr}{uphgothr-h}    {UniJIS-UTF16-H}      {Uni*,90}%
-\Entry{gtr}{uphgothr-v}    {UniJIS-UTF16-V}      {Uni*,90,V}%
-\Entry{gtr}{uphgothrn-h}   {UniJIS2004-UTF16-H}  {Uni*,04}%
-\Entry{gtr}{uphgothrn-v}   {UniJIS2004-UTF16-V}  {Uni*,04,V}%
-\Entry{gtb}{uphgothb-h}    {UniJIS-UTF16-H}      {Uni*,90}%
-\Entry{gtb}{uphgothb-v}    {UniJIS-UTF16-V}      {Uni*,90,V}%
-\Entry{gtb}{uphgothbn-h}   {UniJIS2004-UTF16-H}  {Uni*,04}%
-\Entry{gtb}{uphgothbn-v}   {UniJIS2004-UTF16-V}  {Uni*,04,V}%
-\Entry{gtx}{uphgotheb-h}   {UniJIS-UTF16-H}      {Uni*,90}%
-\Entry{gtx}{uphgotheb-v}   {UniJIS-UTF16-V}      {Uni*,90,V}%
-\Entry{gtx}{uphgothebn-h}  {UniJIS2004-UTF16-H}  {Uni*,04}%
-\Entry{gtx}{uphgothebn-v}  {UniJIS2004-UTF16-V}  {Uni*,04,V}%
-\Entry{mgr}{uphmgothr-h}   {UniJIS-UTF16-H}      {Uni*,90}%
-\Entry{mgr}{uphmgothr-v}   {UniJIS-UTF16-V}      {Uni*,90,V}%
-\Entry{mgr}{uphmgothrn-h}  {UniJIS2004-UTF16-H}  {Uni*,04}%
-\Entry{mgr}{uphmgothrn-v}  {UniJIS2004-UTF16-V}  {Uni*,04,V}%
+\Entry{mnl}{uphminl-h}     {UniJIS-UTF16-H}      {Uni*,90,Exp}%
+\Entry{mnl}{uphminl-v}     {UniJIS-UTF16-V}      {Uni*,90,V,Exp}%
+\Entry{mnl}{uphminln-h}    {UniJIS2004-UTF16-H}  {Uni*,04,Exp}%
+\Entry{mnl}{uphminln-v}    {UniJIS2004-UTF16-V}  {Uni*,04,V,Exp}%
+\Entry{mnr}{uphminr-h}     {UniJIS-UTF16-H}      {Uni*,90,Exp}%
+\Entry{mnr}{uphminr-v}     {UniJIS-UTF16-V}      {Uni*,90,V,Exp}%
+\Entry{mnr}{uphminrn-h}    {UniJIS2004-UTF16-H}  {Uni*,04,Exp}%
+\Entry{mnr}{uphminrn-v}    {UniJIS2004-UTF16-V}  {Uni*,04,V,Exp}%
+\Entry{mnb}{uphminb-h}     {UniJIS-UTF16-H}      {Uni*,90,Exp}%
+\Entry{mnb}{uphminb-v}     {UniJIS-UTF16-V}      {Uni*,90,V,Exp}%
+\Entry{mnb}{uphminbn-h}    {UniJIS2004-UTF16-H}  {Uni*,04,Exp}%
+\Entry{mnb}{uphminbn-v}    {UniJIS2004-UTF16-V}  {Uni*,04,V,Exp}%
+\Entry{gtr}{uphgothr-h}    {UniJIS-UTF16-H}      {Uni*,90,Exp}%
+\Entry{gtr}{uphgothr-v}    {UniJIS-UTF16-V}      {Uni*,90,V,Exp}%
+\Entry{gtr}{uphgothrn-h}   {UniJIS2004-UTF16-H}  {Uni*,04,Exp}%
+\Entry{gtr}{uphgothrn-v}   {UniJIS2004-UTF16-V}  {Uni*,04,V,Exp}%
+\Entry{gtb}{uphgothb-h}    {UniJIS-UTF16-H}      {Uni*,90,Exp}%
+\Entry{gtb}{uphgothb-v}    {UniJIS-UTF16-V}      {Uni*,90,V,Exp}%
+\Entry{gtb}{uphgothbn-h}   {UniJIS2004-UTF16-H}  {Uni*,04,Exp}%
+\Entry{gtb}{uphgothbn-v}   {UniJIS2004-UTF16-V}  {Uni*,04,V,Exp}%
+\Entry{gtx}{uphgotheb-h}   {UniJIS-UTF16-H}      {Uni*,90,Exp}%
+\Entry{gtx}{uphgotheb-v}   {UniJIS-UTF16-V}      {Uni*,90,V,Exp}%
+\Entry{gtx}{uphgothebn-h}  {UniJIS2004-UTF16-H}  {Uni*,04,Exp}%
+\Entry{gtx}{uphgothebn-v}  {UniJIS2004-UTF16-V}  {Uni*,04,V,Exp}%
+\Entry{mgr}{uphmgothr-h}   {UniJIS-UTF16-H}      {Uni*,90,Exp}%
+\Entry{mgr}{uphmgothr-v}   {UniJIS-UTF16-V}      {Uni*,90,V,Exp}%
+\Entry{mgr}{uphmgothrn-h}  {UniJIS2004-UTF16-H}  {Uni*,04,Exp}%
+\Entry{mgr}{uphmgothrn-v}  {UniJIS2004-UTF16-V}  {Uni*,04,V,Exp}%
 }
 \pxcz@mapentry{GID}{%
 \Entry{mnr}{hminrn-h}      {H}                   {SubG}%
@@ -1104,13 +1144,15 @@
   \let\pxcz@otf@weight=d
 }{\@ifpackagewith{otf}{bold}{%
   \let\pxcz@otf@weight=b
+}{\@ifpackagewith{otf}{expert}{%
+  \let\pxcz@otf@weight=r % 'expert' cancels 'noreplace'
 }{\@ifpackagewith{otf}{noreplace}{%
   \let\pxcz@otf@weight=n
 }{\@ifpackageloaded{otf}{%
   \let\pxcz@otf@weight=r
 }{%else
   \let\pxcz@otf@weight=n
-}}}}
+}}}}}
 %% \pxcz@otf@mmivjis: otf jis2004
 \@ifpackagewith{otf}{jis2004}{%
   \let\pxcz@otf@mmivjis=t%
@@ -1238,6 +1280,41 @@
 \fi\fi\fi
 
 \fi                 %---- </glyphid>
+
+\ifx t\pxcz@expert  %---- <*expert>
+
+%% \pxcz@dx@decl@shape{<fam>}{<ser>}<sw>{<tfmname>}
+\@onlypreamble\pxcz@dx@decl@shape
+\def\pxcz@dx@decl@shape#1#2#3#4{%
+\DeclareFontShape{JY2}{#1}{#2}{n}{<->%
+    \pxcz@dx@shape@spec{#3}{#4}{h}}{}%
+\DeclareFontShape{JT2}{#1}{#2}{n}{<->%
+    \pxcz@dx@shape@spec{#3}{#4}{v}}{}}
+\@onlypreamble\pxcz@dx@shape@spec
+\def\pxcz@dx@shape@spec#1#2#3{%
+  \if#1t%
+    s*[\pxcz@du@scale]#2-#3%
+  \else#2\fi}
+
+\AtEndOfPackage{% this must be after loading pxufont
+\if d\pxcz@otf@weight % deluxe
+\pxcz@dx@decl@shape{ruby}{l}t{otf-cjml}%
+\pxcz@dx@decl@shape{ruby}{m}t{otf-cjmr}%
+\pxcz@dx@decl@shape{ruby}{bx}t{otf-cjmb}%
+\pxcz@dx@decl@shape{rubyg}{m}t{otf-cjgr}%
+\pxcz@dx@decl@shape{rubyg}{bx}t{otf-cjgb}%
+\pxcz@dx@decl@shape{rubyg}{eb}t{otf-cjge}%
+\pxcz@dx@decl@shape{rubymg}{m}t{otf-cjmgr}%
+\else\if b\pxcz@otf@weight % bold
+\pxcz@dx@decl@shape{ruby}{m}t{otf-cjmr}%
+\pxcz@dx@decl@shape{ruby}{bx}t{otf-cjgb}%
+\else % default
+\pxcz@dx@decl@shape{ruby}{m}t{otf-cjmr}%
+\pxcz@dx@decl@shape{ruby}{bx}t{otf-cjgr}%
+\fi\fi
+}
+
+\fi                 %---- </expert>
 
 \fi                 %---- </diruni-ok>
 
