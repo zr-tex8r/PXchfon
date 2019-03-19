@@ -17,7 +17,8 @@ used in the japanese-otf package.
   * TeX engine: pTeX or upTeX.
   * DVIware: dvipdfmx.
   * Prerequisite packages:
-      - atbegshi
+      - atbegshi (when option `everypage` is used)
+      - pxufont (when option `unicode` is used)
 
 ### INSTALLATION
 
@@ -38,10 +39,13 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.3a ‹2019/03/20›
+      - Now the support of `expert` mode in the direct Unicode mode is
+        available also on pTeX.
   * Version 1.3  ‹2019/02/03›
       - Now the direct Unicode mode supports the major feature of the
         `expert` mode of the otf-japanese package.
-      - (experimental) The feature of GID input (`glyphid` option).
+      - The feature of GID input (`glyphid` option).
   * Version 1.2b ‹2019/01/21›
       - Fix the file name for font “Jun 101”.
   * Version 1.2a ‹2018/03/17›

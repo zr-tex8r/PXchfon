@@ -21,6 +21,7 @@ pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）を
   * DVIウェア： dvipdfmx
   * 依存パッケージ：
       - atbegshi パッケージ(`everypage` オプション使用時)
+      - pxufont パッケージ(`unicode` オプション使用時)
 
 ### インストール
 
@@ -62,10 +63,13 @@ MITライセンスの下で配布される。
 更新履歴
 --------
 
+  * Version 1.3a ‹2019/03/20›
+      - 1.3 版の追加機能の大幅な改修。Unicode 直接モードの `expert` が
+        pTeX でも使用可能になった。
   * Version 1.3  ‹2019/02/03›
       - Unicode 直接モードにおいて japanese-otf の `expert` 指定の主要な
         機能（横組・縦組用仮名字形、ルビ用字形）に対応した。
-      - (試験的) GID 指定入力（`glyphid` オプション、`\gid` 命令）。
+      - GID 指定入力（`glyphid` オプションおよび `\gid` 命令）。
   * Version 1.2b ‹2019/01/21›
       - 「じゅん101」のファイル名の誤りを修正。
   * Version 1.2a ‹2018/03/17›

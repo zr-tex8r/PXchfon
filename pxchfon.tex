@@ -10,12 +10,13 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.3}
-\newcommand{\PkgDate}{2019/02/03}
+\newcommand{\PkgVersion}{1.3a}
+\newcommand{\PkgDate}{2019/03/20}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
 \newcommand{\Means}{：\ }
+\providecommand{\Strong}[1]{\textsf{#1}}
 \providecommand{\pTeX}{p\TeX}
 \providecommand{\pLaTeX}{p\LaTeX}
 \providecommand{\upTeX}{u\pTeX}
@@ -31,9 +32,9 @@
 %===========================================================
 \section{概要}
 
-{\pLaTeX}／{\upLaTeX}の文書の標準のフォント（明朝・ゴシック）
-をユーザ指定のものに置き換える。
-dvipdfmx専用である。
+{\pLaTeX}／{\upLaTeX}＋dvipdfmxのワークフローでPDF文書を作る場合に、
+標準の和文フォント（明朝・ゴシック）に対して実際に使われる
+OpenTypeフォントをユーザが指定する機能を提供する。
 使用するフォントを{\LaTeX}文書中で指定するので、
 一度パッケージをインストールするだけで、
 任意の日本語フォント（ただし等幅に限る）を使うことができる。
@@ -42,15 +43,16 @@ dvipdfmx専用である。
   https://www.ctan.org/pkg/japanese-otf}%
 パッケージにも対応している。
 
-0.5版での拡張で、{\pTeX}において広く行われているフォント設定
-（IPAフォントの使用等）をパッケージオプション一つで
-行う機能を追加した。
+また、{(u)\pLaTeX}において広く行われているフォント設定
+（IPAexフォントの使用等）をパッケージオプション一つで適用する機能
+（プリセット指定）も備えている。
 
 %===========================================================
 \section{前提環境}
 
 \begin{itemize}
-\item {\TeX}フォーマット\Means {\pLaTeX}／{\upLaTeX}
+\item {\TeX}フォーマット\Means {\LaTeX}
+\item {\TeX}エンジン\Means {\pTeX}／{\upTeX}
 \item DVIウェア\Means dvipdfmx
 \item 前提パッケージ\Means
   \begin{itemize}
@@ -71,7 +73,7 @@ dvipdfmx専用である。
 オプションは次のものが用意されている。
 
 \begin{itemize}
-\item \textbf{ドライバオプション}\Means
+\item \Strong{ドライバオプション}\Means
   |dvipdfmx|、|dvips|、|dviout|、|xdvi| および |nodvidriver|%
   \footnote{ドライバ依存動作を明示的に無効化するための指定。}
   が指定できる。
@@ -81,23 +83,34 @@ dvipdfmx専用である。
   他のDVIウェアにおける動作については
   \ref{sec:Other-Drivers}節を参照。
   ドライバオプションの既定値は |dvipdfmx| である。
-\item \textbf{プリセット指定オプション}（|ipa|、|hiragino| 等）
+\item \Strong{プリセット指定オプション}（|ipaex|、|hiragino-pron| 等）
   名前に対応するプリセット指定を有効にする。
   \Note 詳細については\ref{sec:Preset}節を参照。
-\item \textbf{ファイルプリセット指定オプション}%
+\item \Strong{ファイルプリセット指定オプション}%
   （|+|\mbox{}\textgt{名前} または |*|\mbox{}\textgt{名前}）
   名前に対応するファイルプリセット指定を有効にする。
   \Note 詳細については\ref{sec:FilePreset}節を参照。
 \item |alphabet|\Means
   欧文フォントも指定されたフォントの英数字部分で置き換える。
   （明朝が |\rmfamily|、ゴシックが |\sffamily| に適用される。）
-  プリセット指定オプション未使用の場合は既定で有効である。
+  \Note 技術的制約のため
+  \footnote{プロポーショナル幅のフォントを使うためには、
+    そのフォントに合わせた{\TeX}側の論理フォント（TFM）を
+    事前に用意する必要があるため。
+    和文が全角幅しか使えないのも同じ理由である。}、
+  \Strong{半角等幅のフォント}しかサポートされないことに注意してほしい。
+  つまり、この設定を使うと欧文が全て等幅になってしまう。
+  「部分的に欧文フォントを和文フォントに合わせたい」という場合は、
+  後述の |relfont| オプションの使用も検討されたい。
+  \Note プリセット指定オプション\Strong{不使用}の場合は
+  こちらが既定で有効になる。
+  すなわち\Strong{欧文フォントも置き換えられる}。
 \item |noalphabet|\Means
   |alphabet| の否定。
   欧文フォントは変更しない。
 %  インストール時に欧文用の設定をしていない場合は必ずこれを
 %  指定する必要がある。
-  \textbf{プリセット指定オプション使用の場合はこちらが既定で有効になる。}
+  \Note プリセット指定オプション使用の場合はこちらが既定で有効になる。
 \item |otf|（既定）\Means
   \Pkg{japanese-otf}パッケージの使用時に、
   そのフォントも置き換えの対象とする。
@@ -143,15 +156,16 @@ dvipdfmx専用である。
 \paragraph{上級者向けオプション}
 \begin{itemize}
 \item |relfont|\Means
-  指定された和文フォントの英数字部分を（{\pLaTeX}の標準機能の）
-  従属欧文フォントとして設定する。
-  すなわち、既定の欧文フォントは置き換えないが、|\selectfont| で
+  指定された和文フォントの英数字部分を（{\pLaTeX}の標準機能である）
+  \Strong{従属欧文フォント}として設定する。
+  すなわち、既定では欧文フォントは置き換えないが、|\selectfont| で
   和文フォントを選択する際に予め |\userelfont| を実行しておくと
   欧文も和文と同じ書体になる。
   \footnote{特に
   「\texttt{\symbol{`\\}userelfont\symbol{`\\}selectfont}」
   だけ実行すると、欧文が現在の和文と同じ書体になる。}
-  （ただし置き換えていない総称ファミリについては無効。）
+  （ただし適用すべき和文ファミリについて置換が設定されていない
+  場合は無効になる。）
   \Note |alphabet|、|noalphabet|、|relfont| の3つのオプションは
   排他である。
 \item |everypage|\Means
@@ -160,13 +174,14 @@ dvipdfmx専用である。
 \item |noeverypage|（既定）\Means
   |everypage|の否定。
   DVIの先頭ページにのみマップ設定を書き込む。
-\item \textbf{Unicode直接指定オプション}\Means
-  一部（または全部）のフォントについて、エンコーディング指定方式を
+\item \Strong{Unicode直接指定オプション}\Means
+  一部または全部のフォントについて、エンコーディング指定方式を
   “Cmap指定”から“Unicode直接指定”に変更する。
   |nodirectunicode|（既定）、|directunicode|、|directunicode*|、
   |unicode*|、|unicode| の5種類の指定がある。
   \Note 詳細については\ref{sec:DirectUnicode}節を参照。
-  \Note 一部のプリセット指定はUnicode直接指定の既定値を変更する。
+  \Note 一部のプリセット指定（|sourcehan|等）は
+  Unicode直接指定の既定値を変更する。
 %\item |directunicode|\Means
 %  \Pkg{japanese-otf}パッケージのUnicode出力用フォント（|\UTF{}| の出力）
 %  について、Unicodeを用いてフォントのグリフにアクセスするように
@@ -195,25 +210,19 @@ dvipdfmx専用である。
 %  |directunicode| の否定。
 \item |usecmapforalphabet|\Means
   |alphabet|（または |relfont|）を指定して日本語フォントの英数字部分を
-  欧文フォントとして使う際に、そのフォントマップについて
-  “CMap指定”を利用する。
-  \Note “CMap指定”と“Unicode直接指定”の違いについては
-  \ref{sec:DirectUnicode}節を参照。
+  欧文フォントとして使う際に、そのエンコーディング指定方式を
+  “CMap指定”にする。
+%  \Note “CMap指定”と“Unicode直接指定”の違いについては
+%  \ref{sec:DirectUnicode}節を参照。
   \Note 半角英数字用の\texttt{UniJIS-UCS2-HW-H}というCMapが指定される。
-  \Note “AJ1である”OpenTypeフォントの場合、“Unicode直接指定”
-  を使うと英数字がプロポーショナル幅のものになってしまうので、
+  \Note 字形セットがAJ1であるOpenTypeフォントの場合、“Unicode直接指定”
+  を使うと英数字がプロポーショナル幅のものになるがこれは
+  サポートされない（|alphabet| オプションの説明を参照）ので、
   このオプションを指定して半角幅のものを使う必要がある。
-  \footnote{%
-  念のため補足すると、半角幅しかサポートされないのは技術的制限による。
-%  すなわち、フォントを「後から置き換える」ということを可能に
-%  するためには、TFMは固定幅でなければならないのである。
-  \ref{sec:Notice}節を参照されたい。}
 \item |nousecmapforalphabet|（既定）\Means
   |usecmapforalphabet| の否定。
-  \Note 和文と異なり、欧文フォントでは“Unicode直接指定”の方が
-  既定となる。
-  ただし、|unicode*| または |unicode| が指定された場合はそちらの指定が
-  優先されて欧文フォントもUnicode直接指定になる。
+  \Note 和文と異なり、欧文フォントでは実質的に“Unicode直接指定”の方が
+  既定となっている。
   \Note 一部のプリセット指定は |usecmapforalphabet| の指定を強制する。
 \item |dumpmap|\Means
   「通常マップファイルダンプ出力」を有効にする。
@@ -223,7 +232,7 @@ dvipdfmx専用である。
   |dumpmap| の否定。
 \item |dumpmaptl|\Means
   「{\TeX} Liveマップファイルダンプ出力」を有効にする。
-  すなわち、本パッケージにより設定されたフォントマップに対応する
+  すなわち、本パッケージによる設定を再現する
   kanji-config-updmap用のマップファイルのセット
   （|ptex-NAME.map|、|otf-NAME.map|、|uptex-NAME.map|、
   |otf-up-NAME.map| の4つ、ただし |NAME| はジョブ名）
@@ -238,9 +247,9 @@ dvipdfmx専用である。
 \item |nodumpmaptl|（既定）\Means
   |dumpmaptl| の否定。
 \item |strictcsi|\Means
-  |Identity-H/V| のCMapが指定されたマップ行について、“CSI指定”は
+  |Identity-H/V| のCMapが指定されたマップ行について、CSI指定は
   （仕様に厳密に従って）フォントがTrueTypeグリフの場合にのみ出力する。
-  \Note “CSI指定”とはフォントファイル名の直後に書く“|/AJ1|”の類の
+  \Note 「CSI指定」とはフォントファイル名の直後に書く“|/AJ1|”の類の
     ことで、本来は（グリフ集合情報を持たない）TrueTypeグリフのフォント
     のためのものである。
     しかし、CFFグリフのフォントに対してCSI指定があっても特に問題は
@@ -248,29 +257,45 @@ dvipdfmx専用である。
     かかるため、既定では厳密な判定は行わない。
 \item |nostrictcsi|（既定）\Means
   |strictcsi| の否定。
-  |Identity-H/V| に対する“CSI指定”は常に出力される。
+  |Identity-H/V| に対するCSI指定は常に出力される。
   \Note さすがにファイルに出力されたマップ行に不備があるのは
     避けたいので、|dumpmap(tl)| が指定された場合は、
     既定が |strictcsi| に変更される。
+\item |expert|（既定）\Means
+  Unicode直接指定の適用時に\Pkg{japanese-otf}の |expert| オプション
+  の機能を（可能な範囲で）エミュレートする。
+  \Note \Pkg{japanese-otf}の |expert| が指定されない場合は無意味。
+\item |noexpert|\Means
+  |expert| の否定。
+  Unicode直接指定時には\Pkg{japanese-otf}の |expert| は無効になる。
+\item |glyphid|\Means
+  GID指定入力（|\gid| 命令）の機能を有効にする。
+  \Note エンジンが{\upTeX}でかつUnicode直接指定が有効の場合に
+  のみ利用できる。
+\item |noglyphid|（既定）\Means
+  |glyphid| の否定。
 \end{itemize}
 
 %===========================================================
 \section{機能}
 
-以下に該当する和文（CJK）フォントを、以降で述べるユーザ命令で
-指定したものに置き換える。
+以下に該当する和文（CJK）用の論理フォント（原メトリックTFM）について、
+それに対応する物理フォント（OpenTypeフォント）を
+ユーザ指定のものに置き換える。
 \begin{itemize}
 \item {\pTeX}の標準のフォント --- |rml*|/|gbm*|
 \item {\upTeX}の日本語フォント --- |urml*|/|ugbm*|/|uprml*|/|upgbm*|
 \item {\upTeX}の中国語・韓国語フォント
 \item \Pkg{UTF}パッケージのフォント --- |hmr*|/|hkb*|/|unij*|/|cid*|
-\item \Pkg{japanese-otf}パッケージの日本語フォント --- |hmin*|/|hgoth*|/|otf-{u,c}j*|
+\item \Pkg{japanese-otf}パッケージの日本語フォント
+  --- |{,up}hmin*|/|{,up}hgoth*|/|otf-{u,c}j*|
 \item \Pkg{japanese-otf}パッケージの中国語・韓国語フォント
+\item \Pkg{pxufont}パッケージのフォント
+  --- |zur-?j*|
 %\item \Pkg{PXfontspec}パッケージの日本語フォント --- |nja{r,s}-*|
 \end{itemize}
 
-\Note 0.7c版で中国語・韓国語フォントに
-対するサポートを行った。
+\Note 中国語・韓国語フォントに対するサポートの詳細については
 \ref{sec:Non-Japanese}を参照。
 
 和文フォント置換は、dvipdfmxのマップ設定を文書内で
@@ -278,28 +303,40 @@ dvipdfmx専用である。
 欧文フォントについては実現方法が少し異なる
 （\ref{sec:Mechanism-Alph}節を参照）。
 
+\paragraph{単ウェイトの場合の設定}
+
 \Pkg{japanese-otf}パッケージを |deluxe| オプション付きで用いている
 場合\textgt{以外}、すなわち明朝・ゴシックとも単ウェイトの場合、
 以下の命令を用いる。
 
 \begin{itemize}
 \item |\setminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
-  「明朝」のフォントを置き換えるフォントをファイル名で指定する。
+  明朝体（|\mcfamily|）のフォントを置き換えるフォントを
+  ファイル名で指定する。
   TTC形式の場合の該当のフォントの番号を\Meta{番号}に指定する。
 \item |\setgothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
-  「ゴシック」のフォントを置き換えるフォントをファイル名で指定する。
+  ゴシック体（|\gtfamily|%
+  \footnote{単ウェイト設定を用いる多くの場合、明朝体の太字
+  （|\mcfamily|\linebreak[0]|\bfseries|）は
+  ゴシック体（|\gtfamily| と同じもの）で代替される。}%
+  ）のフォントを置き換えるフォントをファイル名で指定する。
+  \Meta{番号}の意味は前項と同じ。
 \item 以上の2つの命令、および以降で紹介するフォント設定命令について、
   \Meta{フォントファイル名}の値を |*| にするとフォント非埋込を指示する。
   また、この値を空にすると、以前に（当該の命令により）設定されていた
-  値を取り消して既定の設定に戻す。
+  値を取り消して（dvipdfmxの）既定の設定に戻す。
 \end{itemize}
-\begin{quote}\small
-  例:
-\begin{verbatim}
-\setminchofont{ipam.ttf}        % IPA明朝
-\setgothicfont[0]{msgothic.ttc} % ＭＳ ゴシック
-\end{verbatim}
-\end{quote}
+
+以下に設定例を示す。
+
+\begin{quote}\small\begin{verbatim}
+\setminchofont{ipam.ttf}        % 明朝体は"IPA明朝"
+\setgothicfont[0]{msgothic.ttc} % ゴシック体は"ＭＳ ゴシック"
+\setminchofont{*}               % 明朝体は非埋込
+\setgothicfont{}                % ゴシック体は既定設定に従う
+\end{verbatim}\end{quote}
+
+\paragraph{多ウェイトの場合の設定}
 
 \Pkg{japanese-otf}パッケージを |deluxe| 付きで用いている場合は、
 明朝・ゴシックともに3ウェイトを使う。
@@ -372,19 +409,32 @@ dvipdfmx専用である。
   dvipdfmxのマップ行を直接指定して、その読込を指示する。
   pdf{\TeX}の |\pdfmapline| に相当する機能。
 \item |\diruni|\Means
-  和文フォントを、「Unicodeを用いてフォントのグリフにアクセスする」
-  状態に切り替える（宣言型命令）。
-  これにより、全角幅の任意の文字が出力可能となる。
-%  \footnote{\texttt{directunicode} オプションはBMP内でしか
-%    効かないが、この命令の効果はBMP外の文字にも及ぶ。
-%    つまり本当に任意の文字が扱える。}%
+  現在の和文フォントを“Unicode直接入力”
+  （フォントマップを“Unicode直接指定”にした上で
+  さらに和文VFをバイパスする）
+  の状態に切り替える（宣言型命令）。
+  これにより、実際のフォントがサポートする任意の
+  文字が出力可能となる。
   その代わり、この状態では、約物の周りの空き調整が無効になる。
-  詳細については\ref{sec:Loading}節の |directunicode| オプションの
-  説明を参照されたい。
-  なお、この命令は、シェープを |diruni| という値に変えることで
-  実現されている。
+%  詳細については\ref{sec:Loading}節の |directunicode| オプションの
+%  説明を参照されたい。
+  \Note “Unicode直接指定”のオプションの何れか
+  （|unicode|等）が有効であり、
+  かつ現在の和文ファミリについてフォントの置き換えが有効に
+  なっている必要がある。
+  \Note 全角幅のグリフでないと正常に出力されない。
+  \Note この命令自体は単にシェープを |diruni| という値に変えて
+  いるだけであり、このシェープに“Unicode直接入力”のフォントが
+  予め設定されているわけである。
 \item |\textdiruni{|\Meta{テキスト}|}|\Means
   |\diruni| に対応する引数型命令。
+\item |\gid{|\Meta{整数}|}|\Means
+  現在の和文フォントで、指定の値のGIDをもつグリフを出力する。
+  \Note 全角幅のグリフでないと正常に出力されない。
+  \Note エンジンが{\upLaTeX}であり、
+  |unicode| オプションが指定されていて、かつ、
+  現在の和文ファミリについてフォントの置き換えが有効に
+  有効になっている必要がある。
 \end{itemize}
 
 %===========================================================
@@ -396,7 +446,8 @@ dvipdfmx専用である。
 例えば「普段使う設定が複数ありそれを簡単に切り替えたい」という
 場合にも有用である。
 そこで、{\pTeX}において広く行われている設定をパッケージ内に
-組み込んで、パッケージオプションでそれを呼び出すという機能を追加した。
+組み込んで、パッケージオプションでそれを呼び出すという機能が
+後になって追加された。
 \footnote{元々は\Pkg{PXjafont}という別のパッケージで
 提供されていた機能であるが、
 0.5版からこのパッケージに組み入れることにした。}
@@ -935,7 +986,7 @@ CMap指定の利用が必須であったため、慣習的に、dvipdfmxのフ�
 Unicode直接指定をサポートしている。
 特に1.0版から、新しいdvipdfmxのOpenType属性の指定を積極的に
 利用することで、“AJ1でない”フォントを使用した場合でも、
-CMap指定の場合の機能性を可能な限り保つことを目財している。
+CMap指定の場合の機能性を可能な限り保つことを目指している。
 
 \Note Unicode直接指定に対するサポートは発展途上であるため、
 過渡的な要素が多く混ざっていてやや煩雑になっていることに
@@ -951,12 +1002,12 @@ Unicode直接指定が有効になる。
   最も理想的な設定であるが、現存の{\TeX} Live 2017では利用できない。
   \Note dvipdfmxの20170918版以降（{\TeX} Live 2018以降）が必要。
 \item |unicode*|\Means
-  |unicode| と同じだが、{\TeX} Live 2017のdvipdfmaに対応するために
+  |unicode| と同様だが、{\TeX} Live 2017のdvipdfmaに対応するために
   妥協を入れた（過渡的な）設定。
   一部の約物・記号の出力が異常になる可能性がある。
   \Note dvipdfmxの20170318版以降（{\TeX} Live 2017以降）が必要。
 \item |directunicode*|\Means
-  |unicode| と同じだが、古い（{\TeX} Live 2016以前の）dvipdfmaに
+  |unicode| と同様だが、古い（{\TeX} Live 2016以前の）dvipdfmaに
   対応するために、OpenType属性の指定を全く行わない設定。
   つまり、入力のUnicode文字に対する既定のグリフが常に出力され、
   異体字の区別は全て無効になる。
@@ -1061,7 +1112,7 @@ OT1として扱われるが、実際にはOT1の一部のグリフしか持っ�
   （例えば jsarticle の標準設定ならJISメトリック）
 \item 欧文部分を置き換えた場合、残念ながら欧文も等幅
   （半角幅）になってしまう。
-\item さらに、アクセント付きの文字（\'e 等）や非英語文字
+  さらに、アクセント付きの文字（\'e 等）や非英語文字
   （{\ss} 等）も使えない。
   大抵の日本語用フォントにはその文字を出力するためのグリフがそもそも
   ないのであるが、例えあったとしても使えない。
@@ -1076,9 +1127,9 @@ OT1として扱われるが、実際にはOT1の一部のグリフしか持っ�
   設定に欧文フォントの置換の際にも従っているが、
   明朝のみが置換されている場合は、
   明朝の置換フォントが太字にも適用される。
-\item 既述のように、0.3版以降では\Pkg{japanese-otf}パッケージで |deluxe|、
-  |bold|、|noreplace| のいずれも指定されてない場合でも |\setgothicfont|
-  が有効になる。
+%\item 既述のように、0.3版以降では\Pkg{japanese-otf}パッケージで |deluxe|、
+%  |bold|、|noreplace| のいずれも指定されてない場合でも |\setgothicfont|
+%  が有効になる。
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
