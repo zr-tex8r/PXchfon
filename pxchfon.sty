@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2019/03/20 v1.3a]
+\ProvidesPackage{pxchfon}[2019/03/21 v1.4-pre]
 \def\pxcz@pkgname{pxchfon}
 
 %% preparations
@@ -800,10 +800,7 @@
     \let\pxcz@cmap\pxcz@cmap@uni
     \pxcz@switch@font@for{hwid}%
   \fi
-  \pxcz@add@lopt{hwid}%
-  \def\pxcz@tmpa{mgr}\ifx\pxcz@sym\pxcz@tmpa
-    \let\pxcz@font\@empty
-  \fi}
+  \pxcz@add@lopt{hwid}}
 % FWid
 \pxcz@declare@entry@modifier{FWid}{%
   \pxcz@switch@font@for{fwid}%
@@ -952,12 +949,19 @@
 }
 \pxcz@mapentry{ALPHA}{%
 \Entry{mnl}{r-cfjar-l-@PXcjk0@}{unicode}         {HWid}%
+\Entry{mnl}{r-cfjar-lz-@PXcjk0@}{UniJIS-UCS2-H}  {Uni*,FWid}%
 \Entry{mnr}{r-cfjar-r-@PXcjk0@}{unicode}         {HWid}%
+\Entry{mnr}{r-cfjar-rz-@PXcjk0@}{UniJIS-UCS2-H}  {Uni*,FWid}%
 \Entry{mnb}{r-cfjar-b-@PXcjk0@}{unicode}         {HWid}%
+\Entry{mnb}{r-cfjar-bz-@PXcjk0@}{UniJIS-UCS2-H}  {Uni*,FWid}%
 \Entry{gtr}{r-cfjas-r-@PXcjk0@}{unicode}         {HWid}%
+\Entry{gtr}{r-cfjas-rz-@PXcjk0@}{UniJIS-UCS2-H}  {Uni*,FWid}%
 \Entry{gtb}{r-cfjas-b-@PXcjk0@}{unicode}         {HWid}%
+\Entry{gtb}{r-cfjas-bz-@PXcjk0@}{UniJIS-UCS2-H}  {Uni*,FWid}%
 \Entry{gtx}{r-cfjas-x-@PXcjk0@}{unicode}         {HWid}%
-\Entry{mgr}{r-cfjas-r-@PXcjk0@}{unicode}         {HWid}%
+\Entry{gtx}{r-cfjas-xz-@PXcjk0@}{UniJIS-UCS2-H}  {Uni*,FWid}%
+\Entry{mgr}{r-cfjam-r-@PXcjk0@}{unicode}         {HWid}%
+\Entry{mgr}{r-cfjam-rz-@PXcjk0@}{UniJIS-UCS2-H}  {Uni*,FWid}%
 }
 \pxcz@mapentry{UTF}{%
 \Entry{mnr}{unijmin-h}     {UniJIS-UTF16-H}      {Uni*,Switch}%
@@ -1366,26 +1370,44 @@
 
 %--------------------------------------- 'alphabet' option
 
-%% \pxcz@decl@shape{<fam>}{<ser>}{<font>}
+%% \pxcz@afont@enc@list
+\def\pxcz@afont@enc@list{OT1,T1}
+%% \pxcz@decl@family{<fam>}
+\@onlypreamble\pxcz@decl@family
+\def\pxcz@decl@family#1{%
+  \@for\pxcz@x:=\pxcz@afont@enc@list\do{%
+    \DeclareFontFamily{\pxcz@x}{#1}{}}}
+%% \pxcz@decl@shape{<fam>}{<ser>}<sw>{<font>}
 \@onlypreamble\pxcz@decl@shape
-\def\pxcz@decl@shape#1#2#3{%
-\DeclareFontShape{OT1}{#1}{#2}{n}{<->#3}{}%
-\DeclareFontShape{OT1}{#1}{#2}{it}{<->ssub*#1/#2/n}{}}
+\def\pxcz@decl@shape#1#2#3#4{%
+  \if s#3%
+    \@for\pxcz@x:=\pxcz@afont@enc@list\do{%
+      \DeclareFontShape{\pxcz@x}{#1}{#2}{n}{<->ssub*#4}{}}%
+  \else
+    \DeclareFontShape{OT1}{#1}{#2}{n}{<->#4-l0j}{}%
+    \DeclareFontShape {T1}{#1}{#2}{n}{<->#4-l0j}{}% FIXME
+  \fi
+  \@for\pxcz@x:=\pxcz@afont@enc@list\do{%
+    \DeclareFontShape{\pxcz@x}{#1}{#2}{it}{<->ssub*#1/#2/n}{}%
+    \DeclareFontShape{\pxcz@x}{#1}{#2}{sl}{<->ssub*#1/#2/n}{}}}
 
+%% \pxcz@check@extra
 \let\pxcz@check@extra\@empty
 \@onlypreamble\pxcz@check@extra
-%
+
 \ifpxcz@alphafont   %---- <*alphabet>
 \ifpxcz@otf@deluxe  %---- <*otfdx> : otf with deluxe option
   % define families cfjar & cfjas
-\DeclareFontFamily{OT1}{cfjar}{}%
-\pxcz@decl@shape{cfjar}{l}{cfjar-l-l0j}%
-\pxcz@decl@shape{cfjar}{m}{cfjar-r-l0j}%
-\pxcz@decl@shape{cfjar}{bx}{cfjar-b-l0j}%
-\DeclareFontFamily{OT1}{cfjas}{}%
-\pxcz@decl@shape{cfjas}{m}{cfjas-r-l0j}%
-\pxcz@decl@shape{cfjas}{bx}{cfjas-b-l0j}%
-\pxcz@decl@shape{cfjas}{eb}{cfjas-x-l0j}%
+\pxcz@decl@family{cfjar}%
+\pxcz@decl@shape{cfjar}{l}n{cfjar-l}%
+\pxcz@decl@shape{cfjar}{m}n{cfjar-r}%
+\pxcz@decl@shape{cfjar}{bx}n{cfjar-b}%
+\pxcz@decl@family{cfjas}%
+\pxcz@decl@shape{cfjas}{m}n{cfjas-r}%
+\pxcz@decl@shape{cfjas}{bx}n{cfjas-b}%
+\pxcz@decl@shape{cfjas}{eb}n{cfjas-x}%
+\pxcz@decl@family{cfjam}%
+\pxcz@decl@shape{cfjam}{m}n{cfjam-r}%
   % redefine \ltseries & \ebseries so they affect roman font
 \let\ltseries\relax \let\ebseries\relax
 \DeclareRobustCommand\ltseries{%
@@ -1395,12 +1417,12 @@
   \not@math@alphabet\ebseries\relax
   \fontseries\ebdefault\selectfont}%
 \else               %---- <*!otfdx>
-\DeclareFontFamily{OT1}{cfjar}{}%
-\pxcz@decl@shape{cfjar}{m}{cfjar-r-l0j}%
-\pxcz@decl@shape{cfjar}{bx}{ssub*cfjas/m/n}%
-\DeclareFontFamily{OT1}{cfjas}{}%
-\pxcz@decl@shape{cfjas}{m}{cfjas-r-l0j}%
-\pxcz@decl@shape{cfjas}{bx}{ssub*cfjas/m/n}%
+\pxcz@decl@family{cfjar}%
+\pxcz@decl@shape{cfjar}{m}n{cfjar-r}%
+\pxcz@decl@shape{cfjar}{bx}s{cfjas/m/n}%
+\pxcz@decl@family{cfjas}%
+\pxcz@decl@shape{cfjas}{m}n{cfjas-r}%
+\pxcz@decl@shape{cfjas}{bx}s{cfjas/m/n}%
 \@onlypreamble\pxcz@err@dxotf
 \def\pxcz@err@dxotf#1{%
   \pxcz@error{Loaded before '#1' with 'deluxe'}%
@@ -1422,6 +1444,12 @@
 
 %--------------------------------------- begin-document hook
 
+%% variables
+\let\pxcz@afont@enc\relax
+
+%% \pxcz@mgfamily@hook
+\def\pxcz@mgfamily@hook{\romanfamily{cfjam}}
+
 %% \pxcz@set@page@hook{<text>}
 \@onlypreamble\pxcz@set@page@hook
 \ifpxcz@everypage
@@ -1435,13 +1463,41 @@
   \global\setbox\@begindvibox\vbox{\yoko\unvbox\@begindvibox#1}}
 \fi
 
-%% the begin-document hook
+%% \pxcz@check@alldefined{<sym>,...}
 \@onlypreamble\pxcz@check@alldefined
 \def\pxcz@check@alldefined#1{%
   \pxcz@oktrue
   \@for\pxcz@x:={#1}\do{%
     \expandafter\ifx\csname pxcz@FS/\pxcz@x\endcsname\@empty
       \pxcz@okfalse \fi}}
+
+%% \pxcz@decl@relfont{<fam>}{<afam>}{<ser>,...}
+\@onlypreamble\pxcz@decl@relfont
+\def\pxcz@decl@relfont#1#2#3{%
+  \@for\pxcz@x:={#3}\do{%
+    \expandafter\ifx\csname\k@encoding/#1/\pxcz@x/n\endcsname\relax\else
+      \edef\pxcz@tmpa{\noexpand\DeclareRelationFont
+        {\k@encoding}{#1}{\pxcz@x}{}{\pxcz@afont@enc}{#2}{\pxcz@x}{}%
+      }\pxcz@tmpa
+    \fi}%
+  \pxcz@info{Relation font set for \k@encoding/#1}}
+
+%% \pxcz@check@afont@enc
+\@onlypreamble\pxcz@check@afont@enc
+\def\pxcz@check@afont@enc{%
+  \pxcz@oktrue % OT1 is always okay
+  \def\pxcz@tmpa{OT1}\ifx\pxcz@tmpa\pxcz@afont@enc\else
+    % otherwise, noembed must not be used
+    \@for\pxcz@x:=\pxcz@sym@list\do{%
+      \expandafter\ifx\csname pxcz@FS/\pxcz@x\endcsname\pxcz@noembed
+        \pxcz@okfalse \fi}%
+    \expandafter\ifx\csname\pxcz@afont@enc+cfjar\endcsname\relax
+      \pxcz@okfalse \fi
+  \fi
+  % if not okay, use OT1 instead
+  \ifpxcz@ok\else \def\pxcz@afont@enc{OT1}\fi}
+
+%% the begin-document hook
 \@onlypreamble\pxcz@doc@hook
 \def\pxcz@doc@hook{%
   \pxcz@user@hook
@@ -1451,24 +1507,41 @@
   \ifx t\pxcz@strict@csi
     \pxcz@inspect@flavor@all
   \fi
-  \ifpxcz@alpha
+  \ifpxcz@alpha % 'alphabet'
     \pxcz@check@alldefined{mnl,mnr,mnb}%
     \ifpxcz@ok \renewcommand\rmdefault{cfjar}\fi
     \pxcz@check@alldefined{gtr,gtb,gtx}%
     \ifpxcz@ok \renewcommand\sfdefault{cfjas}\fi
-    \edef\pxcz@tmpa{\encodingdefault}\def\pxcz@tmpb{OT1}
-    \ifx\pxcz@tmpa\pxcz@tmpb\else
+    % attach hook to \mgfamily if mgr font is defined
+    \pxcz@check@alldefined{mgr}
+    \ifpxcz@ok\ifpxcz@otf@deluxe
+      \begingroup
+        \def\pxcz@x##1{\toks@\expandafter{##1}%
+          \xdef##1{\noexpand\pxcz@mgfamily@hook\the\toks@}%
+        }\expandafter\pxcz@x\csname mgfamily \endcsname
+      \endgroup
+    \fi\fi
+    % decide alphabet font encoding
+    \edef\pxcz@afont@enc{\encodingdefault}%
+    \pxcz@check@afont@enc\ifpxcz@ok\else
       \pxcz@warn{Default encoding is changed to 'OT1' because%
         \MessageBreak'alphabet' option is in effect}%
+      \renewcommand\encodingdefault{OT1}%
     \fi
-    \renewcommand\encodingdefault{OT1}\normalfont
+    \normalfont
     \pxcz@addtospec{ALPHA}%
   \fi
-  \ifpxcz@rel
+  \ifpxcz@rel % 'relfont'
+    \edef\pxcz@afont@enc{\encodingdefault}%
+    \pxcz@check@afont@enc
     \pxcz@check@alldefined{mnl,mnr,mnb}%
-    \ifpxcz@ok \pxcz@decl@relfont\mcdefault{cfjar}{l}\fi
+    \ifpxcz@ok \pxcz@decl@relfont\mcdefault{cfjar}{m,bx,l}\fi
     \pxcz@check@alldefined{gtr,gtb,gtx}%
-    \ifpxcz@ok \pxcz@decl@relfont\gtdefault{cfjas}{eb}\fi
+    \ifpxcz@ok \pxcz@decl@relfont\gtdefault{cfjas}{m,bx,eb}\fi
+    \pxcz@check@alldefined{mgr}%
+    \ifpxcz@ok\ifpxcz@otf@deluxe
+      \pxcz@decl@relfont\mgdefault{cfjam}{m}%
+    \fi\fi
     \pxcz@addtospec{ALPHA}%
   \fi
   \ifpxcz@uptex\else
@@ -1516,17 +1589,6 @@
   \fi
 }
 \AtBeginDocument{\pxcz@doc@hook}
-
-%% \pxcz@decl@relfont
-\@onlypreamble\pxcz@decl@relfont
-\def\pxcz@decl@relfont#1#2#3{%
-  \DeclareRelationFont{\k@encoding}{#1}{m}{}{OT1}{#2}{m}{}%
-  \DeclareRelationFont{\k@encoding}{#1}{bx}{}{OT1}{#2}{bx}{}%
-  \ifpxcz@otf@deluxe
-    \DeclareRelationFont{\k@encoding}{#1}{#3}{}{OT1}{#2}{#3}{}%
-  \fi
-  \pxcz@info{Relation font set for \k@encoding/#1}%
-}
 
 %--------------------------------------- strict-CSI mode
 \ifx t\pxcz@strict@csi
