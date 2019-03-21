@@ -39,6 +39,11 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.4  ‹2019/03/24›
+      - Presets `sourcehan-jp` and `noto-jp`, which use the subset OTF
+        version of Source Han and Noto CJK.
+      - Now the replacement of alphabetic fonts also works with T1
+        encoding (besides OT1).
   * Version 1.3a ‹2019/03/20›
       - Now the support of `expert` mode in the direct Unicode mode is
         available also on pTeX.

@@ -10,8 +10,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.3a}
-\newcommand{\PkgDate}{2019/03/20}
+\newcommand{\PkgVersion}{1.4}
+\newcommand{\PkgDate}{2019/03/24}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -807,8 +807,23 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \setmarugothicfont{SourceHanSans-Medium.otf}
 \end{verbatim}\end{quote}
 
+\item |sourcehan-jp|\Means
+  Source Han Serif JP（源ノ明朝）+ Source Han Sans JP（源ノ角ゴシック）、
+  地域別サブセットOTF版。
+
+\begin{quote}\small\begin{verbatim}
+\setminchofont{SourceHanSerifJP-Regular.otf}
+\setlightminchofont{SourceHanSerifJP-Light.otf}
+\setboldminchofont{SourceHanSerifJP-Bold.otf}
+\setgothicfont{SourceHanSansJP-Medium.otf}
+\setmediumgothicfont{SourceHanSansJP-Regular.otf}
+\setboldgothicfont{SourceHanSansJP-Bold.otf}
+\setxboldgothicfont{SourceHanSansJP-Heavy.otf}
+\setmarugothicfont{SourceHanSansJP-Medium.otf}
+\end{verbatim}\end{quote}
+
 \item |noto-otc|\Means
-  Noto Serif CJK + Noto Sans CJK、
+  Noto Serif CJK JP + Noto Sans CJK JP、
   OTC版。
 
 \begin{quote}\small\begin{verbatim}
@@ -823,18 +838,33 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \end{verbatim}\end{quote}
 
 \item |noto|\Means
-  Noto Serif CJK + Noto Sans CJK、
+  Noto Serif CJK JP + Noto Sans CJK JP、
   言語別OTF版。
 
 \begin{quote}\small\begin{verbatim}
-\setminchofont{NotoSerifCJK-Regular.otf}
-\setlightminchofont{NotoSerifCJK-Light.otf}
-\setboldminchofont{NotoSerifCJK-Bold.otf}
-\setgothicfont{NotoSansCJK-Medium.otf}
-\setmediumgothicfont{NotoSansCJK-Regular.otf}
-\setboldgothicfont{NotoSansCJK-Bold.otf}
-\setxboldgothicfont{NotoSansCJK-Black.otf}
-\setmarugothicfont{NotoSansCJK-Medium.otf}
+\setminchofont{NotoSerifCJKjp-Regular.otf}
+\setlightminchofont{NotoSerifCJKjp-Light.otf}
+\setboldminchofont{NotoSerifCJKjp-Bold.otf}
+\setgothicfont{NotoSansCJKjp-Medium.otf}
+\setmediumgothicfont{NotoSansCJKjp-Regular.otf}
+\setboldgothicfont{NotoSansCJKjp-Bold.otf}
+\setxboldgothicfont{NotoSansCJKjp-Black.otf}
+\setmarugothicfont{NotoSansCJKjp-Medium.otf}
+\end{verbatim}\end{quote}
+
+\item |noto-jp|\Means
+  Noto Serif JP + Noto Sans JP、
+  地域別サブセットOTF版。
+
+\begin{quote}\small\begin{verbatim}
+\setminchofont{NotoSerifJP-Regular.otf}
+\setlightminchofont{NotoSerifJP-Light.otf}
+\setboldminchofont{NotoSerifJP-Bold.otf}
+\setgothicfont{NotoSansJP-Medium.otf}
+\setmediumgothicfont{NotoSansJP-Regular.otf}
+\setboldgothicfont{NotoSansJP-Bold.otf}
+\setxboldgothicfont{NotoSansJP-Black.otf}
+\setmarugothicfont{NotoSansJP-Medium.otf}
 \end{verbatim}\end{quote}
 
 \end{itemize}
@@ -1030,10 +1060,12 @@ Unicode直接指定が有効になる。
 1.2版から本来の仕様が適用される。}。
 
 \begin{itemize}
-\item |sourcehan|
 \item |sourcehan-otc|
-\item |noto|
+\item |sourcehan|
+\item |sourcehan-jp|
 \item |noto-otc|
+\item |noto|
+\item |noto-jp|
 \end{itemize}
 
 \paragraph{特殊プリセット指定\<（過渡的）}
@@ -1090,17 +1122,28 @@ DVI文書の全てのページにフォントマップ情報を書き出すの�
 \label{sec:Mechanism-Alph}
 
 指定された和文フォントの半角部分からなる欧文フォントファミリとして
-OT1/cfjar（明朝）とOT1/cfjas（ゴシック）を定義し、
-既定の欧文ファミリに設定している
-（明朝→|\rmdefault|；ゴシック→|\sfdefault|）
-\footnote{従って、欧文フォントの置換（\texttt{alphabet}や
-\texttt{relfont}オプション）を利用する場合は、欧文エンコーディングが
-OT1である必要がある。}。
-その上で、この欧文ファミリに対するマップ指定を和文と同じ方法で行っている。
+OT1/cfjar（明朝）、OT1/cfjas（ゴシック）、OT1/cfjam（丸ゴシック）
+の3つ（以下では\Strong{CFJAファミリ}と総称する）を定義している
+\footnote{1.4版からはT1エンコーディングにもCFJAファミリを定義する。
+現状で対応しているのはOT1とT1のみであるので、欧文フォントの置換
+（\texttt{alphabet}や\texttt{relfont}オプション）
+を利用する文書は、欧文エンコーディングがOT1かT1である必要がある。}。
+その上で、CFJAファミリに対するマップ指定を和文と同じ方法で行っている。
+なお、CFJAファミリは内部ではOT1として扱われるが、
+実際にはOT1の一部のグリフしか持っていない。
 
-従って、例えば一時的に従来のCMフォントに切り替えたい場合はファミリ
-をcmrに変更すればよい。なお、このcfjarとcfjasフォントは内部では
-OT1として扱われるが、実際にはOT1の一部のグリフしか持っていない。
+\paragraph{alphabetオプション指定時}
+オプション |alphabet| を指定した場合、
+CFJAファミリを既定の欧文ファミリとして設定する
+（cfjar→|\rmdefault|；cfjas→|\sfdefault|）。
+従って、例えば一時的に従来のCMフォントを使いたい場合は、
+適宜ファミリの変更（|\fontfamily{cmr}|等）を行えばよい。
+
+\paragraph{relfontオプション指定時}
+オプション |relfont| を指定した場合、
+CFJAファミリを和文ファミリの従属欧文フォントに
+（cfjarを |\mcfamily| に、cfjasを |\gtfamily| に、
+cfjamを |\mgfamily| に対して）設定する。
 
 %===========================================================
 \section{注意事項}
