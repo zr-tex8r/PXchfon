@@ -39,6 +39,9 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.4a ‹2019/03/24›
+      - Issue a warning for unsubstituted font weights, if a setting
+        where unsubtituted fonts could cause problems is employed.
   * Version 1.4  ‹2019/03/24›
       - Presets `sourcehan-jp` and `noto-jp`, which use the subset OTF
         version of Source Han and Noto CJK.
