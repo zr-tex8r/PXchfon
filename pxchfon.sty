@@ -810,10 +810,12 @@
 \pxcz@declare@entry@modifier{HWid}{%
   \ifx\pxcz@font\pxcz@noembed
     \let\pxcz@cmap\pxcz@cmap@hwuni
+  \else\ifnum\pxcz@directunicode=\pxcz@directunicode@full
+    \let\pxcz@cmap\pxcz@cmap@directuni
   \else
     \let\pxcz@cmap\pxcz@cmap@uni
     \pxcz@switch@font@for{hwid}%
-  \fi
+  \fi\fi
   \pxcz@add@lopt{hwid}}
 % FWid
 \pxcz@declare@entry@modifier{FWid}{%
