@@ -355,7 +355,10 @@
   \let\pxcz@switch@font@xjistrue\pxcz@switch@font@xjisfalse
 \fi
 
-%--------------------------------------- preset-triggered setup
+%--------------------------------------- preset-dependent setup
+
+%% variables
+\newif\ifpxcz@warn@unless@all@defined
 
 %% \pxcz@apply@opt@unicode
 % Forces the 'unicode' setup (unless a directunicode option was given).
@@ -476,6 +479,9 @@
       expert mode of the 'otf' package is not enabled}
   \fi
   \let\pxcz@expert=f
+\fi
+\if t\pxcz@expert
+  \pxcz@warn@unless@all@definedtrue
 \fi
 
 %--------------------------------------- user interface
@@ -607,6 +613,11 @@
 \@onlypreamble\usefontmapfile
 \newcommand*\usefontmapfile[1]{%
   \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapfile{#1}}}
+
+%% \pxcz@check@extra
+% Executed at the begin-document hook.
+\@onlypreamble\pxcz@check@extra
+\let\pxcz@check@extra\@empty
 
 %--------------------------------------- map entry handling
 
@@ -1394,10 +1405,6 @@
     \DeclareFontShape{\pxcz@x}{#1}{#2}{it}{<->ssub*#1/#2/n}{}%
     \DeclareFontShape{\pxcz@x}{#1}{#2}{sl}{<->ssub*#1/#2/n}{}}}
 
-%% \pxcz@check@extra
-\let\pxcz@check@extra\@empty
-\@onlypreamble\pxcz@check@extra
-
 \ifpxcz@alphafont   %---- <*alphabet>
 \ifpxcz@otf@deluxe  %---- <*otfdx> : otf with deluxe option
   % define families cfjar & cfjas
@@ -1431,7 +1438,7 @@
   \pxcz@error{Loaded before '#1' with 'deluxe'}%
   {This package must be loaded after '#1' with 'deluxe' option
   when using both.}}
-\def\pxcz@check@extra{%
+\g@addto@macro\pxcz@check@extra{%
   \expandafter\let\expandafter\pxcz@x\csname pxcz@FS/mnr\endcsname
   \ifx\pxcz@x\@empty\else
     % if mnr is replaced but gtr is not then ...
@@ -1575,6 +1582,20 @@
   \@ifpackageloaded{pxfontenc}{\pxcz@oktrue}{}%
   \ifpxcz@ok \pxcz@addtospec{PXOTF}%
   \fi
+  % warn if some weights are not substituted, and if necessaty
+  \ifpxcz@warn@unless@all@defined
+    \ifpxcz@otf@deluxe
+      \pxcz@check@alldefined{mnl,mnr,mnb,gtr,gtb,gtx,mgr}%
+    \else \pxcz@check@alldefined{mnr,mnb,gtr,gtb}%
+    \fi
+    \ifpxcz@ok\else
+      \PackageWarningNoLine\pxcz@pkgname
+       {Some font weights are not substituted.\MessageBreak
+        Thus some features of pxchfon might not work\MessageBreak
+        properly when applied to such weights}%
+    \fi
+  \fi
+  %
   \pxcz@check@extra
   \pxcz@addtospec{USR}%
   \ifpxcz@enabled
