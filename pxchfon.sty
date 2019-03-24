@@ -269,6 +269,18 @@
 % dispatch
 \ProcessOptions*
 
+%% 'unicode*' and 'unicode*-fwid' are DEPRECATED
+\ifpxcz@uniquify
+  \PackageWarningNoLine\pxcz@pkgname
+   {IMPORTANT: Option 'unicode*\ifpxcz@fullwidth -fwid\fi'
+    is DEPRECATED!\MessageBreak
+    This option invokes a transitional setting that\MessageBreak
+    is specially tailored for TL2017, and will be\MessageBreak
+    abolished in near future.\MessageBreak
+    You should update to TL2018 or later and use\MessageBreak
+    option 'unicode\ifpxcz@fullwidth -fwid\fi' instead}
+\fi
+
 %% 'everypage' needs 'atbegshi' package
 \ifpxcz@everypage
 \RequirePackage{atbegshi}
@@ -382,7 +394,7 @@
 %% \pxcz@warn@unicode
 \pxcz@onlypreamble@def\pxcz@warn@unicode{%
   \PackageWarningNoLine\pxcz@pkgname
-   {The option 'unicode(*)' is enforced, because the\MessageBreak
+   {The option 'unicode' is enforced, because the\MessageBreak
     preset '\pxcz@main@preset' is selected.}}
 
 %% the setup
