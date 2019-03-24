@@ -13,11 +13,6 @@
 \ProvidesPackage{pxchfon}[2019/05/01 v1.5-pre]
 \def\pxcz@pkgname{pxchfon}
 
-%% preparations
-\def\pxcz@error{\PackageError\pxcz@pkgname}
-\def\pxcz@warn{\PackageWarning\pxcz@pkgname}
-\def\pxcz@info{\PackageInfo\pxcz@pkgname}
-
 %--------------------------------------- general
 
 %% variables
@@ -44,6 +39,9 @@
 %% \pxcz@onlypreamble@def\CS
 \def\pxcz@onlypreamble@def#1{%
   \@onlypreamble#1\def#1}
+%% \pxcz@onlypreamble@let\CS
+\def\pxcz@onlypreamble@let#1{%
+  \@onlypreamble#1\let#1}
 
 %% \pxcz@csuse@or{<csname>}{<default>}
 \def\pxcz@csuse@or#1#2{%
@@ -238,15 +236,15 @@
 % dvipdfmx of version 20170627 or later. The 'unicode-fwid' is a variant.
 % The 'unicode*(-fwid)' option is a transitional (deteriorated) version
 % of 'unicode(-fwid)' and can work with dvipdfmx of version 20170318.
-\@namedef{pxcz@POPT/unicode}{%
+\pxcz@onlypreamble@csdef{pxcz@POPT/unicode}{%
   \let\pxcz@directunicode\pxcz@directunicode@full}
-\@namedef{pxcz@POPT/unicode*}{%
+\pxcz@onlypreamble@csdef{pxcz@POPT/unicode*}{%
   \pxcz@uniquifytrue
   \let\pxcz@directunicode\pxcz@directunicode@full}
-\@namedef{pxcz@POPT/unicode-fwid}{%
+\pxcz@onlypreamble@csdef{pxcz@POPT/unicode-fwid}{%
   \pxcz@fullwidthtrue
   \let\pxcz@directunicode\pxcz@directunicode@full}
-\@namedef{pxcz@POPT/unicode*-fwid}{%
+\pxcz@onlypreamble@csdef{pxcz@POPT/unicode*-fwid}{%
   \pxcz@fullwidthtrue \pxcz@uniquifytrue
   \let\pxcz@directunicode\pxcz@directunicode@full}
 \DeclareOption*{%
@@ -300,10 +298,11 @@
 \else  \pxcz@alphafalse
 \fi\fi\fi\fi
 \ifpxcz@alpha
-  \IfFileExists{pxchfon0.def}{\relax}{%
-    \pxcz@error{Option 'alphabet' not available in Lite edition}%
-    {You must install full edition of PXchfon bundle, or specify
-    'noalphabet'\MessageBreak as package option.}%
+  \IfFileExists{pxchfon0.def}{}{%else
+    \PackageError\pxcz@pkgname
+     {Option 'alphabet' not available in Lite edition}%
+     {You must install full edition of PXchfon bundle, or specify
+      'noalphabet'\MessageBreak as package option.}%
   \pxcz@alphafalse}
 \fi
 
@@ -312,9 +311,10 @@
 \else \pxcz@relfalse
 \fi
 \ifpxcz@rel
-  \IfFileExists{pxchfon0.def}{\relax}{%
-    \pxcz@error{Option 'relfont' not available in Lite edition}%
-    {You must install full edition of PXchfon bundle.}%
+  \IfFileExists{pxchfon0.def}{}{%else
+    \PackageError\pxcz@pkgname
+     {Option 'relfont' not available in Lite edition}%
+     {You must install full edition of PXchfon bundle.}%
   \pxcz@relfalse}
 \fi
 
@@ -1344,7 +1344,8 @@
     You must use upLaTeX and load pxchfon after 'otf' package.}
 \fi
 \def\pxcz@err@diruni{%
-  \pxcz@error{Command '\string\diruni' not available}%
+  \PackageError\pxcz@pkgname
+   {Command '\string\diruni' not available}%
    {\pxcz@errhelp@diruni\MessageBreak\@ehc}%
   \global\let\pxcz@err@diruni\relax}
 \AtBeginDocument{%
@@ -1405,9 +1406,10 @@
 \pxcz@decl@shape{cfjas}{m}n{cfjas-r}%
 \pxcz@decl@shape{cfjas}{bx}s{cfjas/m/n}%
 \pxcz@onlypreamble@def\pxcz@err@dxotf#1{%
-  \pxcz@error{Loaded before '#1' with 'deluxe'}%
-  {This package must be loaded after '#1' with 'deluxe' option
-  when using both.}}
+  \PackageError\pxcz@pkgname
+   {Loaded before '#1' with 'deluxe'}%
+   {This package must be loaded after '#1' with 'deluxe' option
+    when using both.}}
 \g@addto@macro\pxcz@check@extra{%
   \expandafter\let\expandafter\pxcz@x\csname pxcz@FS/mnr\endcsname
   \ifx\pxcz@x\@empty\else
@@ -1431,14 +1433,13 @@
 \def\pxcz@mgfamily@hook{\romanfamily{cfjam}}
 
 %% \pxcz@set@page@hook{<text>}
-\@onlypreamble\pxcz@set@page@hook
 \ifpxcz@everypage
-\def\pxcz@set@page@hook#1{%
+\pxcz@onlypreamble@def\pxcz@set@page@hook#1{%
   \AtBeginShipout{\setbox\AtBeginShipoutBox=\vbox{%
      \baselineskip\z@skip\lineskip\z@skip\lineskiplimit\z@
      #1\copy\AtBeginShipoutBox}}}
 \else
-\def\pxcz@set@page@hook#1{%
+\pxcz@onlypreamble@def\pxcz@set@page@hook#1{%
   % this is \AtBeginDvi with forcing of yoko-dir added
   \global\setbox\@begindvibox\vbox{\yoko\unvbox\@begindvibox#1}}
 \fi
@@ -1458,7 +1459,8 @@
         {\k@encoding}{#1}{\pxcz@x}{}{\pxcz@afont@enc}{#2}{\pxcz@x}{}%
       }\pxcz@tmpa
     \fi}%
-  \pxcz@info{Relation font set for \k@encoding/#1}}
+  \PackageInfo\pxcz@pkgname
+   {Relation font set for \k@encoding/#1}}
 
 %% \pxcz@check@afont@enc
 \pxcz@onlypreamble@def\pxcz@check@afont@enc{%
@@ -1500,7 +1502,8 @@
     % decide alphabet font encoding
     \edef\pxcz@afont@enc{\encodingdefault}%
     \pxcz@check@afont@enc\ifpxcz@ok\else
-      \pxcz@warn{Default encoding is changed to 'OT1' because%
+      \PackageWarningNoLine\pxcz@pkgname
+       {Default encoding is changed to 'OT1' because%
         \MessageBreak'alphabet' option is in effect}%
       \renewcommand\encodingdefault{OT1}%
     \fi
@@ -1646,8 +1649,7 @@
 
 %% \pxcz@kpse@dir@cache
 % to spped up \pxcz@kpsewhich
-\@onlypreamble\pxcz@kpse@dir@cache
-\let\pxcz@kpse@dir@cache\@empty
+\pxcz@onlypreamable@let\pxcz@kpse@dir@cache\@empty
 
 %% \pxcz@kpsewhich{<filename>}
 % Sets to \pxcz@kpse@dir the directory where the file is found
@@ -1775,9 +1777,8 @@
 
 %% \pxcz@declare@preset@alias{<name1>}{<name2>}
 \pxcz@onlypreamble@def\pxcz@declare@preset@alias#1#2{%
-  \expandafter\pxcz@decl@preset@alias@a\csname pxcz@the@preset@#1%
+  \expandafter\pxcz@onlypreamble@let\csname pxcz@the@preset@#1%
   \expandafter\endcsname\csname pxcz@the@preset@#2\endcsname}
-\def\pxcz@decl@preset@alias@a#1#2{\@onlypreamble#1\let#1#2}
 
 %% \pxcz@abolished@preset
 \pxcz@onlypreamble@def\pxcz@abolished@preset{%
