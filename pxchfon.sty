@@ -541,11 +541,17 @@
   }{}%
 }
 \def\pxcz@asutf@a#1{%
+  \pxcz@warn@depre@asutf
   \kchardef\pxcz@tmpa=`#1\relax
   \expandafter\pxcz@asutf@b\meaning\pxcz@tmpa\relax
 }
 \def\pxcz@asutf@b#1"#2\relax{%
   \UTF{#2}%
+}
+\def\pxcz@warn@depre@asutf{%
+  \PackageWarningNoLine\pxcz@pkgname
+   {Important: Command '\string\asUTF' is DEPRECATED}%
+  \global\let\pxcz@warn@depre@asutf\relax
 }
 
 \fi
