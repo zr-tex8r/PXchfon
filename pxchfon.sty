@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2019/03/24 v1.4a]
+\ProvidesPackage{pxchfon}[2019/05/01 v1.5-pre]
 \def\pxcz@pkgname{pxchfon}
 
 %% preparations
@@ -253,14 +253,11 @@
   \pxcz@csuse@or{pxcz@POPT/\CurrentOption}{%
     \pxcz@parse@opt\CurrentOption
     \ifpxcz@ok\else \@unknownoptionerror \fi}}
-\@onlypreamble\pxcz@parse@opt
-\def\pxcz@parse@opt#1{%
+\pxcz@onlypreamble@def\pxcz@parse@opt#1{%
   \expandafter\pxcz@parse@opt@a#1\@nnil}
-\@onlypreamble\pxcz@parse@opt@a
-\def\pxcz@parse@opt@a{%
+\pxcz@onlypreamble@def\pxcz@parse@opt@a{%
   \futurelet\pxcz@tok\pxcz@parse@opt@b}
-\@onlypreamble\pxcz@parse@opt@b
-\def\pxcz@parse@opt@b{%
+\pxcz@onlypreamble@def\pxcz@parse@opt@b{%
   \pxcz@okfalse
   \let\pxcz@tmpa\remove@to@nnil
   \ifx+\pxcz@tok
@@ -268,8 +265,7 @@
   \else\ifx*\pxcz@tok
     \pxcz@file@preset@tlfalse \let\pxcz@tmpa\pxcz@parse@opt@c
   \fi\fi \pxcz@tmpa}
-\@onlypreamble\pxcz@parse@opt@c
-\def\pxcz@parse@opt@c#1#2\@nnil{%
+\pxcz@onlypreamble@def\pxcz@parse@opt@c#1#2\@nnil{%
   \pxcz@oktrue
   \edef\pxcz@file@preset{#2}}
 % dispatch
@@ -362,8 +358,7 @@
 
 %% \pxcz@apply@opt@unicode
 % Forces the 'unicode' setup (unless a directunicode option was given).
-\@onlypreamble\pxcz@apply@opt@unicode
-\def\pxcz@apply@opt@unicode{%
+\pxcz@onlypreamble@def\pxcz@apply@opt@unicode{%
   \ifpxcz@directunicode@default %  default -> unicode
     \pxcz@warn@unicode
     \let\pxcz@directunicode\pxcz@directunicode@full
@@ -377,8 +372,7 @@
 %% \pxcz@apply@opt@unicodeP
 % Forces the 'unicode+' setup, which is a 'unicode' with switch-font
 % enabled on the width features.
-\@onlypreamble\pxcz@apply@opt@unicodeP
-\def\pxcz@apply@opt@unicodeP{%
+\pxcz@onlypreamble@def\pxcz@apply@opt@unicodeP{%
   \pxcz@uniquifyfalse
   \pxcz@switch@font@xwidtrue % 'unicode+'
   \ifnum\pxcz@directunicode=\pxcz@directunicode@full\else
@@ -386,8 +380,7 @@
     \let\pxcz@directunicode\pxcz@directunicode@full
   \fi}
 %% \pxcz@warn@unicode
-\@onlypreamble\pxcz@warn@unicode
-\def\pxcz@warn@unicode{%
+\pxcz@onlypreamble@def\pxcz@warn@unicode{%
   \PackageWarningNoLine\pxcz@pkgname
    {The option 'unicode(*)' is enforced, because the\MessageBreak
     preset '\pxcz@main@preset' is selected.}}
@@ -507,11 +500,9 @@
 \newcommand*\setschinesegothicfont{\pxcz@setfont{scg}}
 \newcommand*\settchineseminchofont{\pxcz@setfont{tcm}}
 \newcommand*\settchinesegothicfont{\pxcz@setfont{tcg}}
-\@onlypreamble\pxcz@setfont
-\def\pxcz@setfont#1{\@ifnextchar[%]
+\pxcz@onlypreamble@def\pxcz@setfont#1{\@ifnextchar[%]
   {\pxcz@setfont@a{#1}}{\pxcz@setfont@a{#1}[0]}}
-\@onlypreamble\pxcz@setfont@a
-\def\pxcz@setfont@a#1[#2]#3{%
+\pxcz@onlypreamble@def\pxcz@setfont@a#1[#2]#3{%
   \edef\pxcz@tmpa{#3}\pxcz@lower\pxcz@tmpa
   \pxcz@split{?:}{?\pxcz@tmpa}%
   \ifx\pxcz@pre\relax
@@ -521,8 +512,7 @@
     \fi
   \else \pxcz@setfont@b{#1}{#3}%
   \fi}
-\@onlypreamble\pxcz@setfont@b
-\def\pxcz@setfont@b#1#2{%
+\pxcz@onlypreamble@def\pxcz@setfont@b#1#2{%
   \@for\pxcz@tmpx:=#1\do{%
     \@namedef{pxcz@FS/\pxcz@tmpx}{#2}}}
 \@for\pxcz@x:=\pxcz@sym@list\do{%
@@ -648,13 +638,11 @@
 \edef\pxcz@@jpXX{%
   \ifpxcz@mmivjis jp04\else jp90\fi}
 %% \pxcz@add@lopt
-\@onlypreamble\pxcz@add@lopt
-\def\pxcz@add@lopt#1{%
+\pxcz@onlypreamble@def\pxcz@add@lopt#1{%
   \edef\pxcz@lopts{%
     \ifx\pxcz@lopts\@empty\else \pxcz@lopts:\fi#1}}
 %% \pxcz@uniquify@lopts
-\@onlypreamble\pxcz@uniquify@lopts
-\def\pxcz@uniquify@lopts#1#2{%
+\pxcz@onlypreamble@def\pxcz@uniquify@lopts#1#2{%
   \pxcz@oktrue
   \def\pxcz@tmpb{jp90}\ifx\pxcz@tmpb\pxcz@lopts\pxcz@okfalse\fi
   \def\pxcz@tmpb{jp04}\ifx\pxcz@tmpb\pxcz@lopts\pxcz@okfalse\fi
@@ -664,17 +652,14 @@
   \fi}
 
 %% \pxcz@is@jis@cmap
-\@onlypreamble\pxcz@is@jis@cmap
-\def\pxcz@is@jis@cmap{%
+\pxcz@onlypreamble@def\pxcz@is@jis@cmap{%
   \pxcz@okfalse
   \expandafter\pxcz@is@jis@cmap@a\pxcz@cmap\pxcz@end}
-\@onlypreamble\pxcz@is@jis@cmap@a
-\def\pxcz@is@jis@cmap@a#1#2\pxcz@end{%
+\pxcz@onlypreamble@def\pxcz@is@jis@cmap@a#1#2\pxcz@end{%
   \ifx\pxcz@mt#2\pxcz@mt \pxcz@oktrue \fi}
 
 %% \pxcz@force@mmiv@cmap
-\@onlypreamble\pxcz@force@mmiv@cmap
-\def\pxcz@force@mmiv@cmap{%
+\pxcz@onlypreamble@def\pxcz@force@mmiv@cmap{%
   \pxcz@is@jis@cmap \ifpxcz@ok
     \edef\pxcz@cmap{\pxcz@pfx@jis\pxcz@cmap}%
   \else
@@ -685,8 +670,7 @@
   \fi}
 
 %% \pxcz@inspect@font@tribe
-\@onlypreamble\pxcz@inspect@font@tribe
-\def\pxcz@inspect@font@tribe{%
+\pxcz@onlypreamble@def\pxcz@inspect@font@tribe{%
   \let\pxcz@font@tribe\@empty
   \ifx\pxcz@font\@empty
   \else\ifx\pxcz@font\pxcz@noembed
@@ -711,8 +695,7 @@
      {Font tribe is '\pxcz@font@tribe':\MessageBreak
       \@spaces\pxcz@font\@gobble}%
   \fi}
-\@onlypreamble\pxcz@inspect@font@tribe@a
-\def\pxcz@inspect@font@tribe@a#1#2#3{%
+\pxcz@onlypreamble@def\pxcz@inspect@font@tribe@a#1#2#3{%
   \pxcz@split{#1}{?\pxcz@font}%
   \ifx\pxcz@pre\relax\else
     \pxcz@split{#2}{\pxcz@font?}%
@@ -723,8 +706,7 @@
 
 %% \pxcz@switch@font@for{<feature>}
 % Modifies \pxcz@font, assuming \pxcz@font@tribe is properly set.
-\@onlypreamble\pxcz@switch@font@for
-\def\pxcz@switch@font@for#1{%
+\pxcz@onlypreamble@def\pxcz@switch@font@for#1{%
   \pxcz@csletcs{pxcz@tmpb}{pxcz@switch@font@@\pxcz@font@tribe @#1}%
   \ifx\pxcz@tmpb\relax\else
 %\typeout{#1:\pxcz@font-->\expandafter\pxcz@tmpb\pxcz@font}%
@@ -772,8 +754,7 @@
 \fi
 
 %% \pxcz@declare@entry@modifier{<name>}
-\@onlypreamble\pxcz@declare@entry@modifier
-\def\pxcz@declare@entry@modifier#1{%
+\pxcz@onlypreamble@def\pxcz@declare@entry@modifier#1{%
   \pxcz@onlypreamble@csdef{pxcz@MEM/#1}}
 
 %% entry modifiers
@@ -865,15 +846,13 @@
 \let\pxcz@spec\@empty
 
 %% \pxcz@addtospec{<id>}
-\@onlypreamble\pxcz@addtospec
-\def\pxcz@addtospec#1{%
+\pxcz@onlypreamble@def\pxcz@addtospec#1{%
   \begingroup
     \let\Entry\pxcz@Entry
     \@nameuse{pxcz@ME/#1}%
   \endgroup}
 %% \Entry{<sym>}{<tfm>}{<cmap>}{<modify>,...}
-\@onlypreamble\pxcz@Entry
-\def\pxcz@Entry#1#2#3#4{%
+\pxcz@onlypreamble@def\pxcz@Entry#1#2#3#4{%
   \def\pxcz@sym{#1}\def\pxcz@cmap{#3}%
   \let\pxcz@csi\relax \let\pxcz@mopts\@empty \let\pxcz@lopts\@empty
   \pxcz@retainfalse \pxcz@retain@csifalse \pxcz@vertfalse
@@ -927,8 +906,7 @@
   \fi\fi}
 
 %% \pxcz@do@file@preset
-\@onlypreamble\pxcz@do@file@preset
-\def\pxcz@do@file@preset{%
+\pxcz@onlypreamble@def\pxcz@do@file@preset{%
   \ifpxcz@file@preset@tl
     \pxcz@do@file@preset@a{ptex-}%
     \ifpxcz@uptex \pxcz@do@file@preset@a{uptex-}\fi
@@ -939,8 +917,7 @@
   \else
     \pxcz@do@file@preset@a{}%
   \fi}
-\@onlypreamble\pxcz@do@file@preset@a
-\def\pxcz@do@file@preset@a#1{%
+\pxcz@onlypreamble@def\pxcz@do@file@preset@a#1{%
   \pxcz@addtospec@alt\pxcz@mapfile{#1\pxcz@file@preset.map}}
 
 %% \pxcz@addtospec@alt
@@ -952,8 +929,7 @@
 %--------------------------------------- map entry definitions
 
 %% \pxcz@mapentry{<id>}{<text>}
-\@onlypreamble\pxcz@mapentry
-\def\pxcz@mapentry#1{%
+\pxcz@onlypreamble@def\pxcz@mapentry#1{%
   \pxcz@onlypreamble@csdef{pxcz@ME/#1}}
 
 %% map entries
@@ -1250,14 +1226,12 @@
 \fi
 
 %% \pxcz@du@decl@shape{<fam>}{<ser>}<sw>{<tfmname>}{<suffix>}
-\@onlypreamble\pxcz@du@decl@shape
-\def\pxcz@du@decl@shape#1#2#3#4#5{%
+\pxcz@onlypreamble@def\pxcz@du@decl@shape#1#2#3#4#5{%
 \DeclareFontShape{JY2}{#1}{#2}{diruni}{<->%
     \pxcz@du@shape@spec{#3}{#4}{#5}{h}}{}%
 \DeclareFontShape{JT2}{#1}{#2}{diruni}{<->%
     \pxcz@du@shape@spec{#3}{#4}{#5}{v}}{}}
-\@onlypreamble\pxcz@du@shape@spec
-\def\pxcz@du@shape@spec#1#2#3#4{%
+\pxcz@onlypreamble@def\pxcz@du@shape@spec#1#2#3#4{%
   \if#1t%
     s*[\pxcz@du@scale]#2\if t\pxcz@otf@mmivjis#3\fi-#4%
   \else#2\fi}
@@ -1303,8 +1277,7 @@
       \edef\pxcz@tmpb{{\f@encoding}{\pxcz@tmpa}{\pxcz@tmpb}}%
       \expandafter\pxcz@do\pxcz@tmpb}}%
 }
-\@onlypreamble\pxcz@force@load@font@fam
-\def\pxcz@force@load@font@fam#1{%
+\pxcz@onlypreamble@def\pxcz@force@load@font@fam#1{%
   \begingroup
     \edef\f@family{#1}\def\f@series{m}\def\f@shape{n}%
     \xdef\font@name{\csname\curr@fontshape/\f@size\endcsname}%
@@ -1323,14 +1296,12 @@
   \endgroup}
 
 %% \pxcz@dg@decl@shape{<fam>}{<ser>}<sw>{<tfmname>}
-\@onlypreamble\pxcz@dg@decl@shape
-\def\pxcz@dg@decl@shape#1#2#3#4{%
+\pxcz@onlypreamble@def\pxcz@dg@decl@shape#1#2#3#4{%
 \DeclareFontShape{JY2}{#1}{#2}{dirgid}{<->%
     \pxcz@dg@shape@spec{#3}{#4}{h}}{}%
 \DeclareFontShape{JT2}{#1}{#2}{dirgid}{<->%
     \pxcz@dg@shape@spec{#3}{#4}{v}}{}}
-\@onlypreamble\pxcz@dg@shape@spec
-\def\pxcz@dg@shape@spec#1#2#3{%
+\pxcz@onlypreamble@def\pxcz@dg@shape@spec#1#2#3{%
   \if#1t%
     s*[\pxcz@du@scale]#2-#3%
   \else#2\fi}
@@ -1389,13 +1360,11 @@
 %% \pxcz@afont@enc@list
 \def\pxcz@afont@enc@list{OT1,T1}
 %% \pxcz@decl@family{<fam>}
-\@onlypreamble\pxcz@decl@family
-\def\pxcz@decl@family#1{%
+\pxcz@onlypreamble@def\pxcz@decl@family#1{%
   \@for\pxcz@x:=\pxcz@afont@enc@list\do{%
     \DeclareFontFamily{\pxcz@x}{#1}{}}}
 %% \pxcz@decl@shape{<fam>}{<ser>}<sw>{<font>}
-\@onlypreamble\pxcz@decl@shape
-\def\pxcz@decl@shape#1#2#3#4{%
+\pxcz@onlypreamble@def\pxcz@decl@shape#1#2#3#4{%
   \if s#3%
     \@for\pxcz@x:=\pxcz@afont@enc@list\do{%
       \DeclareFontShape{\pxcz@x}{#1}{#2}{n}{<->ssub*#4}{}}%
@@ -1435,8 +1404,7 @@
 \pxcz@decl@family{cfjas}%
 \pxcz@decl@shape{cfjas}{m}n{cfjas-r}%
 \pxcz@decl@shape{cfjas}{bx}s{cfjas/m/n}%
-\@onlypreamble\pxcz@err@dxotf
-\def\pxcz@err@dxotf#1{%
+\pxcz@onlypreamble@def\pxcz@err@dxotf#1{%
   \pxcz@error{Loaded before '#1' with 'deluxe'}%
   {This package must be loaded after '#1' with 'deluxe' option
   when using both.}}
@@ -1476,16 +1444,14 @@
 \fi
 
 %% \pxcz@check@alldefined{<sym>,...}
-\@onlypreamble\pxcz@check@alldefined
-\def\pxcz@check@alldefined#1{%
+\pxcz@onlypreamble@def\pxcz@check@alldefined#1{%
   \pxcz@oktrue
   \@for\pxcz@x:={#1}\do{%
     \expandafter\ifx\csname pxcz@FS/\pxcz@x\endcsname\@empty
       \pxcz@okfalse \fi}}
 
 %% \pxcz@decl@relfont{<fam>}{<afam>}{<ser>,...}
-\@onlypreamble\pxcz@decl@relfont
-\def\pxcz@decl@relfont#1#2#3{%
+\pxcz@onlypreamble@def\pxcz@decl@relfont#1#2#3{%
   \@for\pxcz@x:={#3}\do{%
     \expandafter\ifx\csname\k@encoding/#1/\pxcz@x/n\endcsname\relax\else
       \edef\pxcz@tmpa{\noexpand\DeclareRelationFont
@@ -1495,8 +1461,7 @@
   \pxcz@info{Relation font set for \k@encoding/#1}}
 
 %% \pxcz@check@afont@enc
-\@onlypreamble\pxcz@check@afont@enc
-\def\pxcz@check@afont@enc{%
+\pxcz@onlypreamble@def\pxcz@check@afont@enc{%
   \pxcz@oktrue % OT1 is always okay
   \def\pxcz@tmpa{OT1}\ifx\pxcz@tmpa\pxcz@afont@enc\else
     % otherwise, noembed must not be used
@@ -1510,8 +1475,7 @@
   \ifpxcz@ok\else \def\pxcz@afont@enc{OT1}\fi}
 
 %% the begin-document hook
-\@onlypreamble\pxcz@doc@hook
-\def\pxcz@doc@hook{%
+\pxcz@onlypreamble@def\pxcz@doc@hook{%
   \pxcz@user@hook
   \ifx\pxcz@file@preset\relax\else
     \pxcz@do@file@preset
@@ -1636,8 +1600,7 @@
 %% \pxcz@insf@read@word{<offset>}
 % Reads a 32-bit integer from \pxcz@insf@file at the given offset,
 % and sets the value (or -1 on error) to \pxcz@cntr.
-\@onlypreamble\pxcz@insf@read@word
-\def\pxcz@insf@read@word#1{%
+\pxcz@onlypreamble@def\pxcz@insf@read@word#1{%
   \pxcz@cntr=#1\relax
   \edef\pxcz@tmpa{\pdffiledump offset\pxcz@cntr length1{\pxcz@insf@file}}%
   \ifnum"0\pxcz@tmpa<"80
@@ -1652,8 +1615,7 @@
 %% \pxcz@inspect@flavor{<path>}{<index>}
 % Sets the result to \pxcz@cntr.
 % 1=CFF, 0=TTF, <0 if error.
-\@onlypreamble\pxcz@inspect@flavor
-\def\pxcz@inspect@flavor#1#2{%
+\pxcz@onlypreamble@def\pxcz@inspect@flavor#1#2{%
   \edef\pxcz@insf@file{#1}%
   \mathchardef\pxcz@insf@idx=#2\relax
   \pxcz@insf@read@word{0}% outer tag
@@ -1690,8 +1652,7 @@
 %% \pxcz@kpsewhich{<filename>}
 % Sets to \pxcz@kpse@dir the directory where the file is found
 % (or \relax if not found).
-\@onlypreamble\pxcz@kpsewhich
-\def\pxcz@kpsewhich#1{%
+\pxcz@onlypreamble@def\pxcz@kpsewhich#1{%
   \edef\pxcz@tmpa{#1}\let\pxcz@kpse@dir\relax
   \let\do\pxcz@kpsewhich@do \pxcz@kpse@dir@cache\relax
   \ifx\pxcz@kpse@dir\relax
@@ -1708,15 +1669,13 @@
     \fi
     \endlinechar\pxcz@tmpz
   \fi}
-\@onlypreamble\pxcz@kpsewhich@a
-\def\pxcz@kpsewhich@a#1/#2\pxcz@end{%
+\pxcz@onlypreamble@def\pxcz@kpsewhich@a#1/#2\pxcz@end{%
   \ifx\pxcz@end#2\pxcz@end \expandafter\@gobble
   \else \expandafter\@firstofone
   \fi{%
     \edef\pxcz@kpse@dir{\pxcz@kpse@dir#1/}%
     \pxcz@kpsewhich@a#2\pxcz@end}}
-\@onlypreamble\pxcz@kpsewhich@do
-\def\pxcz@kpsewhich@do#1{%
+\pxcz@onlypreamble@def\pxcz@kpsewhich@do#1{%
   \ifnum0\pdffilesize{#1\pxcz@tmpa}>\z@
     \def\pxcz@kpse@dir{#1}%
     \expandafter\pxcz@kpsewhich@do@a
@@ -1725,25 +1684,21 @@
 
 %% \pxcz@inspect@flavor@all
 % Sets \[pxcz@OT/<sym>].
-\@onlypreamble\pxcz@inspect@flavor@all
-\def\pxcz@inspect@flavor@all{%
+\pxcz@onlypreamble@def\pxcz@inspect@flavor@all{%
   \@for\pxcz@tmpa:=\pxcz@sym@list\do{%
     \edef\pxcz@tmpa{{\pxcz@tmpa}{\@nameuse{pxcz@FS/\pxcz@tmpa}}}%
     \expandafter\pxcz@inspect@flavor@all@a\pxcz@tmpa}}
-\@onlypreamble\pxcz@inspect@flavor@all@a
-\def\pxcz@inspect@flavor@all@a#1#2{%
+\pxcz@onlypreamble@def\pxcz@inspect@flavor@all@a#1#2{%
   \def\pxcz@tmpa{#2}%
   \ifx\pxcz@tmpa\@empty
   \else\ifx\pxcz@tmpa\pxcz@noembed
     \@namedef{pxcz@OT/#1}{t}%
   \else \pxcz@inspect@flavor@all@b#2\pxcz@end{#1}%
   \fi\fi}
-\@onlypreamble\pxcz@inspect@flavor@all@b
-\def\pxcz@inspect@flavor@all@b#1#2\pxcz@end{%
+\pxcz@onlypreamble@def\pxcz@inspect@flavor@all@b#1#2\pxcz@end{%
   \edef\pxcz@tmpa{\ifx:#1\else:0:\fi#1#2}%
   \expandafter\pxcz@inspect@flavor@all@c\pxcz@tmpa\pxcz@end}
-\@onlypreamble\pxcz@inspect@flavor@all@c
-\def\pxcz@inspect@flavor@all@c:#1:#2\pxcz@end#3{%
+\pxcz@onlypreamble@def\pxcz@inspect@flavor@all@c:#1:#2\pxcz@end#3{%
   \pxcz@kpsewhich{#2}%
   \unless\ifx\pxcz@kpse@dir\relax
     \pxcz@inspect@flavor{\pxcz@kpse@dir#2}{#1}%
@@ -1769,11 +1724,9 @@
   \edef\pxcz@dump@text{\pxcz@dump@text#1}}
 
 %% \pxcz@dump@special{<string>}
-\@onlypreamble\pxcz@dump@special
-\def\pxcz@dump@special#1{%
+\pxcz@onlypreamble@def\pxcz@dump@special#1{%
   \pxcz@dump@special@a#1\bxcz@end}
-\@onlypreamble\pxcz@dump@special@a
-\def\pxcz@dump@special@a#1 #2\bxcz@end{%
+\pxcz@onlypreamble@def\pxcz@dump@special@a#1 #2\bxcz@end{%
   \@nameuse{pxcz@dump@special@#1}\@gobble{#2}}
 \@namedef{pxcz@dump@special@pdf:mapline}#1#2{%
   \pxcz@add@to@dump@text{\pxcz@rmin#2^^J}}
@@ -1783,8 +1736,7 @@
   \ifx-#1\@percentchar\else#1\fi}
 
 %% \pxcz@dump@spec@to{<file-name>}
-\@onlypreamble\pxcz@dump@spec@to
-\def\pxcz@dump@spec@to#1{%
+\pxcz@onlypreamble@def\pxcz@dump@spec@to#1{%
   \def\pxcz@dump@text{\@percentchar\space#1^^J}%
   \let\special\pxcz@dump@special
   \pxcz@spec \let\special\relax
@@ -1794,15 +1746,13 @@
   \immediate\closeout\pxcz@fout}
 
 %% \pxcz@do@dumpmap
-\@onlypreamble\pxcz@do@dumpmap
-\def\pxcz@do@dumpmap{%
+\pxcz@onlypreamble@def\pxcz@do@dumpmap{%
   \begingroup
     \pxcz@dump@spec@to{\jobname.map}%
   \endgroup}
 
 %% \pxcz@do@dumpmap@tl
-\@onlypreamble\pxcz@do@dumpmap@tl
-\def\pxcz@do@dumpmap@tl{%
+\pxcz@onlypreamble@def\pxcz@do@dumpmap@tl{%
   \begingroup
     \let\pxcz@spec@save\pxcz@spec
     \pxcz@do@dumpmap@tl@a{STD}{ptex-\jobname}%
@@ -1811,8 +1761,7 @@
     \pxcz@do@dumpmap@tl@a{UPOTF}{otf-up-\jobname}%
     \global\let\pxcz@spec\pxcz@spec@save
   \endgroup}
-\@onlypreamble\pxcz@do@dumpmap@tl@a
-\def\pxcz@do@dumpmap@tl@a#1#2{%
+\pxcz@onlypreamble@def\pxcz@do@dumpmap@tl@a#1#2{%
   \global\let\pxcz@spec\@empty
   \pxcz@addtospec{#1}%
   \pxcz@dump@spec@to{#2.map}}
@@ -1821,13 +1770,11 @@
 %--------------------------------------- preset japanese font mappings
 
 %% \pxcz@declare@preset{<name>}{<text>}
-\@onlypreamble\pxcz@declare@preset
-\def\pxcz@declare@preset#1{%
+\pxcz@onlypreamble@def\pxcz@declare@preset#1{%
   \pxcz@onlypreamble@csdef{pxcz@the@preset@#1}}
 
 %% \pxcz@declare@preset@alias{<name1>}{<name2>}
-\@onlypreamble\pxcz@declare@preset@alias
-\def\pxcz@declare@preset@alias#1#2{%
+\pxcz@onlypreamble@def\pxcz@declare@preset@alias#1#2{%
   \expandafter\pxcz@decl@preset@alias@a\csname pxcz@the@preset@#1%
   \expandafter\endcsname\csname pxcz@the@preset@#2\endcsname}
 \def\pxcz@decl@preset@alias@a#1#2{\@onlypreamble#1\let#1#2}
@@ -1841,14 +1788,12 @@
   \pxcz@onlypreamble@csdef{pxcz@the@preset@\pxcz@x}{\pxcz@abolished@preset}}
 
 %% \pxcz@uniweight{<font-mn>}{<font-gt>}
-\@onlypreamble\pxcz@uniweight
-\def\pxcz@uniweight#1#2{%
+\pxcz@onlypreamble@def\pxcz@uniweight#1#2{%
   \setminchofont{#1}\setgothicfont{#2}\setmarugothicfont{#2}}
 
 %% \pxcz@multiweight{<font-mnl>}{<font-mnr>}{<font-mnb>}
 %%   {<font-gtr>}{<font-gtb>}{<font-gtx>}{<font-gtu>}{<font-mgr>}
-\@onlypreamble\pxcz@multiweight
-\def\pxcz@multiweight#1#2#3#4#5#6#7#8{%
+\pxcz@onlypreamble@def\pxcz@multiweight#1#2#3#4#5#6#7#8{%
   \setminchofont{#2}\setgothicfont{#7}\setmarugothicfont{#8}%
   \ifpxcz@oneweight\else
   \setlightminchofont{#1}\setboldminchofont{#3}%
