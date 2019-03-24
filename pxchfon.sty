@@ -367,6 +367,7 @@
 
 %% variables
 \newif\ifpxcz@warn@unless@all@defined
+\newif\ifpxcz@warn@unless@all@embedded
 
 %% \pxcz@apply@opt@unicode
 % Forces the 'unicode' setup (unless a directunicode option was given).
@@ -417,6 +418,10 @@
 \pxcz@do{noto+}{\pxcz@apply@opt@unicodeP}
 \pxcz@do{noto-otc+}{\pxcz@apply@opt@unicodeP}
 \pxcz@do{yu-win10+}{\pxcz@apply@opt@unicodeP}
+% No-embed is not supported under the 'unicode' setup
+\ifnum\pxcz@directunicode=\pxcz@directunicode@full
+  \pxcz@warn@unless@all@embeddedtrue
+\fi
 
 %% apply default for \pxcz@legacycode
 \ifx\pxcz@legacycode\relax
@@ -574,11 +579,9 @@
 
 %%<*> \usecmapforalphabet/\nousecmapforalphabet
 \newcommand*\usecmapforalphabet{%
-  \global\let\pxcz@cmap@uni\pxcz@cmap@hwuni}
+  \global\pxcz@cmap@alphatrue}
 \newcommand*\nousecmapforalphabet{%
-  \global\let\pxcz@cmap@uni\pxcz@cmap@directuni}
-\ifpxcz@cmap@alpha \usecmapforalphabet
-\else \nousecmapforalphabet \fi
+  \global\pxcz@cmap@alphafalse}
 
 %% \pxcz@NEF/<sym>
 \def\pxcz@do#1#2{%
@@ -651,6 +654,7 @@
 \let\pxcz@lopts\relax
 \let\pxcz@mopts\relax
 \let\pxcz@font@tribe\relax
+\newif\ifpxcz@noembed@used
 
 %% \pxcz@@jpXX
 \edef\pxcz@@jpXX{%
@@ -807,14 +811,16 @@
   \pxcz@add@lopt{jp90}}
 % HWid
 \pxcz@declare@entry@modifier{HWid}{%
-  \ifx\pxcz@font\pxcz@noembed
-    \let\pxcz@cmap\pxcz@cmap@hwuni
-  \else\ifnum\pxcz@directunicode=\pxcz@directunicode@full
+  \ifx\pxcz@font\pxcz@noembed \pxcz@okfalse
+  \else\ifnum\pxcz@directunicode=\pxcz@directunicode@full \pxcz@oktrue
+  \else\ifpxcz@cmap@alpha \pxcz@okfalse
+  \else \pxcz@oktrue
+  \fi\fi\fi
+  \ifpxcz@ok
     \let\pxcz@cmap\pxcz@cmap@directuni
-  \else
-    \let\pxcz@cmap\pxcz@cmap@uni
     \pxcz@switch@font@for{hwid}%
-  \fi\fi
+  \else \let\pxcz@cmap\pxcz@cmap@hwuni
+  \fi
   \pxcz@add@lopt{hwid}}
 % FWid
 \pxcz@declare@entry@modifier{FWid}{%
@@ -884,6 +890,8 @@
   % resolve no-embed font spec
   \ifx\pxcz@font\pxcz@noembed
     \edef\pxcz@font{!\@nameuse{pxcz@NEF/\pxcz@sym}}%
+    \pxcz@retaintrue
+    \global\pxcz@noembed@usedtrue
   \fi
   % apply layout options when using 'unicode'
   \ifnum\pxcz@directunicode<\pxcz@directunicode@full\else
@@ -1483,14 +1491,8 @@
 %% \pxcz@check@afont@enc
 \pxcz@onlypreamble@def\pxcz@check@afont@enc{%
   \pxcz@oktrue % OT1 is always okay
-  \def\pxcz@tmpa{OT1}\ifx\pxcz@tmpa\pxcz@afont@enc\else
-    % otherwise, noembed must not be used
-    \@for\pxcz@x:=\pxcz@sym@list\do{%
-      \expandafter\ifx\csname pxcz@FS/\pxcz@x\endcsname\pxcz@noembed
-        \pxcz@okfalse \fi}%
-    \expandafter\ifx\csname\pxcz@afont@enc+cfjar\endcsname\relax
-      \pxcz@okfalse \fi
-  \fi
+  \expandafter\ifx\csname\pxcz@afont@enc+cfjar\endcsname\relax
+    \pxcz@okfalse \fi
   % if not okay, use OT1 instead
   \ifpxcz@ok\else \def\pxcz@afont@enc{OT1}\fi}
 
@@ -1578,10 +1580,17 @@
     \ifpxcz@ok\else
       \PackageWarningNoLine\pxcz@pkgname
        {Some font weights are not substituted.\MessageBreak
-        Thus some features of pxchfon might not work\MessageBreak
+        So some features of pxchfon might not work\MessageBreak
         properly when applied to such weights}%
     \fi
   \fi
+  % warn if some weights are not embedded, and if necessaty
+  \ifpxcz@warn@unless@all@embedded \ifpxcz@noembed@used
+    \PackageWarningNoLine\pxcz@pkgname
+     {Some font weights have no-embed setting.\MessageBreak
+      So some features of pxchfon might not work\MessageBreak
+      properly when applied to such weights}%
+  \fi\fi
   %
   \pxcz@check@extra
   \pxcz@addtospec{USR}%
