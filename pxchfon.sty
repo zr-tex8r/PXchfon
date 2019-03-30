@@ -1384,10 +1384,16 @@
 
 %--------------------------------------- 'alphabet' option
 
+%% check for textcomp
+\newif\ifpxcz@textcomp
+\@ifpackageloaded{textcomp}{\pxcz@textcomptrue}{}
+
 %% \pxcz@afont@enc@list
 \def\pxcz@afont@enc@list{OT1,T1}
+\ifpxcz@textcomp \g@addto@macro\pxcz@afont@enc@list{,TS1}\fi
 %% \pxcz@decl@family{<fam>}
 \pxcz@onlypreamble@def\pxcz@decl@family#1{%
+  \ifpxcz@textcomp \DeclareEncodingSubset{TS1}{#1}{3}\fi
   \@for\pxcz@x:=\pxcz@afont@enc@list\do{%
     \DeclareFontFamily{\pxcz@x}{#1}{}}}
 %% \pxcz@decl@shape{<fam>}{<ser>}<sw>{<font>}
@@ -1398,6 +1404,9 @@
   \else
     \DeclareFontShape{OT1}{#1}{#2}{n}{<->#4-l5j}{}%
     \DeclareFontShape {T1}{#1}{#2}{n}{<->#4-t1}{}%
+    \ifpxcz@textcomp
+      \DeclareFontShape{TS1}{#1}{#2}{n}{<->#4-ts1}{}%
+    \fi
   \fi
   \@for\pxcz@x:=\pxcz@afont@enc@list\do{%
     \DeclareFontShape{\pxcz@x}{#1}{#2}{it}{<->ssub*#1/#2/n}{}%
