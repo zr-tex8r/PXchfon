@@ -1,6 +1,8 @@
 % 文字コードは UTF-8
 % uplatex で組版する
 \documentclass[uplatex,dvipdfmx,a4paper]{jsarticle}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,textcomp}
 \usepackage{color}
 \definecolor{myblue}{rgb}{0,0,0.75}
 \definecolor{mygreen}{rgb}{0,0.45,0}
@@ -10,8 +12,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.4a}
-\newcommand{\PkgDate}{2019/03/24}
+\newcommand{\PkgVersion}{1.5-pre}
+\newcommand{\PkgDate}{2019/05/01}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -177,7 +179,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item \Strong{Unicode直接指定オプション}\Means
   一部または全部のフォントについて、エンコーディング指定方式を
   “Cmap指定”から“Unicode直接指定”に変更する。
-  |nodirectunicode|（既定）、|directunicode|、|directunicode*|、
+  |nounicode|（既定）、|directunicode|、|directunicode*|、
   |unicode*|、|unicode| の5種類の指定がある。
   \Note 詳細については\ref{sec:DirectUnicode}節を参照。
   \Note 一部のプリセット指定（|sourcehan|等）は
@@ -262,7 +264,10 @@ OpenTypeフォントをユーザが指定する機能を提供する。
     避けたいので、|dumpmap(tl)| が指定された場合は、
     既定が |strictcsi| に変更される。
 \item |expert|（既定）\Means
-  Unicode直接指定の適用時に\Pkg{japanese-otf}の |expert| オプション
+  Unicode直接指定の適用時
+  \footnote{置換されていないウェイトはUnicode直接指定にならない。
+    （\ref{ssec:DirectUnicodeNotice}節の注意を参照。）}%
+  に\Pkg{japanese-otf}の |expert| オプション
   の機能を（可能な範囲で）エミュレートする。
   \Note \Pkg{japanese-otf}の |expert| が指定されない場合は無意味。
 \item |noexpert|\Means
@@ -270,8 +275,10 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   Unicode直接指定時には\Pkg{japanese-otf}の |expert| は無効になる。
 \item |glyphid|\Means
   GID指定入力（|\gid| 命令）の機能を有効にする。
-  \Note エンジンが{\upTeX}でかつUnicode直接指定が有効の場合に
-  のみ利用できる。
+  \Note エンジンが{\upTeX}でかつUnicode直接指定
+  \footnote{置換されていないウェイトはUnicode直接指定にならない。
+    （\ref{ssec:DirectUnicodeNotice}節の注意を参照。）}%
+  が有効の場合にのみ利用できる。
 \item |noglyphid|（既定）\Means
   |glyphid| の否定。
 \end{itemize}
@@ -1024,21 +1031,21 @@ CMap指定の場合の機能性を可能な限り保つことを目指してい�
 
 \paragraph{“Unicode直接指定”オプション}
 以下のパッケージオプションを指定することで
-Unicode直接指定が有効になる。
+Unicode直接指定の有効・無効を切り替えられる。
 
 \begin{itemize}
 \item |unicode|\Means
   全般的にUnicode直接指定を利用する。
-  最も理想的な設定であるが、現存の{\TeX} Live 2017では利用できない。
-  \Note dvipdfmxの20170918版以降（{\TeX} Live 2018以降）が必要。
+  最も理想的な設定であるが、\Strong{{\TeX} Live 2018以降のdvipdfmx}%
+  （20170918版以降）が必要である。
 \item |unicode*|\Means
-  |unicode| と同様だが、{\TeX} Live 2017のdvipdfmaに対応するために
-  妥協を入れた（過渡的な）設定。
-  一部の約物・記号の出力が異常になる可能性がある。
-  \Note dvipdfmxの20170318版以降（{\TeX} Live 2017以降）が必要。
+  {\TeX} Live 2017のdvipdfmx（20170318版）専用の\Strong{過渡的}な設定。
+  \Note 1.5版以降では\Strong{非推奨}であり、
+  将来的に廃止される予定である。
 \item |directunicode*|\Means
-  |unicode| と同様だが、古い（{\TeX} Live 2016以前の）dvipdfmaに
-  対応するために、OpenType属性の指定を全く行わない設定。
+  全般的にUnicode直接指定を利用するが、
+  古い（{\TeX} Live 2016以前の）dvipdfmxに
+  対応するために、OpenType属性の指定を全く行わない。
   つまり、入力のUnicode文字に対する既定のグリフが常に出力され、
   異体字の区別は全て無効になる。
 \item |directunicode|\Means
@@ -1068,33 +1075,49 @@ Unicode直接指定が有効になる。
 \item |noto-jp|
 \end{itemize}
 
-\paragraph{特殊プリセット指定\<（過渡的）}
+\paragraph{特殊プリセット指定\<（非推奨）}
 
-現状の{\TeX} Live 2017のdvipdfmxで |unicode| が使えない
-という問題に対処するため、
-一部のプリセット指定について、
-「|unicode| を指定した理想的な状態を模倣する」
-特殊なプリセット設定を用意した。
-これらの設定はdvipdfmxの20170318版以降（{\TeX} Live 2017以降）
-において使用できる。
+以下に挙げるプリセット設定は{\TeX} Live 2017%
+（dvipdfmx 20170318版）のために用意された特殊な設定である。
 
-本来使えないはずの設定を模倣するために、
-少々邪悪な細工を行ている。
+1.5版においてこれらのプリセットは\Strong{非推奨}となった。
+将来的には廃止される予定である。
+そのため、これらのプリセットを利用している場合は、
+\Strong{{\TeX}システムを更新}（dvipdfmxを20170918版以降に）した上で、
+“本来の正しい設定”に移行することを推奨する。
 
 \begin{itemize}
-\item |sourcehan+|、|sourcehan-otc+|、
-    |noto+|、|noto-otc+|\Means
-  これらの特殊プリセット指定は、対応する（|+| 無しの）
-  Unicode直接指定専用プリセットの設定を模倣する。
-  日本語用の一部のグリフを
-  日本語以外（繁体中国語等）のフォントに振り替えている。
-  従って、言語別OTF版のフォントファイルを利用する場合は、
-  原則的に全てのCJK言語の版を用意する必要がある。
+\item |sourcehan+|、|sourcehan-otc+|、|noto+|、|noto-otc+|：\\
+  →代わりに|+|無しの名前（|sourcehan| 等）を指定する。
+  \Note 前述の通り、|unicode| は自動的に補われる。
+  \Note 日本語版以外のフォントはもはや不要である。
 
-\item |yu-win10+|\Means
-  |yu-win10| に |unicode| を加えた設定を模倣する。
-  クオートの出力を正常にするため、クオートのグリフを
-  「Yu Gothic UI」フォントに振り替えている。
+\item |yu-win10+|：\\
+  →代わりに |yu-win10| と |unicode| を指定する。
+\end{itemize}
+
+%-------------------
+\subsection{Unicode直接指定に関する注意事項}
+\label{ssec:DirectUnicodeNotice}
+
+\begin{itemize}
+\item プリセット指定または |\set...font| 命令で
+  フォントを置換していないウェイトについては、
+  |unicode| 指定時であってもUnicode直接指定は効かない。
+  従って、そのようなウェイトはUnicode直接指定が想定する出力には
+  ならず、またUnicode直接指定を必要とする機能
+  （|expert| や |glyphid| の各オプション）
+  も使えない。
+\item 特に、|expert| については、
+  非置換のウェイトの動作が非常に複雑で解りにくい。
+  従って、|expert| を指定する場合は、全ファミリ・ウェイトについて
+  置換を指定することを推奨する
+  （これに反する場合は警告が出る）。
+\item 非埋込を指定したウェイトについてはUnicode直接指定が
+  無効になる。
+  この動作も非常に解りにくいため、
+  Unicode直接指定を用いる場合は、非埋込の指定をしないことを推奨する
+  （これに反する場合は警告が出る）。
 \end{itemize}
 
 
@@ -1123,11 +1146,7 @@ DVI文書の全てのページにフォントマップ情報を書き出すの�
 
 指定された和文フォントの半角部分からなる欧文フォントファミリとして
 OT1/cfjar（明朝）、OT1/cfjas（ゴシック）、OT1/cfjam（丸ゴシック）
-の3つ（以下では\Strong{CFJAファミリ}と総称する）を定義している
-\footnote{1.4版からはT1エンコーディングにもCFJAファミリを定義する。
-現状で対応しているのはOT1とT1のみであるので、欧文フォントの置換
-（\texttt{alphabet}や\texttt{relfont}オプション）
-を利用する文書は、欧文エンコーディングがOT1かT1である必要がある。}。
+の3つ（以下では\Strong{CFJAファミリ}と総称する）を定義している。
 その上で、CFJAファミリに対するマップ指定を和文と同じ方法で行っている。
 なお、CFJAファミリは内部ではOT1として扱われるが、
 実際にはOT1の一部のグリフしか持っていない。
@@ -1144,6 +1163,53 @@ CFJAファミリを既定の欧文ファミリとして設定する
 CFJAファミリを和文ファミリの従属欧文フォントに
 （cfjarを |\mcfamily| に、cfjasを |\gtfamily| に、
 cfjamを |\mgfamily| に対して）設定する。
+
+\paragraph{利用可能な欧文エンコーディング}
+現状で、CFJAファミリが対応している欧文エンコーディングは
+OT1、T1、TS1の3つである
+\footnote{1.4版でT1に“暫定対応”し、1.5版でT1とTS1に正式に対応した。}。
+このため、欧文フォントの置換
+（\texttt{alphabet}や\texttt{relfont}オプション）
+を利用する文書は、欧文エンコーディングがOT1かT1である必要がある
+\footnote{TS1は記号用のエンコーディングであり、本文の既定の
+エンコーディングとして使うものではない。}。
+
+何れのエンコーディングを用いる場合でも、様々な理由により、利用できる
+文字の種類が限られている。
+\begin{enumerate}
+\item AJ1対応のOpenTypeフォントを指定して、かつ |usecmapforalphabet|
+  オプションを指定した場合、
+  以下の文字（でかつ当該の欧文エンコーディングに含まれるもの）が使える。
+  \Note AJ1対応フォント用のプリセット（|kozuka-pr6n| 等）を
+  指定した場合は |usecmapforalphabet| は自動的に有効になる。
+  \begin{itemize}
+  \item[a)] ASCII文字
+    \footnote{出力される文字の話であることに注意。
+      例えば、OT1やT1で \textsf{\textquotesingle}（U+0027）を
+      入力したときに出力される文字は \textsf{\textquoteright}（U+2019）
+      であり、これはASCII文字ではない。
+      なお、TS1はU+0027を含む。}%
+    およびen-ダッシュ（\textsf{--}）。
+    \Note これらは半角幅である。
+  \item[b)] クオート（\textsf{`` '' ` '}）。
+    \Note これらは和文用の全角幅の字形を、空き詰めて半角幅で出力する。
+  \item[c)] em-ダッシュ（\textsf{---}）。
+    \Note これらはU+2015の全角幅の字形をそのまま（全角幅）で出力する。
+  \end{itemize}
+\item 1以外の場合、
+  以下の文字（でかつ当該の欧文エンコーディングに含まれるもの）が使える。
+  \Note この場合、既定では欧文は |directunicode*| 相当の状態になる。
+  \begin{itemize}
+  \item 1項のa、b、cの文字はフォントが正しい幅
+    （aは半角、bとcは半角）の字形を持っていれば使える。
+  \item それ以外でも、Unicodeにある文字である大部分の文字は、
+    フォントが半角幅の字形を持っていれば使える。
+    \Note 半角幅のまま出力される。
+  \item |unicode| オプションを指定すると、正しい幅の字形を優先して
+    使おうとするため、既定の場合よりも多くの文字が使える。
+  \end{itemize}
+\end{enumerate}
+
 
 %===========================================================
 \section{注意事項}
