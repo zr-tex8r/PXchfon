@@ -12,8 +12,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.5-pre}
-\newcommand{\PkgDate}{2019/05/01}
+\newcommand{\PkgVersion}{1.5}
+\newcommand{\PkgDate}{2019/05/15}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -1167,7 +1167,8 @@ cfjamを |\mgfamily| に対して）設定する。
 \paragraph{利用可能な欧文エンコーディング}
 現状で、CFJAファミリが対応している欧文エンコーディングは
 OT1、T1、TS1の3つである
-\footnote{1.4版でT1に“暫定対応”し、1.5版でT1とTS1に正式に対応した。}。
+\footnote{1.4版でT1に“暫定対応”し、1.5版でT1とTS1に正式に対応した。}%
+（TS1は事前に\Pkg{textcomp}を読み込んだ場合にのみ有効）
 このため、欧文フォントの置換
 （\texttt{alphabet}や\texttt{relfont}オプション）
 を利用する文書は、欧文エンコーディングがOT1かT1である必要がある
@@ -1192,9 +1193,9 @@ OT1、T1、TS1の3つである
     およびen-ダッシュ（\textsf{--}）。
     \Note これらは半角幅である。
   \item[b)] クオート（\textsf{`` '' ` '}）。
-    \Note これらは和文用の全角幅の字形を、空き詰めて半角幅で出力する。
+    \Note これらは和文用の全角幅の字形を、空きを詰めて半角幅で出力する。
   \item[c)] em-ダッシュ（\textsf{---}）。
-    \Note これらはU+2015の全角幅の字形をそのまま（全角幅）で出力する。
+    \Note これらはU+2015の全角幅の字形をそのまま全角幅で出力する。
   \end{itemize}
 \item 1以外の場合、
   以下の文字（でかつ当該の欧文エンコーディングに含まれるもの）が使える。

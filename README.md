@@ -25,8 +25,8 @@ used in the japanese-otf package.
 Move the files as follows (in a system compliant to TDS 1.1):
 
   - `*.sty`      → $TEXMF/tex/platex/pxchfon/
-  - `*.tfm`      → $TEXMF/fonts/tfm/public/pxchfon/
-  - `*.vf`       → $TEXMF/fonts/vf/public/pxchfon/
+  - `tfm/*.tfm`  → $TEXMF/fonts/tfm/public/pxchfon/
+  - `vf/*.vf`    → $TEXMF/fonts/vf/public/pxchfon/
   - `pxcjk0.sfd` → $TEXMF/fonts/sfd/pxchfon/
   - `*.def`      → $TEXMF/tex/platex/pxchfon/
 
@@ -39,6 +39,14 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.5  ‹2019/05/15›
+      - The `unicode*` option, which is a tentative setting for TL2017,
+        is now deprecated.
+      - The `\asUTF` command is now deprecated.
+      - The VFs of alphabetic fonts are refined; now TS1 encoding is
+        also supported.
+      - Issue a warning for unembedded font weights, if direct Unicode
+        mode is employed.
   * Version 1.4a ‹2019/03/24›
       - Issue a warning for unsubstituted font weights, if a setting
         where unsubtituted fonts could cause problems is employed.

@@ -33,9 +33,6 @@ pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）を
   - TDS 1.1 に従ったシステムでは、次のファイルを移動する。
       * `*.sty` → $TEXMF/tex/platex/pxchfon/
 
-  - W32TeX を `C:\usr\local` にインストールした場合の例。
-      * `*.sty` → `C:\usr\local\share\texmf-local\tex\platex\pxchfon`
-
   - もっと簡単に、TeX システムのディレクトリには手を加えずに、単に
     文書ファイルと同じディレクトリに pxchfon.sty を置くだけでも使える。
 
@@ -45,16 +42,10 @@ pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）を
 設定を行う。
 
   * TDS 1.1 に従ったシステムでは、各ファイルを次の場所に移動する。
-      - `*.tfm`      → $TEXMF/fonts/tfm/public/pxchfon/
-      - `*.vf`       → $TEXMF/fonts/vf/public/pxchfon/
+      - `tfm/*.tfm`  → $TEXMF/fonts/tfm/public/pxchfon/
+      - `vf/*.vf`    → $TEXMF/fonts/vf/public/pxchfon/
       - `pxcjk0.sfd` → $TEXMF/fonts/sfd/pxchfon/
       - `*.def`      → $TEXMF/tex/platex/pxchfon/
-
-  * W32TeX を `C:\usr\local` にインストールした場合の例。
-      - `*.tfm`  → `C:\usr\local\share\texmf-local\fonts\tfm\public\pxchfon`
-      - `*.vf`   → `C:\usr\local\share\texmf-local\fonts\vf\public\pxchfon`
-      - `pxcjk0.sfd` → `C:\usr\local\share\texmf-local\fonts\sfd\pxchfon`
-      - `*.def`  → `C:\usr\local\share\texmf-local\tex\platex\pxchfon`
 
 ### ライセンス
 
@@ -63,6 +54,13 @@ MITライセンスの下で配布される。
 更新履歴
 --------
 
+  * Version 1.5  ‹2019/05/15›
+      - TL2017 用の暫定設定である `unicode*` オプションを非推奨とする。
+      - `\asUTF` 命令を非推奨とする。
+      - 欧文置換用の VF を刷新した。TS1 エンコーディングをサポート。
+      - The VFs of alphabetic fonts are refined; now TS1 encoding is
+        also supported.
+      - Unicode 直接モードでは非埋込のフォントに対して警告を出す。
   * Version 1.4a ‹2019/03/24›
       - 非置換のフォントに対して不具合が起こりうる設定を使う場合、
         非置換のフォントがあると警告を出す。
