@@ -39,6 +39,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.5a ‹2019/07/10›
+      - Bug fix.
   * Version 1.5  ‹2019/05/15›
       - The `unicode*` option, which is a tentative setting for TL2017,
         is now deprecated.
