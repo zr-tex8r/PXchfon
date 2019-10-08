@@ -253,20 +253,17 @@
     \pxcz@parse@opt\CurrentOption
     \ifpxcz@ok\else \@unknownoptionerror \fi}}
 \pxcz@onlypreamble@def\pxcz@parse@opt#1{%
-  \expandafter\pxcz@parse@opt@a#1\@nnil}
-\pxcz@onlypreamble@def\pxcz@parse@opt@a{%
-  \futurelet\pxcz@tok\pxcz@parse@opt@b}
-\pxcz@onlypreamble@def\pxcz@parse@opt@b{%
   \pxcz@okfalse
-  \let\pxcz@tmpa\remove@to@nnil
-  \ifx+\pxcz@tok
-    \pxcz@file@preset@tltrue \let\pxcz@tmpa\pxcz@parse@opt@c
-  \else\ifx*\pxcz@tok
-    \pxcz@file@preset@tlfalse \let\pxcz@tmpa\pxcz@parse@opt@c
-  \fi\fi \pxcz@tmpa}
-\pxcz@onlypreamble@def\pxcz@parse@opt@c#1#2\@nnil{%
-  \pxcz@oktrue
-  \edef\pxcz@file@preset{#2}}
+  \pxcz@parse@opt@a{+}{#1}{\pxcz@file@preset@tltrue}%
+  \pxcz@parse@opt@a{*}{#1}{\pxcz@file@preset@tlfalse}%
+  \pxcz@parse@opt@a{tl:}{#1}{\pxcz@file@preset@tltrue}%
+  \pxcz@parse@opt@a{file:}{#1}{\pxcz@file@preset@tlfalse}}
+\pxcz@onlypreamble@def\pxcz@parse@opt@a#1#2#3{%
+  \ifpxcz@ok\else
+    \pxcz@split{#1}{#2}\ifx\pxcz@pre\@empty
+      #3\let\pxcz@file@preset\pxcz@post \pxcz@oktrue
+    \fi
+  \fi}
 % dispatch
 \ProcessOptions*
 
