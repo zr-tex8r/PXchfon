@@ -113,6 +113,50 @@
   \chardef\pxcz@pxufont@loaded=0
 }
 
+%--------------------------------------- custom presets
+
+%% \pxcz@custom@presets
+\pxcz@onlypreamble@let\pxcz@custom@presets\@empty
+%% \pxcz@custom@apply@opt@unicode
+\pxcz@onlypreamble@let\pxcz@custom@apply@opt@unicode\@empty
+%% freeze
+\pxcz@onlypreamble@let\pxcz@custom\relax
+\let\pxcz@uniweight\relax
+\let\pxcz@multiweight\relax
+
+%% \pxcz@declare@oneweight@preset{<name>}{<m>}{<g>}
+\pxcz@onlypreamble@def\pxcz@declare@oneweight@preset#1#2#3{%
+  \xdef\pxcz@custom@presets{\pxcz@custom@presets
+    \pxcz@custom{#1}{\pxcz@uniweight{#2}{#3}}}}
+%% \pxcz@declare@multiweight@preset{<name>}{<1>}...{<8>}
+\pxcz@onlypreamble@def\pxcz@declare@multiweight@preset#1#2#3#4#5#6#7#8#9{%
+  \xdef\pxcz@custom@presets{\pxcz@custom@presets
+    \pxcz@custom{#1}{\pxcz@multiweight{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}}}
+%%<+> \pxchfonDeclareOneWeightPreset{<name>}{<m>}{<g>}
+\@onlypreamble\pxchfonDeclareOneWeightPreset
+\newcommand*\pxchfonDeclareOneWeightPreset[1]{%
+  \pxcz@declare@oneweight@preset{user:#1}}
+%%<+> \pxchfonDeclareMultiWeightPreset{<name>}{<1>}...{<8>}
+\@onlypreamble\pxchfonDeclareMultiWeightPreset
+\newcommand*\pxchfonDeclareMultiWeightPreset[1]{%
+  \pxcz@declare@multiweight@preset{user:#1}}
+
+%% Load custom preset definitions
+\IfFileExists{pxchfon-extras.def}{%
+  \PackageInfo\pxcz@pkgname
+   {Extra preset settings are loaded\@gobble}%
+  \input{pxchfon-extras.def}%
+}{}
+\IfFileExists{pxchfon.cfg}{%
+  \PackageInfo\pxcz@pkgname
+   {Custom preset settings are loaded\@gobble}%
+  \begingroup
+    \makeatother\input{pxchfon.cfg}%
+  \endgroup
+}{}
+\let\pxcz@declare@oneweight@preset\@undefined
+\let\pxcz@declare@multiweight@preset\@undefined
+
 %--------------------------------------- handle options
 
 %% variables
@@ -232,6 +276,8 @@
   \expandafter\pxcz@do\expandafter{\pxcz@x}}
 \@for\pxcz@x:=\pxcz@all@abolished@preset\do{%
   \expandafter\pxcz@do\expandafter{\pxcz@x}}
+\def\pxcz@custom#1#2{\pxcz@do{#1}}
+\pxcz@custom@presets
 % others
 % The 'unicode' option means a Unicode-oriented mapping, and requires
 % dvipdfmx of version 20170627 or later. The 'unicode-fwid' is a variant.
@@ -416,6 +462,7 @@
 \pxcz@do{noto+}{\pxcz@apply@opt@unicodeP}
 \pxcz@do{noto-otc+}{\pxcz@apply@opt@unicodeP}
 \pxcz@do{yu-win10+}{\pxcz@apply@opt@unicodeP}
+\pxcz@custom@apply@opt@unicode
 % No-embed is not supported under the 'unicode' setup
 \ifnum\pxcz@directunicode=\pxcz@directunicode@full
   \pxcz@warn@unless@all@embeddedtrue
@@ -1838,6 +1885,10 @@
 %% \pxcz@use@preset{<name>}
 \pxcz@onlypreamble@def\pxcz@use@preset#1{%
   \csname pxcz@the@preset@#1\endcsname}
+
+%% Redefine \pxcz@custom
+\let\pxcz@custom\pxcz@declare@preset
+\pxcz@custom@presets
 
 %% definitions of main preset mappings
 \pxcz@declare@preset{noembed}{%
