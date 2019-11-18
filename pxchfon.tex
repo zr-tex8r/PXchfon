@@ -9,20 +9,18 @@
 \usepackage[colorlinks,hyperfootnotes=false]{hyperref}
 \usepackage{pxjahyper}
 \hypersetup{linkcolor=myblue,urlcolor=mygreen}
-\usepackage{metalogo}
+\usepackage{bxtexlogo}
+\bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.5a}
-\newcommand{\PkgDate}{2019/07/10}
+\newcommand{\PkgVersion}{1.6a}
+\newcommand{\PkgDate}{2019/11/18}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
 \newcommand{\Means}{：\ }
+\newcommand{\Zk}{\mbox{}}
 \providecommand{\Strong}[1]{\textsf{#1}}
-\providecommand{\pTeX}{p\TeX}
-\providecommand{\pLaTeX}{p\LaTeX}
-\providecommand{\upTeX}{u\pTeX}
-\providecommand{\upLaTeX}{u\pLaTeX}
 %-----------------------------------------------------------
 \begin{document}
 \title{\Pkg{pxchfon} パッケージ}
@@ -41,9 +39,10 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 一度パッケージをインストールするだけで、
 任意の日本語フォント（ただし等幅に限る）を使うことができる。
 欧文部分を同じ日本語フォントで置き換えることも可能である。
-\Pkg{japanese-otf}\footnote{\Pkg{japanese-otf}パッケージ\Means
+\Pkg{japanese-otf}パッケージ%
+\footnote{\Pkg{japanese-otf}パッケージ\Means
   https://www.ctan.org/pkg/japanese-otf}%
-パッケージにも対応している。
+にも対応している。
 
 また、{(u)\pLaTeX}において広く行われているフォント設定
 （IPAexフォントの使用等）をパッケージオプション一つで適用する機能
@@ -143,14 +142,14 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item |oneweight|\Means
   \Pkg{japanese-otf}パッケージを単ウェイトで使用する場合に、
   プリセット設定で使われるフォントの集合を{\pTeX}標準と同一にする。
-  \footnote{小塚フォントのプリセットでは、{\pTeX}標準のゴシック
-  （jisg等）にはMウェイト（Acrobatに付属のフォントの一つ）を
+  \footnote{多ウェイト用プリセット設定の一部において、
+  このオプションによりゴシックのウェイトが変更される。
+  例えば、小塚フォントのプリセットでは、{\pTeX}標準のゴシック
+  （jisg等）にはMウェイトを
   割り当てる一方で、\Pkg{japanese-otf}パッケージの3ウェイトのゴシックには
   R、B、Hウェイトを割り当てている。
   従って、\Pkg{japanese-otf}を単ウェイトで用いる時にMウェイトを使いたい
-  場合には \texttt{oneweight} オプションを指定すればよい。
-  現状では、小塚フォント以外のプリセットではこのオプションを
-  用いる必要はない。}
+  場合には |oneweight| オプションを指定すればよい。}
 \item |nooneweight|（既定）\Means
   |oneweight| の否定。
 \end{itemize}
@@ -166,20 +165,20 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   \footnote{特に
   「\texttt{\symbol{`\\}userelfont\symbol{`\\}selectfont}」
   だけ実行すると、欧文が現在の和文と同じ書体になる。}
-  （ただし適用すべき和文ファミリについて置換が設定されていない
-  場合は無効になる。）
+  \Note 置換が設定されていないウェイトについては無効になる。
   \Note |alphabet|、|noalphabet|、|relfont| の3つのオプションは
   排他である。
 \item |everypage|\Means
-  DVIの全ページにマップ設定を書き込む。
+  出力DVIの全ページにフォントマップ設定を書き込む。
   \Note 詳細については\ref{sec:PageSelection}節を参照。
 \item |noeverypage|（既定）\Means
   |everypage|の否定。
-  DVIの先頭ページにのみマップ設定を書き込む。
+  出力DVIの先頭ページにのみフォントマップ設定を書き込む。
 \item \Strong{Unicode直接指定オプション}\Means
   一部または全部のフォントについて、エンコーディング指定方式を
-  “Cmap指定”から“Unicode直接指定”に変更する。
-  |nounicode|（既定）、|directunicode|、|directunicode*|、
+  “CMap指定”から“Unicode直接指定”に変更する。
+  |nounicode|（既定：CMap設定のまま）、
+  |directunicode|、|directunicode*|、
   |unicode*|、|unicode| の5種類の指定がある。
   \Note 詳細については\ref{sec:DirectUnicode}節を参照。
   \Note 一部のプリセット指定（|sourcehan|等）は
@@ -211,15 +210,15 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 %\item |nodirectunicode|（既定）\Means
 %  |directunicode| の否定。
 \item |usecmapforalphabet|\Means
-  |alphabet|（または |relfont|）を指定して日本語フォントの英数字部分を
+  |alphabet| または |relfont| を指定して日本語フォントの英数字部分を
   欧文フォントとして使う際に、そのエンコーディング指定方式を
   “CMap指定”にする。
 %  \Note “CMap指定”と“Unicode直接指定”の違いについては
 %  \ref{sec:DirectUnicode}節を参照。
   \Note 半角英数字用の\texttt{UniJIS-UCS2-HW-H}というCMapが指定される。
-  \Note 字形セットがAJ1であるOpenTypeフォントの場合、“Unicode直接指定”
-  を使うと英数字がプロポーショナル幅のものになるがこれは
-  サポートされない（|alphabet| オプションの説明を参照）ので、
+  \Note AJ1のグリフ集合をもつOpenTypeフォントの場合、既定では
+  \footnote{|unicode| オプションが指定されない場合。}%
+  英数字がプロポーショナル幅のものになるがこれはサポートされないので、
   このオプションを指定して半角幅のものを使う必要がある。
 \item |nousecmapforalphabet|（既定）\Means
   |usecmapforalphabet| の否定。
@@ -249,7 +248,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item |nodumpmaptl|（既定）\Means
   |dumpmaptl| の否定。
 \item |strictcsi|\Means
-  |Identity-H/V| のCMapが指定されたマップ行について、CSI指定は
+  |Identity-H|/|-V| のCMapが指定されたマップ行について、CSI指定を
   （仕様に厳密に従って）フォントがTrueTypeグリフの場合にのみ出力する。
   \Note 「CSI指定」とはフォントファイル名の直後に書く“|/AJ1|”の類の
     ことで、本来は（グリフ集合情報を持たない）TrueTypeグリフのフォント
@@ -259,7 +258,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
     かかるため、既定では厳密な判定は行わない。
 \item |nostrictcsi|（既定）\Means
   |strictcsi| の否定。
-  |Identity-H/V| に対するCSI指定は常に出力される。
+  |Identity-H|/|-V| に対するCSI指定は常に出力される。
   \Note さすがにファイルに出力されたマップ行に不備があるのは
     避けたいので、|dumpmap(tl)| が指定された場合は、
     既定が |strictcsi| に変更される。
@@ -961,7 +960,7 @@ kanji-config-updmap用のマップファイルの読込が指示される。
   \item |ptex-NAME.map|
   \item |otf-NAME.map|
   \end{itemize}
-\item {\upLaTeX}の場合、上記のものに加えて以下のもの：
+\item {\upLaTeX}の場合、\Strong{上記のものに加えて}以下のもの：
   \begin{itemize}
   \item |uptex-NAME.map|
   \item |otf-up-NAME.map|
@@ -990,7 +989,7 @@ kanji-config-updmap用のマップファイルの読込が指示される。
 \end{verbatim}\end{quote}
 
 この場合、|yu.map| というマップファイル
-\footnote{例えばW32{\TeX}ではこの名前のマップファイルが
+\footnote{例えばW32{\TeX}では |yu.map| というマップファイルが
   用意されている。}%
 がdvipdfmx実行時に読み込まれる。
 
@@ -1103,8 +1102,8 @@ Unicode直接指定の有効・無効を切り替えられる。
 \begin{itemize}
 \item プリセット指定または |\set...font| 命令で
   フォントを置換していないウェイトについては、
-  |unicode| 指定時であってもUnicode直接指定は効かない。
-  従って、そのようなウェイトはUnicode直接指定が想定する出力には
+  Unicode直接指定は無効になる。
+  従って、そのようなウェイトは想定する出力には
   ならず、またUnicode直接指定を必要とする機能
   （|expert| や |glyphid| の各オプション）
   も使えない。
@@ -1113,7 +1112,7 @@ Unicode直接指定の有効・無効を切り替えられる。
   従って、|expert| を指定する場合は、全ファミリ・ウェイトについて
   置換を指定することを推奨する
   （これに反する場合は警告が出る）。
-\item 非埋込を指定したウェイトについてはUnicode直接指定が
+\item 非埋込を指定したウェイトについてはUnicode直接指定は
   無効になる。
   この動作も非常に解りにくいため、
   Unicode直接指定を用いる場合は、非埋込の指定をしないことを推奨する
@@ -1127,11 +1126,11 @@ Unicode直接指定の有効・無効を切り替えられる。
 
 dvipdfmxには元のDVI文書の一部のページだけを抜粋してPDF文書に変換する
 機能がある（|-s| オプション）。
-ところが、本パッケージでは、ユーザ命令で指定されたフォントマップ情報を、
+ところが、本パッケージではユーザが指定したフォントマップ情報を
 DVIの先頭ページに書き出すという処理方法をとっている
 （すなわち「ページ独立性」を保っていない）ため、
 先頭ページを含まない抜粋を行った場合は、
-フォント置換が効かないという現象が発生する。
+フォント置換が効かないという不具合が発生する。
 
 この問題を解決するのが |everypage| パッケージオプションである。
 このオプションが指定された場合は、
@@ -1145,11 +1144,9 @@ DVI文書の全てのページにフォントマップ情報を書き出すの�
 \label{sec:Mechanism-Alph}
 
 指定された和文フォントの半角部分からなる欧文フォントファミリとして
-OT1/cfjar（明朝）、OT1/cfjas（ゴシック）、OT1/cfjam（丸ゴシック）
+cfjar（明朝）、cfjas（ゴシック）、cfjam（丸ゴシック）
 の3つ（以下では\Strong{CFJAファミリ}と総称する）を定義している。
 その上で、CFJAファミリに対するマップ指定を和文と同じ方法で行っている。
-なお、CFJAファミリは内部ではOT1として扱われるが、
-実際にはOT1の一部のグリフしか持っていない。
 
 \paragraph{alphabetオプション指定時}
 オプション |alphabet| を指定した場合、
@@ -1160,15 +1157,14 @@ CFJAファミリを既定の欧文ファミリとして設定する
 
 \paragraph{relfontオプション指定時}
 オプション |relfont| を指定した場合、
-CFJAファミリを和文ファミリの従属欧文フォントに
-（cfjarを |\mcfamily| に、cfjasを |\gtfamily| に、
-cfjamを |\mgfamily| に対して）設定する。
+CFJAファミリを和文ファミリの従属欧文フォントに設定する
+（cfjar→|\mcfamily|；cfjas→|\gtfamily|；cfjam→|\mgfamily|）。
 
 \paragraph{利用可能な欧文エンコーディング}
 現状で、CFJAファミリが対応している欧文エンコーディングは
 OT1、T1、TS1の3つである
 \footnote{1.4版でT1に“暫定対応”し、1.5版でT1とTS1に正式に対応した。}%
-（TS1は事前に\Pkg{textcomp}を読み込んだ場合にのみ有効）
+（TS1は事前に\Pkg{textcomp}を読み込んだ場合にのみ有効）。
 このため、欧文フォントの置換
 （\texttt{alphabet}や\texttt{relfont}オプション）
 を利用する文書は、欧文エンコーディングがOT1かT1である必要がある
@@ -1202,9 +1198,9 @@ OT1、T1、TS1の3つである
   \Note この場合、既定では欧文は |directunicode*| 相当の状態になる。
   \begin{itemize}
   \item 1項のa、b、cの文字はフォントが正しい幅
-    （aは半角、bとcは半角）の字形を持っていれば使える。
-  \item それ以外でも、Unicodeにある文字である大部分の文字は、
-    フォントが半角幅の字形を持っていれば使える。
+    （aは\Strong{半角}、bとcは\Strong{全角}）の字形を持っていれば使える。
+  \item それ以外でも、Unicode文字の大部分は、
+    フォントが\Strong{半角幅}の字形を持っていれば使える。
     \Note 半角幅のまま出力される。
   \item |unicode| オプションを指定すると、正しい幅の字形を優先して
     使おうとするため、既定の場合よりも多くの文字が使える。
@@ -1222,11 +1218,11 @@ OT1、T1、TS1の3つである
   （例えば jsarticle の標準設定ならJISメトリック）
 \item 欧文部分を置き換えた場合、残念ながら欧文も等幅
   （半角幅）になってしまう。
-  さらに、アクセント付きの文字（\'e 等）や非英語文字
-  （{\ss} 等）も使えない。
-  大抵の日本語用フォントにはその文字を出力するためのグリフがそもそも
-  ないのであるが、例えあったとしても使えない。
-\item \Pkg{japanese-otf}／\Pkg{UTF}パッケージ使用時に |\UTF| や |\CID| で
+%  さらに、アクセント付きの文字（\'e 等）や非英語文字
+%  （{\ss} 等）も使えない。
+%  大抵の日本語用フォントにはその文字を出力するためのグリフがそもそも
+%  ないのであるが、例えあったとしても使えない。
+\item \Pkg{japanese-otf}パッケージ使用時に |\UTF| や |\CID| で
   指定した文字が出力されるかは、
   指定したフォントがその文字を持っているかに依存する。
 \item |deluxe| 付きの\Pkg{japanese-otf}パッケージと |alphabet| 付きの
@@ -1270,7 +1266,7 @@ dvipdfmx以外のDVIウェアに読ませた場合、
 \subsection{欧文フォントも置き換えた場合（\texttt{alphabet} 指定時）}
 
 欧文フォントを置き換えたDVIファイルは、
-独自の欧文フォント（|r-cfja?-?-l0j| という形式の名前）
+独自の欧文フォント（|r-cfja*| という形式の名前）
 を含んでいるので、
 少なくともそれに関する設定をしない限りはdvipdfmx以外の
 DVIウェアで処理することができない。
@@ -1292,6 +1288,7 @@ r-cfjar-b-@PXcjk0@     msmincho.ttc FontIndex=0
 r-cfjas-r-@PXcjk0@     msgothic.ttc FontIndex=0
 r-cfjas-b-@PXcjk0@     msgothic.ttc FontIndex=0
 r-cfjas-x-@PXcjk0@     msgothic.ttc FontIndex=0
+r-cfjam-r-@PXcjk0@     msgothic.ttc FontIndex=0
 \end{verbatim}\end{quote}
 
 %===========================================================

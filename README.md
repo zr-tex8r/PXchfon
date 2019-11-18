@@ -39,6 +39,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.6a ‹2019/11/18›
+      - Now `\(text)diruni` can be used in PDF strings.
   * Version 1.6  ‹2019/10/07›
       - Preset `haranoaji`.
   * Version 1.5a ‹2019/07/10›

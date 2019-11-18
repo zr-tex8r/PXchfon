@@ -54,16 +54,18 @@ MITライセンスの下で配布される。
 更新履歴
 --------
 
+  * Version 1.6a ‹2019/11/18›
+      - `\(text)diruni` を PDF 文字列で通るようにする。
+      - (試験的) PXchfon-extras の追加プリセットに対応。
+      - (試験的) ユーザレベルの追加プリセットに対応。
   * Version 1.6  ‹2019/10/07›
-      - プリセット `haranoaji` を追加。  
+      - プリセット `haranoaji` を追加。
   * Version 1.5a ‹2019/07/10›
       - バグ修正。
   * Version 1.5  ‹2019/05/15›
       - TL2017 用の暫定設定である `unicode*` オプションを非推奨とする。
       - `\asUTF` 命令を非推奨とする。
       - 欧文置換用の VF を刷新した。TS1 エンコーディングをサポート。
-      - The VFs of alphabetic fonts are refined; now TS1 encoding is
-        also supported.
       - Unicode 直接モードでは非埋込のフォントに対して警告を出す。
   * Version 1.4a ‹2019/03/24›
       - 非置換のフォントに対して不具合が起こりうる設定を使う場合、
