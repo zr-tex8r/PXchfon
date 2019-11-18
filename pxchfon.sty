@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2019/10/07 v1.6]
+\ProvidesPackage{pxchfon}[2019/10/07 v1.6a-pre]
 \def\pxcz@pkgname{pxchfon}
 
 %--------------------------------------- general
@@ -85,6 +85,10 @@
 \newif\ifpxcz@uptex \pxcz@uptexfalse
 \edef\pxcz@tmpa{\string\ucs}\edef\pxcz@tmpb{\meaning\ucs}
 \ifx\pxcz@tmpa\pxcz@tmpb \pxcz@uptextrue \fi
+
+%% \pxcz@JYn
+\edef\pxcz@JYn{%
+  \ifpxcz@uptex JY2\else JY1\fi}
 
 %% \ifpxcz@otf@deluxe
 \newif\ifpxcz@otf@deluxe \pxcz@otf@deluxefalse
@@ -1256,12 +1260,26 @@
 %%<*> \diruni
 \DeclareRobustCommand*{\diruni}{%
   \not@math@alphabet\diruni\relax
-  \fontshape{diruni}\selectfont
+  \ifx\cy@encoding\pxcz@JYn % if in standard Japanese encoding
+    \expandafter\let\csname UTF \endcsname\pxcz@du@UTF
+    \fontshape{diruni}\selectfont
+  \fi
 }
 
 %%<*> \textdiruni{<text>}
 \newcommand*{\textdiruni}[1]{%
   \relax\ifmmode\hbox\fi{\diruni#1}%
+}
+
+%% \pxcz@du@UTF
+\def\pxcz@du@UTF#1{%
+  \kchar"#1\relax}
+
+%% redefinition in PDF-strings
+\providecommand*\pdfstringdefPreHook{}
+\g@addto@macro\pdfstringdefPreHook{%
+  \let\diruni\@empty
+  \let\textdiruni\@firstofone
 }
 
 \ifpxcz@diruni@ok   %---- <*diruni-ok>
@@ -1365,6 +1383,10 @@
     \kanjishape{dirgid}\selectfont
     \kchar#1\relax
   \endgroup}
+\def\pxcz@hy@gid#1{?}
+\g@addto@macro\pdfstringdefPreHook{%
+  \let\gid\pxcz@hy@gid
+}
 
 %% \pxcz@dg@decl@shape{<fam>}{<ser>}<sw>{<tfmname>}
 \pxcz@onlypreamble@def\pxcz@dg@decl@shape#1#2#3#4{%
