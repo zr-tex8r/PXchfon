@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2019/11/18 v1.6a]
+\ProvidesPackage{pxchfon}[2019/11/18 v1.7-pre]
 \def\pxcz@pkgname{pxchfon}
 
 %--------------------------------------- general
@@ -128,38 +128,47 @@
 \let\pxcz@uniweight\relax
 \let\pxcz@multiweight\relax
 
-%% \pxcz@declare@oneweight@preset{<name>}{<m>}{<g>}
+%% \pxcz@check@avail@custom@presets
+\pxcz@onlypreamble@let\pxcz@check@avail@custom@presets\relax
+\AtEndOfPackage{%
+  \def\pxcz@check@avail@custom@presets#1#2#3{%
+    \PackageError\pxcz@pkgname
+     {Custom presets cannot be registered after\MessageBreak
+      loading pxchfon package}%
+     {\@eha}}}
+
+%% \pxcz@declare@oneweight@preset{<name>}{<f-mc>}{<f-gt>}
 \pxcz@onlypreamble@def\pxcz@declare@oneweight@preset#1#2#3{%
+  \pxcz@check@avail@custom@presets
   \xdef\pxcz@custom@presets{\pxcz@custom@presets
     \pxcz@custom{#1}{\pxcz@uniweight{#2}{#3}}}}
-%% \pxcz@declare@multiweight@preset{<name>}{<1>}...{<8>}
+%% \pxcz@declare@multiweight@preset{<name>}{<f-1>}...{<f-8>}
 \pxcz@onlypreamble@def\pxcz@declare@multiweight@preset#1#2#3#4#5#6#7#8#9{%
+  \pxcz@check@avail@custom@presets
   \xdef\pxcz@custom@presets{\pxcz@custom@presets
     \pxcz@custom{#1}{\pxcz@multiweight{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}}}
-%%<+> \pxchfonDeclareOneWeightPreset{<name>}{<m>}{<g>}
+%%<+> \pxchfonDeclareOneWeightPreset{<name>}{<f-mc>}{<f-gt>}
 \@onlypreamble\pxchfonDeclareOneWeightPreset
 \newcommand*\pxchfonDeclareOneWeightPreset[1]{%
   \pxcz@declare@oneweight@preset{user:#1}}
-%%<+> \pxchfonDeclareMultiWeightPreset{<name>}{<1>}...{<8>}
+%%<+> \pxchfonDeclareMultiWeightPreset{<name>}{<f-1>}...{<f-8>}
 \@onlypreamble\pxchfonDeclareMultiWeightPreset
 \newcommand*\pxchfonDeclareMultiWeightPreset[1]{%
   \pxcz@declare@multiweight@preset{user:#1}}
 
 %% Load custom preset definitions
-\IfFileExists{pxchfon-extras.def}{%
+\IfFileExists{pxchfon-extras.def}{% PXchfon-extras
   \PackageInfo\pxcz@pkgname
    {Extra preset settings are loaded\@gobble}%
   \input{pxchfon-extras.def}%
 }{}
-\IfFileExists{pxchfon.cfg}{%
+\IfFileExists{pxchfon.cfg}{% of user
   \PackageInfo\pxcz@pkgname
    {Custom preset settings are loaded\@gobble}%
   \begingroup
     \makeatother\input{pxchfon.cfg}%
   \endgroup
 }{}
-\let\pxcz@declare@oneweight@preset\@undefined
-\let\pxcz@declare@multiweight@preset\@undefined
 
 %--------------------------------------- handle options
 
@@ -2028,7 +2037,7 @@
 % Noto Sans/Serif CJK, "OpenType/CFF Collection (OTC)"
 \pxcz@declare@preset{noto-otc}{%
   \pxcz@multiweight{:0:NotoSerifCJK-Light.ttc}%
-   {:0:NotoSerifCJK-Regular.ttc}{:0:NotoSerifCJK-Bold.ttc}%
+   {:0:NotoSerifCJK-Regular.ttc}{:0:N8otoSerifCJK-Bold.ttc}%
    {:0:NotoSansCJK-Regular.ttc}{:0:NotoSansCJK-Bold.ttc}%
    {:0:NotoSansCJK-Black.ttc}{:0:NotoSansCJK-Medium.ttc}%
    {:0:NotoSansCJK-Medium.ttc}}
