@@ -13,8 +13,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.6a}
-\newcommand{\PkgDate}{2019/11/18}
+\newcommand{\PkgVersion}{1.7}
+\newcommand{\PkgDate}{2019/11/19}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -81,14 +81,21 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   ただし、本パッケージの主要機能である
   「フォントマップの文書内での指定」
   がサポートされるのはdvipdfmxのみである。
+  \footnote{現状では、|dvipdfmx| 以外のドライバ指定は
+    全て |nodvidriver| と等価である。}%
   他のDVIウェアにおける動作については
   \ref{sec:Other-Drivers}節を参照。
   ドライバオプションの既定値は |dvipdfmx| である。
 \item \Strong{プリセット指定オプション}（|ipaex|、|hiragino-pron| 等）
   名前に対応するプリセット指定を有効にする。
   \Note 詳細については\ref{sec:Preset}節を参照。
+\item \Strong{カスタムプリセット指定オプション}%
+  （|user:|\Zk\textgt{名前}）
+  ユーザ定義のプリセット指定を有効にする。
+  \Note 詳細については\ref{sec:CustomPreset}節を参照。
 \item \Strong{ファイルプリセット指定オプション}%
-  （|+|\mbox{}\textgt{名前} または |*|\mbox{}\textgt{名前}）
+  （|tl:|\Zk\textgt{名前} または |file:|\Zk\textgt{名前}%
+  \footnote{旧形式は |+|\Zk\textgt{名前} および |*|\Zk\textgt{名前}}）
   名前に対応するファイルプリセット指定を有効にする。
   \Note 詳細については\ref{sec:FilePreset}節を参照。
 \item |alphabet|\Means
@@ -934,11 +941,17 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 ファイルプリセットの指定と見なされる。
 
 \begin{itemize}
-\item |+|\mbox{}\textgt{名前}\Means
+\item |tl:|\Zk\textgt{名前}\Means
   {\TeX} Live用ファイルプリセット。
-\item |*|\mbox{}\textgt{名前}\Means
+\item |file:|\Zk\textgt{名前}\Means
   単純ファイルプリセット。
 \end{itemize}
+
+\Note 1.6a版以前では、
+{\TeX} Live用が「|+|\Zk\textgt{名前}」、
+通常が「|*|\Zk\textgt{名前}」という形式であった。
+これらの古い形式も当面の間はサポートされるが、
+新しい形式の使用を推奨する。
 
 \subsection{{\TeX} Live用ファイルプリセット機能}
 
@@ -949,8 +962,8 @@ kanji-config-updmapというユーティリティで行うことができる。
 対応したファイルをupdmapの機構を用いて有効化することで、
 dvipdfmxの既定の設定を切り替えている。
 
-パッケージオプションとして |+| で始まる文字列
-（仮に |+NAME| とする）を与えると、
+パッケージオプションとして |tl:| で始まる文字列
+（仮に |tl:NAME| とする）を与えると、
 kanji-config-updmap用のマップファイルの読込が指示される。
 具体的には、以下の名前のマップファイルが読み込まれる。
 
@@ -970,7 +983,7 @@ kanji-config-updmap用のマップファイルの読込が指示される。
 例えば、{\pLaTeX}文書において以下のようにパッケージを読み込んだとする。
 
 \begin{quote}\small\begin{verbatim}
-\usepackage[+yu-win]{pxchfon}
+\usepackage[tl:yu-win]{pxchfon}
 \end{verbatim}\end{quote}
 
 この場合、|ptex-yu-win.map| と |otf-yu-win.map| の2つのマップファイル
@@ -978,20 +991,70 @@ kanji-config-updmap用のマップファイルの読込が指示される。
 
 \subsection{単純ファイルプリセット機能}
 
-パッケージオプションとして |*| で始まる文字列
-（仮に |*NAME| とする）を与えると、
+パッケージオプションとして |file:| で始まる文字列
+（仮に |file:NAME| とする）を与えると、
 |NAME.map| という名前のマップファイルの読込が指示される。
 
 例えば、以下のようにパッケージを読み込んだとする。
 
 \begin{quote}\small\begin{verbatim}
-\usepackage[*yu]{pxchfon}
+\usepackage[file:yu]{pxchfon}
 \end{verbatim}\end{quote}
 
 この場合、|yu.map| というマップファイル
 \footnote{例えばW32{\TeX}では |yu.map| というマップファイルが
   用意されている。}%
 がdvipdfmx実行時に読み込まれる。
+
+
+%===========================================================
+\section{カスタムプリセット機能}
+\label{sec:CustomPreset}
+
+1.7版で新設された「カスタムプリセット機能」とは、
+ユーザが独自にプリセットを用意するためのものである。
+ユーザが定義したプリセット（\Strong{カスタムプリセット}）を
+「|pxchfon.cfg|」という名前の
+\Strong{カスタムプリセット定義ファイル}に記述して
+そのファイルを{\TeX}が読める場所に置くと、
+\Pkg{pxchfon}パッケージ読込時にオプションとして指定することで
+カスタムプリセットを利用できるようになる。
+
+カスタムプリセットを定義する命令は以下の通りである。
+これらの命令は |pxchfon.cfg| の中でのみ利用できる。
+\begin{itemize}
+\item |\pxchfonDeclareOneWeightPreset{|\Meta{名前}|}{|%
+  \Meta{明朝}|}{|\Meta{ゴシック}|}|\Means
+  単ウェイトのカスタムプリセットを定義する。
+  プリセットの名前は\Meta{名前}の文字列の前に「|user:|」を
+  前置したものになる。
+  第2引数以降は使用するフォントファイル名
+  （TTC形式の場合は番号も含めて |:番号:ファイル名| の形式）
+  を指定する。
+\item |\pxchfonDeclareMultiWeightPreset{|\Meta{名前}|}{|%
+  \Meta{明朝・細}|}{|\Meta{明朝・中}|}{|\Meta{明朝・太}|}{|%
+  \Meta{ゴシック・中}|}{|\Meta{ゴシック・太}|}{|\Meta{ゴシック・極太}|}{|%
+  \Meta{ゴシック・単}|}{|\Meta{丸ゴシック}|}|\Means
+  多ウェイトのカスタムプリセットを定義する。
+  引数の意味は前項と同様である。
+  \Meta{ゴシック・単}は「|oneweight| オプション指定時のゴシック体」
+  を表す。
+\end{itemize}
+
+例えば、全ての和文フォントを（Microsoft Office付属の）
+「HG創英角ポップ体」に置き換えるような単ウェイトの
+カスタムプリセット |user:soeikakupoptai| を定義するには
+次の命令を実行する。
+\begin{quote}\small\begin{verbatim}                                      
+\pxchfonDeclareOneWeightPreset{soeikakupoptai}
+  {:0:HGRPP1.TTC}{:0:HGRPP1.TTC}
+\end{verbatim}\end{quote}
+
+このカスタムプリセットを利用したい場合はパッケージ読込
+を以下のようにする。
+\begin{quote}\small\begin{verbatim}                                      
+\usepackage[user:soeikakupoptai,...]{pxchfon}
+\end{verbatim}\end{quote}
 
 
 %===========================================================

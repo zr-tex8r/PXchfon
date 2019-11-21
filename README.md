@@ -39,6 +39,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.7  ‹2019/11/19›
+      - Support for user-defined custom presets.
   * Version 1.6a ‹2019/11/18›
       - Now `\(text)diruni` can be used in PDF strings.
   * Version 1.6  ‹2019/10/07›
