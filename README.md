@@ -39,6 +39,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.7a ‹2019/11/22›
+      - Bug fix.
   * Version 1.7  ‹2019/11/19›
       - Support for user-defined custom presets.
   * Version 1.6a ‹2019/11/18›
