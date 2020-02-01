@@ -1267,18 +1267,20 @@
 \fi
 
 %%<*> \diruni
-\DeclareRobustCommand*{\diruni}{%
-  \not@math@alphabet\diruni\relax
-  \ifx\cy@encoding\pxcz@JYn % if in standard Japanese encoding
-    \expandafter\let\csname UTF \endcsname\pxcz@du@UTF
-    \fontshape{diruni}\selectfont
-  \fi
-}
+\@ifdefinable{\diruni}{%
+  \DeclareRobustCommand*{\diruni}{%
+    \not@math@alphabet\diruni\relax
+    \ifx\cy@encoding\pxcz@JYn % if in standard Japanese encoding
+      \expandafter\let\csname UTF \endcsname\pxcz@du@UTF
+      \kanjishape{diruni}\selectfont
+    \fi
+  }}
 
 %%<*> \textdiruni{<text>}
-\newcommand*{\textdiruni}[1]{%
-  \relax\ifmmode\hbox\fi{\diruni#1}%
-}
+\@ifdefinable{\textdiruni}{%
+  \DeclareRobustCommand*{\textdiruni}[1]{%
+    \relax\ifmmode\hbox\fi{\diruni#1}%
+  }}
 
 %% \pxcz@du@UTF
 \def\pxcz@du@UTF#1{%
