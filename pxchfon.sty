@@ -1462,7 +1462,10 @@
 
 %% check for textcomp
 \newif\ifpxcz@textcomp
-\@ifpackageloaded{textcomp}{\pxcz@textcomptrue}{}
+\ifx\DeclareEncodingSubset\@undefined\else
+  \expandafter\ifx\csname T@TS1\endcsname\relax\else
+    \pxcz@textcomptrue
+\fi\fi
 
 %% \pxcz@afont@enc@list
 \def\pxcz@afont@enc@list{OT1,T1}
