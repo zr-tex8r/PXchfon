@@ -1586,6 +1586,13 @@
   % if not okay, use OT1 instead
   \ifpxcz@ok\else \def\pxcz@afont@enc{OT1}\fi}
 
+%% \pxcz@set@bfdefault@to@bx{<doc-ser>}
+\pxcz@onlypreamble@let\pxcz@set@bfdefault@to@bx\@gobble
+\ifx\DeclareFontSeriesDefault\@undefined\else
+  \def\pxcz@set@bfdefault@to@bx#1{%
+    \DeclareFontSeriesDefault[#1]{bf}{bx}}
+\fi
+
 %% the begin-document hook
 \pxcz@onlypreamble@def\pxcz@doc@hook{%
   \pxcz@user@hook
@@ -1596,13 +1603,16 @@
     \pxcz@inspect@flavor@all
   \fi
   \ifpxcz@alpha % 'alphabet'
-    \pxcz@check@alldefined{mnl,mnr,mnb}%
-    \ifpxcz@ok \renewcommand\rmdefault{cfjar}\fi
-    \pxcz@check@alldefined{gtr,gtb,gtx}%
-    \ifpxcz@ok \renewcommand\sfdefault{cfjas}\fi
+    \pxcz@check@alldefined{mnl,mnr,mnb}\ifpxcz@ok
+      \renewcommand\rmdefault{cfjar}%
+      \pxcz@set@bfdefault@to@bx{rm}%
+    \fi
+    \pxcz@check@alldefined{gtr,gtb,gtx}\ifpxcz@ok
+      \renewcommand\sfdefault{cfjas}%
+      \pxcz@set@bfdefault@to@bx{sf}%
+    \fi
     % attach hook to \mgfamily if mgr font is defined
-    \pxcz@check@alldefined{mgr}
-    \ifpxcz@ok\ifpxcz@otf@deluxe
+    \pxcz@check@alldefined{mgr}\ifpxcz@ok\ifpxcz@otf@deluxe
       \begingroup
         \def\pxcz@x##1{\toks@\expandafter{##1}%
           \xdef##1{\noexpand\pxcz@mgfamily@hook\the\toks@}%
