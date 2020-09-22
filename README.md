@@ -27,7 +27,7 @@ Move the files as follows (in a system compliant to TDS 1.1):
   - `*.sty`      → $TEXMF/tex/platex/pxchfon/
   - `tfm/*.tfm`  → $TEXMF/fonts/tfm/public/pxchfon/
   - `vf/*.vf`    → $TEXMF/fonts/vf/public/pxchfon/
-  - `pxcjk0.sfd` → $TEXMF/fonts/sfd/pxchfon/
+  - `PXcjk0.sfd` → $TEXMF/fonts/sfd/pxchfon/
   - `*.def`      → $TEXMF/tex/platex/pxchfon/
 
 And rehash your TEXMF trees if necessary.

@@ -44,7 +44,7 @@ pLaTeX / upLaTeX の文書の標準のフォント（明朝・ゴシック）を
   * TDS 1.1 に従ったシステムでは、各ファイルを次の場所に移動する。
       - `tfm/*.tfm`  → $TEXMF/fonts/tfm/public/pxchfon/
       - `vf/*.vf`    → $TEXMF/fonts/vf/public/pxchfon/
-      - `pxcjk0.sfd` → $TEXMF/fonts/sfd/pxchfon/
+      - `PXcjk0.sfd` → $TEXMF/fonts/sfd/pxchfon/
       - `*.def`      → $TEXMF/tex/platex/pxchfon/
 
 ### ライセンス
