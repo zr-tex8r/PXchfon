@@ -339,9 +339,9 @@
 \fi
 
 %% 'everypage' needs 'atbegshi' package
-\ifpxcz@everypage
+\ifpxcz@everypage \ifx\AddToHook\@undefined
 \RequirePackage{atbegshi}
-\fi
+\fi\fi
 
 %% apply default value for \pxcz@directunicode
 \ifx\pxcz@directunicode\relax
@@ -1549,6 +1549,7 @@
 \def\pxcz@mgfamily@hook{\romanfamily{cfjam}}
 
 %% \pxcz@set@page@hook{<text>}
+\ifx\AddToHook\@undefined  %-------- no hook system
 \ifpxcz@everypage
 \pxcz@onlypreamble@def\pxcz@set@page@hook#1{%
   \AtBeginShipout{\setbox\AtBeginShipoutBox=\vbox{%
@@ -1558,6 +1559,15 @@
 \pxcz@onlypreamble@def\pxcz@set@page@hook#1{%
   % this is \AtBeginDvi with forcing of yoko-dir added
   \global\setbox\@begindvibox\vbox{\yoko\unvbox\@begindvibox#1}}
+\fi
+\else                      %-------- with hook system
+\ifpxcz@everypage
+\pxcz@onlypreamble@def\pxcz@set@page@hook#1{%
+  \AddToHook{shipout/background}{\hb@xt@\z@{#1\hss}}}
+\else
+\pxcz@onlypreamble@def\pxcz@set@page@hook#1{%
+  \AtBeginDvi{#1}}
+\fi
 \fi
 
 %% \pxcz@check@alldefined{<sym>,...}
