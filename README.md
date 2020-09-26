@@ -39,6 +39,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.7d ‹2020/09/26›
+      - Support LaTeX kernel 2020/10/01.
   * Version 1.7c ‹2020/04/25›
       - Minor adjustment for new NFSS.
   * Version 1.7b ‹2020/02/01›
