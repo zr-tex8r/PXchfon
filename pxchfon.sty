@@ -117,6 +117,10 @@
   \chardef\pxcz@pxufont@loaded=0
 }
 
+%% \ifpxcz@old@hook@system
+\newif\ifpxcz@old@hook@system
+\@ifl@t@r\fmtversion{2020/10/01}{}{\pxcz@old@hook@systemtrue}
+
 %--------------------------------------- custom presets
 
 %% \pxcz@custom@presets
@@ -339,7 +343,7 @@
 \fi
 
 %% 'everypage' needs 'atbegshi' package
-\ifpxcz@everypage \ifx\AddToHook\@undefined
+\ifpxcz@everypage \ifpxcz@old@hook@system
 \RequirePackage{atbegshi}
 \fi\fi
 
@@ -1549,7 +1553,7 @@
 \def\pxcz@mgfamily@hook{\romanfamily{cfjam}}
 
 %% \pxcz@set@page@hook{<text>}
-\ifx\AddToHook\@undefined  %-------- no hook system
+\ifpxcz@old@hook@system %----
 \ifpxcz@everypage
 \pxcz@onlypreamble@def\pxcz@set@page@hook#1{%
   \AtBeginShipout{\setbox\AtBeginShipoutBox=\vbox{%
@@ -1560,7 +1564,7 @@
   % this is \AtBeginDvi with forcing of yoko-dir added
   \global\setbox\@begindvibox\vbox{\yoko\unvbox\@begindvibox#1}}
 \fi
-\else                      %-------- with hook system
+\else %----
 \ifpxcz@everypage
 \pxcz@onlypreamble@def\pxcz@set@page@hook#1{%
   \AddToHook{shipout/background}{\hb@xt@\z@{#1\hss}}}
@@ -1568,7 +1572,7 @@
 \pxcz@onlypreamble@def\pxcz@set@page@hook#1{%
   \AtBeginDvi{#1}}
 \fi
-\fi
+\fi %----
 
 %% \pxcz@check@alldefined{<sym>,...}
 \pxcz@onlypreamble@def\pxcz@check@alldefined#1{%
