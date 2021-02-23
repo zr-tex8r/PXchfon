@@ -429,6 +429,27 @@
   \let\pxcz@switch@font@xjistrue\pxcz@switch@font@xjisfalse
 \fi
 
+\begingroup \lccode`\@=`\_ \lowercase{%
+  \xdef\pxcz@get@dvipdfmx@version{%
+    \let\noexpand\pxcz@dvipdfmx@version\expandafter\noexpand
+    \csname c@@Kernel@sys@dvipdfmx@version@int\endcsname}}
+\endgroup
+\AtBeginDocument{%
+  \@tempswatrue
+  \ifnum\pxcz@directunicode<\pxcz@directunicode@full\else
+    \pxcz@get@dvipdfmx@version
+    \ifx\pxcz@dvipdfmx@version\@undefined\else
+      \ifnum\pxcz@dvipdfmx@version<20170918
+        \@tempswafalse \fi\fi
+  \fi
+  \if@tempswa\else
+    \PackageError\pxcz@pkgname
+     {Option 'unicode' is not available, since\MessageBreak
+      your dvipdfmx is too old (v.\number\pxcz@dvipdfmx@version)}
+     {The option requires dvipdfmx version 20170918 or later.%
+      \MessageBreak\@ehc}
+  \fi}
+
 %--------------------------------------- preset-dependent setup
 
 %% variables
