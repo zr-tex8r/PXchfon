@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2020/10/04 v1.7e]
+\ProvidesPackage{pxchfon}[2020/10/04 v1.8-pre]
 \def\pxcz@pkgname{pxchfon}
 
 %--------------------------------------- general
@@ -287,7 +287,6 @@
 \pxcz@onlypreamble@def\pxcz@all@abolished@preset{%
   ipa-otf,ipa-otf-dx,kozuka4,kozuka6,kozuka6n,
   ms-dx,ipa-ttf,ipa-ttf-dx,ipav2,ipav2-dx,ipa-dx,hiragino-dx}
-  % But note, 'hiragino' != 'hiragino-pro'
 \def\pxcz@do#1{\DeclareOption{#1}{\def\pxcz@main@preset{#1}}}
 \@for\pxcz@x:=\pxcz@all@main@preset\do{%
   \expandafter\pxcz@do\expandafter{\pxcz@x}}
@@ -295,11 +294,13 @@
   \expandafter\pxcz@do\expandafter{\pxcz@x}}
 \def\pxcz@custom#1#2{\pxcz@do{#1}}
 \pxcz@custom@presets
-% others
+
+%% 'local-only' constant options
 % The 'unicode' option means a Unicode-oriented mapping, and requires
-% dvipdfmx of version 20170627 or later. The 'unicode-fwid' is a variant.
+% dvipdfmx of version 20170918 or later. The 'unicode-fwid' is a variant.
 % The 'unicode*(-fwid)' option is a transitional (deteriorated) version
 % of 'unicode(-fwid)' and can work with dvipdfmx of version 20170318.
+% NOTE: 'unicode*(-fwid)' is DEPRECATED and will be abolished in v2.0.
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode}{%
   \let\pxcz@directunicode\pxcz@directunicode@full}
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode*}{%
@@ -311,10 +312,13 @@
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode*-fwid}{%
   \pxcz@fullwidthtrue \pxcz@uniquifytrue
   \let\pxcz@directunicode\pxcz@directunicode@full}
+% general option handler
 \DeclareOption*{%
   \pxcz@csuse@or{pxcz@POPT/\CurrentOption}{%
     \pxcz@parse@opt\CurrentOption
     \ifpxcz@ok\else \@unknownoptionerror \fi}}
+
+%% \pxcz@parse@opt{<option>}
 \pxcz@onlypreamble@def\pxcz@parse@opt#1{%
   \pxcz@okfalse
   \pxcz@parse@opt@a{+}{#1}{\pxcz@file@preset@tltrue}%
@@ -327,7 +331,8 @@
       #3\let\pxcz@file@preset\pxcz@post \pxcz@oktrue
     \fi
   \fi}
-% dispatch
+
+%% dispatch
 \ProcessOptions*
 
 %% 'unicode*' and 'unicode*-fwid' are DEPRECATED
@@ -337,7 +342,7 @@
     is DEPRECATED!\MessageBreak
     This option invokes a transitional setting that\MessageBreak
     is specially tailored for TL2017, and will be\MessageBreak
-    abolished in near future.\MessageBreak
+    abolished in v2.0 (soon to be released).\MessageBreak
     You should update to TL2018 or later and use\MessageBreak
     option 'unicode\ifpxcz@fullwidth -fwid\fi' instead}
 \fi
@@ -438,7 +443,7 @@
     \let\pxcz@directunicode\pxcz@directunicode@full
     \pxcz@uniquifyfalse
   \else\ifnum\pxcz@directunicode=\pxcz@directunicode@full
-    \ifpxcz@uniquify % unicode* -> unicode+
+    \ifpxcz@uniquify % unicode* -> 'unicode+'
       \pxcz@switch@font@xwidtrue \pxcz@uniquifyfalse
     \fi % unicode -> (unchanged)
   \else \pxcz@uniquifyfalse % otherwise, enable switch-font
@@ -465,8 +470,7 @@
   \pxcz@cond\ifx\pxcz@main@preset\pxcz@tmpa\fi
       {\@firstofone}{\@gobble}}
 % A 'XXXX+' preset forces 'unicode+' setting.
-% 'sourcehan(-otc)' and 'noto(-otc)' should force 'unicode', but currently
-% equivalent to the corresponding 'XXXX+' preset.
+% 'sourcehan(-otc)' and 'noto(-otc)' force 'unicode' setting.
 \pxcz@do{sourcehan}{\pxcz@apply@opt@unicode}
 \pxcz@do{sourcehan-otc}{\pxcz@apply@opt@unicode}
 \pxcz@do{sourcehan-jp}{\pxcz@apply@opt@unicode}
