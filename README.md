@@ -39,6 +39,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.8  ‹2021/02/22›
+      - (experimental) Add presets `sourcehan!` etc.
   * Version 1.7e ‹2020/10/04›
       - Bug fix.
   * Version 1.7d ‹2020/09/26›

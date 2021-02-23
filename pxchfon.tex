@@ -13,8 +13,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.7e}
-\newcommand{\PkgDate}{2020/10/04}
+\newcommand{\PkgVersion}{1.8}
+\newcommand{\PkgDate}{2021/02/22}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -76,7 +76,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \begin{itemize}
 \item \Strong{ドライバオプション}\Means
   |dvipdfmx|、|dvips|、|dviout|、|xdvi| および |nodvidriver|%
-  \footnote{ドライバ依存動作を明示的に無効化するための指定。}
+  （ドライバ依存動作の無効化を明示的に指示）
   が指定できる。
   ただし、本パッケージの主要機能である
   「フォントマップの文書内での指定」
@@ -86,7 +86,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   他のDVIウェアにおける動作については
   \ref{sec:Other-Drivers}節を参照。
   ドライバオプションの既定値は |dvipdfmx| である。
-\item \Strong{プリセット指定オプション}（|ipaex|、|hiragino-pron| 等）
+\item \Strong{プリセット指定オプション}（|ms|、|haranoaji| 等）
   名前に対応するプリセット指定を有効にする。
   \Note 詳細については\ref{sec:Preset}節を参照。
 \item \Strong{カスタムプリセット指定オプション}%
@@ -125,27 +125,26 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item |nootf|\Means
   |otf| の否定。
   \Pkg{japanese-otf}パッケージのフォントは置き換えない。
-  \Note この場合、\Pkg{japanese-otf}パッケージで |noreplace| を
+  \Note これを指定してかつ\Pkg{japanese-otf}パッケージを
+  用いる場合は、\Pkg{japanese-otf}で |noreplace| を
   指定しない限り、標準の和文フォントは変化しない。
-\item |prefer2004jis|\Means
+\item |jis2004|／|prefer2004jis|\Means
   {\pTeX}／{\upTeX}の標準和文フォントのCMapを「2004JIS字形」指定の
   ものに変更する。
   \footnote{\Pkg{japanese-otf}パッケージの和文フォントについては、
     \Pkg{japanese-otf}パッケージの |jis2004| オプションで2004JIS字形
     指定を行う仕様になっている。
-    そのため、本パッケージの |prefer2004jis| の対象にはならない。
+    そのため、本パッケージの |jis2004| の対象にはならない。
     ところが0.7h版以前の本パッケージでは、
     {\upTeX}上の\Pkg{japanese-otf}の和文フォントにも |prefer2004jis| を
     適用していた。
     これは、昔の\Pkg{japanese-otf}が{\upTeX}上では |jis2004| オプションに
     未対応であったためであり、非公式の暫定仕様であった。
     現在では、この暫定仕様は廃止されている。}
-\item |noprefer2004jis|（既定）\Means
+  \Note グローバルオプションに |jis2004| を指定すると、
+  \Pkg{japanese-otf}と\Pkg{pxchfon}の両方に適用される。
+\item |nojis2004|／|noprefer2004jis|（既定）\Means
   |prefer2004jis| の否定。
-\item |(no)jis2004|\Means
-  |(no)prefer2004jis| の別名。
-  \Note グローバルオプションに |jis2004| を指定して\Pkg{japanese-otf}と
-  \Pkg{pxchfon}の両方に適用することを意図している。
 \item |oneweight|\Means
   \Pkg{japanese-otf}パッケージを単ウェイトで使用する場合に、
   プリセット設定で使われるフォントの集合を{\pTeX}標準と同一にする。
@@ -252,6 +251,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   {\TeX} Live用ダンプ出力は「実際に適用されるか」は無関係で
   kanji-config-updmapの規則に従うため、
   \Pkg{japanese-otf}パッケージ用のマップが |otf-*.map| に書き出される。
+  \Note |dumpmap| と |dumpmaptl| は排他ではない。
 \item |nodumpmaptl|（既定）\Means
   |dumpmaptl| の否定。
 \item |strictcsi|\Means
@@ -413,7 +413,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   CMap名接頭辞の既定値は「|2004-|」で、これは最近の{\TeX} Liveに
   含まれている「|2004-H|」等のCMapファイルを用いることを意味する。%
   \footnote{%
-    引数に \texttt{*} を与えた場合は \texttt{JISX0213-2004-H} が
+    引数に \texttt{*} を与えた場合は \texttt{JISX0213-2004-} が
     指定されたと見なされる（歴史的理由から）。}
 \item |\usefontmapfile{|\Meta{マップファイル名}|}|\Means
   指定のdvipdfmx用のマップファイルの読込を指示する。
@@ -570,11 +570,11 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item |moga-mobo|\Means
    Mogaフォント + Moboフォント。
    \Note 「丸ゴシック」ファミリに MoboGothic を充てている。
-   \Note Moga/MoboフォントはCIDアクセス非対応であるが、
-   フォント実体を変えることで |prefer2004jis| オプションに
+   \Note Moga/MoboフォントはAJ1非対応であるが、
+   フォント実体を変えることで |jis2004| オプションに
    対応させている。
    \par\medskip
-   \textgt{|prefer2004jis| 非指定時}
+   \textgt{|jis2004| 非指定時}
 \begin{quote}\small\begin{verbatim}
 \setminchofont[3]{mogam.ttc}       % Moga90Mincho
 \setboldminchofont[3]{mogamb.ttc}  % Moga90Mincho Bold
@@ -584,7 +584,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \setmarugothic[2]{mobog.ttc}       % Mobo90Gothic
 \end{verbatim}\end{quote}
    \par\medskip
-   \textgt{|prefer2004jis| 指定時}
+   \textgt{|jis2004| 指定時}
 \begin{quote}\small\begin{verbatim}
 \setminchofont[0]{mogam.ttc}       % MogaMincho
 \setboldminchofont[0]{mogamb.ttc}  % MogaMincho Bold
@@ -597,10 +597,10 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item |moga-mobo-ex|\Means
    MogaExフォント + MoboExフォント。
    \Note 「丸ゴシック」ファミリに MoboExGothic を充てている。
-   \Note フォント実体を変えることで |prefer2004jis| オプションに
+   \Note フォント実体を変えることで |jis2004| オプションに
    対応させている。
    \par\medskip
-   \textgt{|prefer2004jis| 非指定時}
+   \textgt{|jis2004| 非指定時}
 \begin{quote}\small\begin{verbatim}
 \setminchofont[4]{mogam.ttc}       % MogaEx90Mincho
 \setboldminchofont[4]{mogamb.ttc}  % MogaEx90Mincho Bold
@@ -610,7 +610,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \setmarugothic[3]{mobog.ttc}       % MoboEx90Gothic
 \end{verbatim}\end{quote}
    \par\medskip
-   \textgt{|prefer2004jis| 指定時}
+   \textgt{|jis2004| 指定時}
 \begin{quote}\small\begin{verbatim}
 \setminchofont[1]{mogam.ttc}       % MogaExMincho
 \setboldminchofont[1]{mogamb.ttc}  % MogaExMincho Bold
@@ -763,9 +763,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   \Note フォントの性質のため、この設定では欧文引用符
   “\,”‘\,’の出力が不正になる。
   この不具合は |unicode| オプションを指定する
-  （dvipdfmxの20170918版が必要）、
-  または代わりに |yu-win10+| プリセットを指定する
-  （dvipdfmxの20170318版が必要）ことで回避できる。
+  ことで解決できる。
   詳細については\ref{sec:DirectUnicode}節を参照されたい。
 
 \begin{quote}\small\begin{verbatim}
