@@ -587,7 +587,10 @@
 
 %% \pxcz@sym@list
 \def\pxcz@sym@list{%
-  mnl,mnr,mnb,gtr,gtb,gtx,gtu,mgr,kom,kog,scm,scg,tcm,tcg}
+  mnl,mnr,mnb,gtr,gtb,gtx,gtu,mgr,%
+  koml,komr,komb,kogr,kogb,kogx,kogu,komgr,%
+  scml,scmr,scmb,scgr,scgb,scgx,scgu,scmgr,%
+  tcml,tcmr,tcmb,tcgr,tcgb,tcgx,tcgu,tcmgr}
 
 %%<*> \setminchofont/\setgothicfont/etc.
 \newcommand*\setminchofont{\pxcz@setfont{mnl,mnr,mnb}}
@@ -600,12 +603,40 @@
 \newcommand*\setxboldgothicfont{\pxcz@setfont{gtx}}
 \newcommand*\setoneweightgothicfont{\pxcz@setfont{gtu}}
 \newcommand*\setmarugothicfont{\pxcz@setfont{mgr}}
-\newcommand*\setkoreanminchofont{\pxcz@setfont{kom}}
-\newcommand*\setkoreangothicfont{\pxcz@setfont{kog}}
-\newcommand*\setschineseminchofont{\pxcz@setfont{scm}}
-\newcommand*\setschinesegothicfont{\pxcz@setfont{scg}}
-\newcommand*\settchineseminchofont{\pxcz@setfont{tcm}}
-\newcommand*\settchinesegothicfont{\pxcz@setfont{tcg}}
+
+\newcommand*\setkoreanminchofont{\pxcz@setfont{koml,komr,komb}}
+\newcommand*\setkoreangothicfont{\pxcz@setfont{kogr,kogb,kogx,kogu,komgr}}
+\newcommand*\setkoreanlightminchofont{\pxcz@setfont{koml}}
+\newcommand*\setkoreanmediumminchofont{\pxcz@setfont{komr}}
+\newcommand*\setkoreanboldminchofont{\pxcz@setfont{komb}}
+\newcommand*\setkoreanmediumgothicfont{\pxcz@setfont{kogr}}
+\newcommand*\setkoreanboldgothicfont{\pxcz@setfont{kogb}}
+\newcommand*\setkoreanxboldgothicfont{\pxcz@setfont{kogx}}
+\newcommand*\setkoreanoneweightgothicfont{\pxcz@setfont{kogu}}
+\newcommand*\setkoreanmarugothicfont{\pxcz@setfont{komgr}}
+
+\newcommand*\setschineseminchofont{\pxcz@setfont{scml,scmr,scmb}}
+\newcommand*\setschinesegothicfont{\pxcz@setfont{scgr,scgb,scgx,scgu,scmgr}}
+\newcommand*\setschineselightminchofont{\pxcz@setfont{scml}}
+\newcommand*\setschinesemediumminchofont{\pxcz@setfont{scmr}}
+\newcommand*\setschineseboldminchofont{\pxcz@setfont{scmb}}
+\newcommand*\setschinesemediumgothicfont{\pxcz@setfont{scgr}}
+\newcommand*\setschineseboldgothicfont{\pxcz@setfont{scgb}}
+\newcommand*\setschinesexboldgothicfont{\pxcz@setfont{scgx}}
+\newcommand*\setschineseoneweightgothicfont{\pxcz@setfont{scgu}}
+\newcommand*\setschinesemarugothicfont{\pxcz@setfont{scmgr}}
+
+\newcommand*\settchineseminchofont{\pxcz@setfont{tcml,tcmr,tcmb}}
+\newcommand*\settchinesegothicfont{\pxcz@setfont{tcgr,tcgb,tcgx,tcgu,tcmgr}}
+\newcommand*\settchineselightminchofont{\pxcz@setfont{tcml}}
+\newcommand*\settchinesemediumminchofont{\pxcz@setfont{tcmr}}
+\newcommand*\settchineseboldminchofont{\pxcz@setfont{tcmb}}
+\newcommand*\settchinesemediumgothicfont{\pxcz@setfont{tcgr}}
+\newcommand*\settchineseboldgothicfont{\pxcz@setfont{tcgb}}
+\newcommand*\settchinesexboldgothicfont{\pxcz@setfont{tcgx}}
+\newcommand*\settchineseoneweightgothicfont{\pxcz@setfont{tcgu}}
+\newcommand*\settchinesemarugothicfont{\pxcz@setfont{tcmgr}}
+
 \pxcz@onlypreamble@def\pxcz@setfont#1{\@ifnextchar[%]
   {\pxcz@setfont@a{#1}}{\pxcz@setfont@a{#1}[0]}}
 \pxcz@onlypreamble@def\pxcz@setfont@a#1[#2]#3{%
@@ -680,12 +711,12 @@
   }}
 \pxcz@do{mnl,mnr,mnb}{Ryumin-Light}
 \pxcz@do{gtr,gtb,gtx,gtu,mgr}{GothicBBB-Medium}
-\pxcz@do{kom}{HYSMyeongJo-Medium}
-\pxcz@do{kog}{HYGoThic-Medium}
-\pxcz@do{scm}{STSong-Light}
-\pxcz@do{scg}{STHeiti-Regular}
-\pxcz@do{tcm}{MSung-Light}
-\pxcz@do{tcg}{MHei-Medium}
+\pxcz@do{koml,komr,komb}{HYSMyeongJo-Medium}
+\pxcz@do{kogr,kogb,kogx,kogu,komgr}{HYGoThic-Medium}
+\pxcz@do{scml,scmr,scmb}{STSong-Light}
+\pxcz@do{scgr,scgb,scgx,scgu,scmgr}{STHeiti-Regular}
+\pxcz@do{tcml,tcmr,tcmb}{MSung-Light}
+\pxcz@do{tcgr,tcgb,tcgx,tcgu,tcmgr}{MHei-Medium}
 
 %%<+> \JaFontReplacementFor{<sym>}
 \newcommand*\JaFontReplacementFor[1]{%
@@ -1157,30 +1188,92 @@
 \Entry{mgr}{hmgothrn-v}    {V}                   {V}%
 %
 \ifpxcz@otf@multi
-\Entry{kom}{otf-ukmr-h}    {UniKS-UTF16-H}       {Uni,FWid}%
-\Entry{kom}{otf-ukmr-v}    {UniKS-UTF16-V}       {Uni,FWid,V}%
-\Entry{kom}{otf-ckmr-h}    {Identity-H}          {AK12}%
-\Entry{kom}{otf-ckmr-v}    {Identity-V}          {AK12,V}%
-\Entry{kog}{otf-ukgr-h}    {UniKS-UTF16-H}       {Uni,FWid}%
-\Entry{kog}{otf-ukgr-v}    {UniKS-UTF16-V}       {Uni,FWid,V}%
-\Entry{kog}{otf-ckgr-h}    {Identity-H}          {AK12}%
-\Entry{kog}{otf-ckgr-v}    {Identity-V}          {AK12,V}%
-\Entry{scm}{otf-ucmr-h}    {UniGB-UTF16-H}       {Uni,FWid}%
-\Entry{scm}{otf-ucmr-v}    {UniGB-UTF16-V}       {Uni,FWid,V}%
-\Entry{scm}{otf-ccmr-h}    {Identity-H}          {AG14}%
-\Entry{scm}{otf-ccmr-v}    {Identity-V}          {AG14,V}%
-\Entry{scg}{otf-ucgr-h}    {UniGB-UTF16-H}       {Uni,FWid}%
-\Entry{scg}{otf-ucgr-v}    {UniGB-UTF16-V}       {Uni,FWid,V}%
-\Entry{scg}{otf-ccgr-h}    {Identity-H}          {AG14}%
-\Entry{scg}{otf-ccgr-v}    {Identity-V}          {AG14,V}%
-\Entry{tcm}{otf-utmr-h}    {UniCNS-UTF16-H}      {Uni,FWid}%
-\Entry{tcm}{otf-utmr-v}    {UniCNS-UTF16-V}      {Uni,FWid,V}%
-\Entry{tcm}{otf-ctmr-h}    {Identity-H}          {AC14}%
-\Entry{tcm}{otf-ctmr-v}    {Identity-V}          {AC14,V}%
-\Entry{tcg}{otf-utgr-h}    {UniCNS-UTF16-H}      {Uni,FWid}%
-\Entry{tcg}{otf-utgr-v}    {UniCNS-UTF16-V}      {Uni,FWid,V}%
-\Entry{tcg}{otf-ctgr-h}    {Identity-H}          {AC14}%
-\Entry{tcg}{otf-ctgr-v}    {Identity-V}          {AC14,V}%
+\Entry{koml}{otf-ukml-h}   {UniKS-UTF16-H}       {Uni,FWid}%
+\Entry{koml}{otf-ukml-v}   {UniKS-UTF16-V}       {Uni,FWid,V}%
+\Entry{koml}{otf-ckml-h}   {Identity-H}          {AK12}%
+\Entry{koml}{otf-ckml-v}   {Identity-V}          {AK12,V}%
+\Entry{komr}{otf-ukmr-h}   {UniKS-UTF16-H}       {Uni,FWid}%
+\Entry{komr}{otf-ukmr-v}   {UniKS-UTF16-V}       {Uni,FWid,V}%
+\Entry{komr}{otf-ckmr-h}   {Identity-H}          {AK12}%
+\Entry{komr}{otf-ckmr-v}   {Identity-V}          {AK12,V}%
+\Entry{komb}{otf-ukmb-h}   {UniKS-UTF16-H}       {Uni,FWid}%
+\Entry{komb}{otf-ukmb-v}   {UniKS-UTF16-V}       {Uni,FWid,V}%
+\Entry{komb}{otf-ckmb-h}   {Identity-H}          {AK12}%
+\Entry{komb}{otf-ckmb-v}   {Identity-V}          {AK12,V}%
+\Entry{kogr}{otf-ukgr-h}   {UniKS-UTF16-H}       {Uni,FWid}%
+\Entry{kogr}{otf-ukgr-v}   {UniKS-UTF16-V}       {Uni,FWid,V}%
+\Entry{kogr}{otf-ckgr-h}   {Identity-H}          {AK12}%
+\Entry{kogr}{otf-ckgr-v}   {Identity-V}          {AK12,V}%
+\Entry{kogb}{otf-ukgb-h}   {UniKS-UTF16-H}       {Uni,FWid}%
+\Entry{kogb}{otf-ukgb-v}   {UniKS-UTF16-V}       {Uni,FWid,V}%
+\Entry{kogb}{otf-ckgb-h}   {Identity-H}          {AK12}%
+\Entry{kogb}{otf-ckgb-v}   {Identity-V}          {AK12,V}%
+\Entry{kogx}{otf-ukge-h}   {UniKS-UTF16-H}       {Uni,FWid}%
+\Entry{kogx}{otf-ukge-v}   {UniKS-UTF16-V}       {Uni,FWid,V}%
+\Entry{kogx}{otf-ckge-h}   {Identity-H}          {AK12}%
+\Entry{kogx}{otf-ckge-v}   {Identity-V}          {AK12,V}%
+\Entry{komgr}{otf-ukmgr-h} {UniKS-UTF16-H}       {Uni,FWid}%
+\Entry{komgr}{otf-ukmgr-v} {UniKS-UTF16-V}       {Uni,FWid,V}%
+\Entry{komgr}{otf-ckmgr-h} {Identity-H}          {AK12}%
+\Entry{komgr}{otf-ckmgr-v} {Identity-V}          {AK12,V}%
+
+\Entry{scml}{otf-ucml-h}   {UniGB-UTF16-H}       {Uni,FWid}%
+\Entry{scml}{otf-ucml-v}   {UniGB-UTF16-V}       {Uni,FWid,V}%
+\Entry{scml}{otf-ccml-h}   {Identity-H}          {AG14}%
+\Entry{scml}{otf-ccml-v}   {Identity-V}          {AG14,V}%
+\Entry{scmr}{otf-ucmr-h}   {UniGB-UTF16-H}       {Uni,FWid}%
+\Entry{scmr}{otf-ucmr-v}   {UniGB-UTF16-V}       {Uni,FWid,V}%
+\Entry{scmr}{otf-ccmr-h}   {Identity-H}          {AG14}%
+\Entry{scmr}{otf-ccmr-v}   {Identity-V}          {AG14,V}%
+\Entry{scmb}{otf-ucmb-h}   {UniGB-UTF16-H}       {Uni,FWid}%
+\Entry{scmb}{otf-ucmb-v}   {UniGB-UTF16-V}       {Uni,FWid,V}%
+\Entry{scmb}{otf-ccmb-h}   {Identity-H}          {AG14}%
+\Entry{scmb}{otf-ccmb-v}   {Identity-V}          {AG14,V}%
+\Entry{scgr}{otf-ucgr-h}   {UniGB-UTF16-H}       {Uni,FWid}%
+\Entry{scgr}{otf-ucgr-v}   {UniGB-UTF16-V}       {Uni,FWid,V}%
+\Entry{scgr}{otf-ccgr-h}   {Identity-H}          {AG14}%
+\Entry{scgr}{otf-ccgr-v}   {Identity-V}          {AG14,V}%
+\Entry{scgb}{otf-ucgb-h}   {UniGB-UTF16-H}       {Uni,FWid}%
+\Entry{scgb}{otf-ucgb-v}   {UniGB-UTF16-V}       {Uni,FWid,V}%
+\Entry{scgb}{otf-ccgb-h}   {Identity-H}          {AG14}%
+\Entry{scgb}{otf-ccgb-v}   {Identity-V}          {AG14,V}%
+\Entry{scgx}{otf-ucge-h}   {UniGB-UTF16-H}       {Uni,FWid}%
+\Entry{scgx}{otf-ucge-v}   {UniGB-UTF16-V}       {Uni,FWid,V}%
+\Entry{scgx}{otf-ccge-h}   {Identity-H}          {AG14}%
+\Entry{scgx}{otf-ccge-v}   {Identity-V}          {AG14,V}%
+\Entry{scmgr}{otf-ucmgr-h} {UniGB-UTF16-H}       {Uni,FWid}%
+\Entry{scmgr}{otf-ucmgr-v} {UniGB-UTF16-V}       {Uni,FWid,V}%
+\Entry{scmgr}{otf-ccmgr-h} {Identity-H}          {AG14}%
+\Entry{scmgr}{otf-ccmgr-v} {Identity-V}          {AG14,V}%
+
+\Entry{tcml}{otf-utml-h}   {UniCNS-UTF16-H}      {Uni,FWid}%
+\Entry{tcml}{otf-utml-v}   {UniCNS-UTF16-V}      {Uni,FWid,V}%
+\Entry{tcml}{otf-ctml-h}   {Identity-H}          {AC14}%
+\Entry{tcml}{otf-ctml-v}   {Identity-V}          {AC14,V}%
+\Entry{tcmr}{otf-utmr-h}   {UniCNS-UTF16-H}      {Uni,FWid}%
+\Entry{tcmr}{otf-utmr-v}   {UniCNS-UTF16-V}      {Uni,FWid,V}%
+\Entry{tcmr}{otf-ctmr-h}   {Identity-H}          {AC14}%
+\Entry{tcmr}{otf-ctmr-v}   {Identity-V}          {AC14,V}%
+\Entry{tcmb}{otf-utmb-h}   {UniCNS-UTF16-H}      {Uni,FWid}%
+\Entry{tcmb}{otf-utmb-v}   {UniCNS-UTF16-V}      {Uni,FWid,V}%
+\Entry{tcmb}{otf-ctmb-h}   {Identity-H}          {AC14}%
+\Entry{tcmb}{otf-ctmb-v}   {Identity-V}          {AC14,V}%
+\Entry{tcgr}{otf-utgr-h}   {UniCNS-UTF16-H}      {Uni,FWid}%
+\Entry{tcgr}{otf-utgr-v}   {UniCNS-UTF16-V}      {Uni,FWid,V}%
+\Entry{tcgr}{otf-ctgr-h}   {Identity-H}          {AC14}%
+\Entry{tcgr}{otf-ctgr-v}   {Identity-V}          {AC14,V}%
+\Entry{tcgb}{otf-utgb-h}   {UniCNS-UTF16-H}      {Uni,FWid}%
+\Entry{tcgb}{otf-utgb-v}   {UniCNS-UTF16-V}      {Uni,FWid,V}%
+\Entry{tcgb}{otf-ctgb-h}   {Identity-H}          {AC14}%
+\Entry{tcgb}{otf-ctgb-v}   {Identity-V}          {AC14,V}%
+\Entry{tcgx}{otf-utge-h}   {UniCNS-UTF16-H}      {Uni,FWid}%
+\Entry{tcgx}{otf-utge-v}   {UniCNS-UTF16-V}      {Uni,FWid,V}%
+\Entry{tcgx}{otf-ctge-h}   {Identity-H}          {AC14}%
+\Entry{tcgx}{otf-ctge-v}   {Identity-V}          {AC14,V}%
+\Entry{tcmgr}{otf-utmgr-h} {UniCNS-UTF16-H}      {Uni,FWid}%
+\Entry{tcmgr}{otf-utmgr-v} {UniCNS-UTF16-V}      {Uni,FWid,V}%
+\Entry{tcmgr}{otf-ctmgr-h} {Identity-H}          {AC14}%
+\Entry{tcmgr}{otf-ctmgr-v} {Identity-V}          {AC14,V}%
 \fi
 }
 \pxcz@mapentry{UPSTD}{%
@@ -1195,18 +1288,18 @@
 \Entry{gtu}{ugbm}          {UniJIS-UTF16-H}      {Uni*,Switch}%
 \Entry{gtu}{ugbmv}         {UniJIS-UTF16-V}      {Uni*,Switch,V}%
 %
-\Entry{kom}{uphysmjm-h}    {UniKS-UTF16-H}       {Uni*}%
-\Entry{kom}{uphysmjm-v}    {UniKS-UTF16-V}       {Uni*,V}%
-\Entry{kog}{uphygt-h}      {UniKS-UTF16-H}       {Uni*}%
-\Entry{kog}{uphygt-v}      {UniKS-UTF16-V}       {Uni*,V}%
-\Entry{scm}{upstsl-h}      {UniGB-UTF16-H}       {Uni*}%
-\Entry{scm}{upstsl-v}      {UniGB-UTF16-V}       {Uni*,V}%
-\Entry{scg}{upstht-h}      {UniGB-UTF16-H}       {Uni*}%
-\Entry{scg}{upstht-v}      {UniGB-UTF16-V}       {Uni*,V}%
-\Entry{tcm}{upmsl-h}       {UniCNS-UTF16-H}      {Uni*}%
-\Entry{tcm}{upmsl-v}       {UniCNS-UTF16-V}      {Uni*,V}%
-\Entry{tcg}{upmhm-h}       {UniCNS-UTF16-H}      {Uni*}%
-\Entry{tcg}{upmhm-v}       {UniCNS-UTF16-V}      {Uni*,V}%
+\Entry{komr}{uphysmjm-h}    {UniKS-UTF16-H}       {Uni*}%
+\Entry{komr}{uphysmjm-v}    {UniKS-UTF16-V}       {Uni*,V}%
+\Entry{kogu}{uphygt-h}      {UniKS-UTF16-H}       {Uni*}%
+\Entry{kogu}{uphygt-v}      {UniKS-UTF16-V}       {Uni*,V}%
+\Entry{scmr}{upstsl-h}      {UniGB-UTF16-H}       {Uni*}%
+\Entry{scmr}{upstsl-v}      {UniGB-UTF16-V}       {Uni*,V}%
+\Entry{scgu}{upstht-h}      {UniGB-UTF16-H}       {Uni*}%
+\Entry{scgu}{upstht-v}      {UniGB-UTF16-V}       {Uni*,V}%
+\Entry{tcmr}{upmsl-h}       {UniCNS-UTF16-H}      {Uni*}%
+\Entry{tcmr}{upmsl-v}       {UniCNS-UTF16-V}      {Uni*,V}%
+\Entry{tcgu}{upmhm-h}       {UniCNS-UTF16-H}      {Uni*}%
+\Entry{tcgu}{upmhm-v}       {UniCNS-UTF16-V}      {Uni*,V}%
 }
 \pxcz@mapentry{UPOTF}{%
 \Entry{mnl}{uphminl-h}     {UniJIS-UTF16-H}      {Uni*,90,Exp}%
