@@ -320,17 +320,41 @@
     \pxcz@parse@opt\CurrentOption
     \ifpxcz@ok\else \@unknownoptionerror \fi}}
 
+%% \pxcz@use@list
+\pxcz@onlypreamble@let\pxcz@use@list\@empty
+\let\pxcz@use@do\relax %freeze
+
 %% \pxcz@parse@opt{<option>}
 \pxcz@onlypreamble@def\pxcz@parse@opt#1{%
   \pxcz@okfalse
+  \pxcz@parse@opt@b{use=file:}{#1}{file}%
+  \pxcz@parse@opt@b{use=tl-ja:}{#1}{ja}%
+  \pxcz@parse@opt@b{use=tl-ko:}{#1}{ko}%
+  \pxcz@parse@opt@b{use=tl-sc:}{#1}{sc}%
+  \pxcz@parse@opt@b{use=tl-tc:}{#1}{tc}%
+  \pxcz@parse@opt@b{use=tl:}{#1}{ja}%
+  \pxcz@parse@opt@b{use=}{#1}{file}%
   \pxcz@parse@opt@a{+}{#1}{\pxcz@file@preset@tltrue}%
   \pxcz@parse@opt@a{*}{#1}{\pxcz@file@preset@tlfalse}%
   \pxcz@parse@opt@a{tl:}{#1}{\pxcz@file@preset@tltrue}%
   \pxcz@parse@opt@a{file:}{#1}{\pxcz@file@preset@tlfalse}}
-\pxcz@onlypreamble@def\pxcz@parse@opt@a#1#2#3{%
+\pxcz@onlypreamble@def\pxcz@parse@opt@a#1#2#3{% for file presets
   \ifpxcz@ok\else
     \pxcz@split{#1}{#2}\ifx\pxcz@pre\@empty
       #3\let\pxcz@file@preset\pxcz@post \pxcz@oktrue
+    \fi
+  \fi}
+\pxcz@onlypreamble@def\pxcz@parse@opt@a#1#2#3{% for file preloads
+  \ifpxcz@ok\else
+    \pxcz@split{#1}{#2}\ifx\pxcz@pre\@empty
+      #3\let\pxcz@file@preset\pxcz@post \pxcz@oktrue
+    \fi
+  \fi}
+\pxcz@onlypreamble@def\pxcz@parse@opt@b#1#2#3{% for file presets
+  \ifpxcz@ok\else
+    \pxcz@split{#1}{#2}\ifx\pxcz@pre\@empty
+      \edef\pxcz@use@list{\pxcz@use@list\pxcz@use@do{#3}{\pxcz@post}}%
+      \pxcz@oktrue
     \fi
   \fi}
 
@@ -1054,17 +1078,28 @@
 %% \pxcz@do@file@preset
 \pxcz@onlypreamble@def\pxcz@do@file@preset{%
   \ifpxcz@file@preset@tl
-    \pxcz@do@file@preset@a{ptex-}%
-    \ifpxcz@uptex \pxcz@do@file@preset@a{uptex-}\fi
-    \ifpxcz@otf
-      \pxcz@do@file@preset@a{otf-}%
-      \ifpxcz@uptex \pxcz@do@file@preset@a{otf-up-}\fi
-    \fi
+    \pxcz@use@mapfile{ja}{\pxcz@file@preset}%
   \else
-    \pxcz@do@file@preset@a{}%
+    \pxcz@use@mapfile{file}{\pxcz@file@preset}%
   \fi}
-\pxcz@onlypreamble@def\pxcz@do@file@preset@a#1{%
-  \pxcz@addtospec@alt\pxcz@mapfile{#1\pxcz@file@preset.map}}
+
+%% \pxcz@use@mapfile{<type>}{<basename>}
+\pxcz@onlypreamble@def\pxcz@use@mapfile#1{%#1=<type>
+  \pxcz@csuse@or{pxcz@use@mapfile@@#1}{\pxcz@use@mapfile@a{#1}}}
+\pxcz@onlypreamble@def\pxcz@use@mapfile@@file#1{%#1=<basename>
+  \pxcz@use@mapfile@b{#1}}
+\pxcz@onlypreamble@def\pxcz@use@mapfile@@ja#1{%
+  \pxcz@use@mapfile@b{ptex-#1}%
+  \ifpxcz@uptex \pxcz@use@mapfile@b{uptex-#1}\fi
+  \ifpxcz@otf
+    \pxcz@use@mapfile@b{otf-#1}%
+    \ifpxcz@uptex \pxcz@use@mapfile@b{otf-up-#1}\fi
+  \fi}
+\pxcz@onlypreamble@def\pxcz@use@mapfile@a#1#2{%
+  \ifpxcz@uptex \pxcz@use@mapfile@b{uptex-#1-#2}\fi
+  \ifpxcz@otf \pxcz@use@mapfile@b{otf-#1-#2}\fi}
+\pxcz@onlypreamble@def\pxcz@use@mapfile@b#1{%
+  \pxcz@addtospec@alt\pxcz@mapfile{#1.map}}
 
 %% \pxcz@addtospec@alt
 \def\pxcz@addtospec@alt#1#2{%
@@ -1729,7 +1764,13 @@
 
 %% the begin-document hook
 \pxcz@onlypreamble@def\pxcz@doc@hook{%
+  \ifpxcz@otf
+    \@ifpackageloaded{otf}{\pxcz@otftrue}{\pxcz@otffalse}%
+    \@ifpackageloaded{utf}{\pxcz@utftrue}{\pxcz@utffalse}%
+  \fi
   \pxcz@user@hook
+  \let\pxcz@use@do\pxcz@use@mapfile
+  \pxcz@use@list
   \ifx\pxcz@file@preset\relax\else
     \pxcz@do@file@preset
   \fi
@@ -1783,10 +1824,6 @@
   \ifnum0\ifnum\pxcz@legacycode=\pxcz@legacycode@replace 1\fi
          \ifpxcz@uptex 1\fi >\z@
     \pxcz@addtospec{UPSTD}%
-  \fi
-  \ifpxcz@otf
-    \@ifpackageloaded{otf}{\pxcz@otftrue}{\pxcz@otffalse}%
-    \@ifpackageloaded{utf}{\pxcz@utftrue}{\pxcz@utffalse}%
   \fi
   \ifpxcz@otf
     \ifnum0\ifnum\pxcz@legacycode=\pxcz@legacycode@replace 1\fi
