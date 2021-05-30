@@ -39,6 +39,9 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.9  ‹2021/05/30›
+      - Support multi-weight settings for Chinese/Korean fonts.
+      - Add `use` option.
   * Version 1.8  ‹2021/02/22›
       - (experimental) Add presets `sourcehan!` etc.
   * Version 1.7e ‹2020/10/04›

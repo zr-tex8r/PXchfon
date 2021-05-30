@@ -1,6 +1,7 @@
 % 文字コードは UTF-8
 % uplatex で組版する
 \documentclass[uplatex,dvipdfmx,a4paper]{jsarticle}
+\renewcommand{\headfont}{\gtfamily\romanseries{sbc}\sffamily}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern,textcomp}
 \usepackage{color}
@@ -8,13 +9,15 @@
 \definecolor{mygreen}{rgb}{0,0.45,0}
 \usepackage[colorlinks,hyperfootnotes=false]{hyperref}
 \usepackage{pxjahyper}
-\hypersetup{linkcolor=myblue,urlcolor=mygreen}
+\hypersetup{linkcolor=myblue,urlcolor=mygreen,
+  pdftitle={pxchfonパッケージ},
+  pdfauthor={八登崇之}}
 \usepackage{bxtexlogo}
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.8}
-\newcommand{\PkgDate}{2021/02/22}
+\newcommand{\PkgVersion}{1.9}
+\newcommand{\PkgDate}{2021/05/30}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -94,10 +97,15 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   ユーザ定義のプリセット指定を有効にする。
   \Note 詳細については\ref{sec:CustomPreset}節を参照。
 \item \Strong{ファイルプリセット指定オプション}%
-  （|tl:|\Zk\textgt{名前} または |file:|\Zk\textgt{名前}%
+  （|tl:|\Meta{名前} または |file:|\Meta{名前}%
   \footnote{旧形式は |+|\Zk\textgt{名前} および |*|\Zk\textgt{名前}}）
   名前に対応するファイルプリセット指定を有効にする。
   \Note 詳細については\ref{sec:FilePreset}節を参照。
+\item |use=|\Meta{名前}\Means
+  マップファイル読込指定。
+  「本パッケージによるマップ設定に先行して
+  指定のマップファイルを読み込む」ことを指示する。
+  \Note 詳細については\ref{sec:MapFileLoad}節を参照。
 \item |alphabet|\Means
   欧文フォントも指定されたフォントの英数字部分で置き換える。
   （明朝が |\rmfamily|、ゴシックが |\sffamily| に適用される。）
@@ -1020,6 +1028,72 @@ kanji-config-updmap用のマップファイルの読込が指示される。
 
 
 %===========================================================
+\section{マップファイル読込機能}
+\label{sec:MapFileLoad}
+
+既存のdvipdfmx用のマップファイルの読込を文書内で指定ための機能として、
+従来の「ファイルプリセット」機能に加えて1.9版から新たに
+「マップファイル読込」機能がサポートされる。
+
+両機能の違いは以下の通りである。
+\begin{itemize}
+\item 「ファイルプリセット」の指定は“プリセット指定の一種”と
+見なされるのに対し、「マップファイル読込」ではプリセット指定とは
+無関係に自由にマップファイルを読み込める。
+\item 「ファイルプリセット」はプリセットの一種であるため、
+高々1つしか指定できず、また（想定仕様上は
+\footnote{実際にマップファイルの中身を検証しているわけではない。}）
+「本パッケージの設定対象である日本語用の論理フォント」
+に対するマップファイルのみを対象とする。
+対して、「マップファイル読込」は何回でも使用できて、
+また任意のdvipdfmx用マップファイルを対象とする。
+\item 「マップファイル読込」によるマップ設定は、
+プリセット（「ファイルプリセット」も含む）や
+フォント指定命令（|\setminchofont|等）によるマップ設定に
+先行して行われるため、優先度が低い。
+\Note このため、「マップファイル読込」を
+“中国語・韓国語フォントに対するファイルプリセット指定”
+の代わりに使うことができる。
+\end{itemize}
+
+「マップファイル読込」は|use|オプションで指定する。
+
+\begin{itemize}
+\item |use=|\Meta{指定}\Means
+  マップファイル読込を指示する。
+  \Meta{指定}は以下の何れかの形式（|NAME|は文字列）。
+  \begin{itemize}
+  \item |file:NAME|\Means
+    |NAME.map|を読み込む。
+    （単純ファイルプリセットと同じ。）
+  \item |tl:NAME| または |tl-ja:NAME|\Means
+    「{\TeX} Live用ファイルプリセット」と同じ規則で決まるファイル群
+    （|ptex-NAME.map|等）を読み込む。
+  \item |tl-LL:NAME|（※|LL|は|ko|・|sc|・|tc|の何れか）\Means
+    kanji-config-updmap向けの中国語・韓国語用のマップファイルを
+    読み込む設定。
+    具体的な規則は以下の通り。
+    \begin{itemize}
+    \item {\upLaTeX}の場合は、|uptex-LL-NAME.map|を読み込む。
+    \item \Pkg{japanese-otf}使用時は、|otf-LL-NAME.map|を読み込む。
+    \end{itemize}
+  \item “|:|”を含まない文字列\Means
+    「\Meta{指定}\Zk|.map|」を読み込む。
+    （|file:|が付いている場合と同じ。）
+  \end{itemize}
+\end{itemize}
+
+\Note 参考：マップ設定の優先度は以下のようになっている
+（後のものほど優先度が高い）。
+\begin{itemize}
+\item 「マップファイル読込」機能によるマップファイル読込。
+\item プリセット（「ファイルプリセット」を含む）による設定。
+\item フォント指定命令（|\setminchofont|等）による設定。
+\item |\usefontmapfile|・|\usefontmapline|命令による設定。
+\end{itemize}
+
+
+%===========================================================
 \section{カスタムプリセット機能}
 \label{sec:CustomPreset}
 
@@ -1373,7 +1447,7 @@ r-cfjam-r-@PXcjk0@     msgothic.ttc FontIndex=0
 取り込んでいるため、\Pkg{pxjafont}は不要である。
 古い環境との互換性のため\Pkg{pxjafont}を残していたが、
 1.0版において\Pkg{pxjafont}の使用を非推奨の扱いとした。
-（近い将来に廃止予定。）
+（2.0版においてに廃止予定。）
 
 \Pkg{pxjafont}を利用しているユーザは、
 \ref{sec:Preset}節を参照して現在の\Pkg{pxchfon}用の
@@ -1387,95 +1461,102 @@ r-cfjam-r-@PXcjk0@     msgothic.ttc FontIndex=0
 
 0.7c版で\Pkg{japanese-otf}パッケージ（|multi| オプション指定）および
 {\upTeX}標準の中国語・韓国語フォントについてのサポートを始めた。
-以下の命令で、実フォントの置換指定ができる。
+
+\paragraph{単ウェイトの場合の設定}
+
+以下の命令が用意されている。
 
 \begin{itemize}
 \newcommand*{\CNot}{\footnotesize}
 \item |\setkoreanminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
-      韓国語・明朝体・単ウェイト。
+      韓国語・明朝体。
 \item |\setkoreangothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
-      韓国語・ゴシック体・単ウェイト。
-\item |\setkoreanlightminchofont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+      韓国語・ゴシック体。
+\item |\setschineseminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      簡体字中国語・明朝体（宋体）。
+\item |\setschinesegothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      簡体字中国語・ゴシック体（黒体）。
+\item |\settchineseminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      繁体字中国語・明朝体（明体）。
+\item |\settchinesegothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
+      繁体字中国語・ゴシック体（黒体）。
+\end{itemize}
+
+\paragraph{多ウェイトの場合の設定}
+
+\Pkg{japanese-otf}パッケージ（{\upTeX}対応版）の0.26版から、
+中国語・韓国語のフォント
+\footnote{ただし、\Pkg{japanese-otf}パッケージにおける中国語・韓国語
+入力は飽くまでコード値入力（|\UTFC|等）であり、直接入力は
+サポート外であることに注意。}%
+についても多ウェイトがサポートされるようになった。
+
+本パッケージの1.9版から中国語・韓国語の多ウェイト設定をサポートする。
+以下の命令が用意されている。
+\Note 引数の書式は全て|\setminchofont|と同じなので省略する。
+\Note 日本語用の|\setminchofont|等と同様に、多ウェイト環境に
+おいて単ウェイト用の命令を用いた場合は、それは全ウェイトに
+対する設定と見なされる。
+
+\begin{itemize}
+\item |\setkoreanlightminchofont|\Means
       韓国語・明朝体・細ウェイト。
-\item |\setkoreanmediumminchofont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setkoreanmediumminchofont|\Means
       韓国語・明朝体・中ウェイト。
-\item |\setkoreanboldminchofont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setkoreanboldminchofont|\Means
       韓国語・明朝体・太ウェイト。
-\item |\setkoreanmediumgothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setkoreanmediumgothicfont|\Means
       韓国語・ゴシック体・中ウェイト。
-\item |\setkoreanboldgothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setkoreanboldgothicfont|\Means
       韓国語・ゴシック体・太ウェイト。
-\item |\setkoreanxboldgothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setkoreanxboldgothicfont|\Means
       韓国語・ゴシック体・極太ウェイト。
-\item |\setkoreanmarugothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setkoreanmarugothicfont|\Means
       韓国語・丸ゴシック体。
 
-\item |\setschineseminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
-      簡体字中国語・明朝体（宋体）・単ウェイト。
-\item |\setschinesegothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
-      簡体字中国語・ゴシック体（黒体）・単ウェイト。
-\item |\setschineselightminchofont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setschineselightminchofont|\Means
       簡体字中国語・明朝体（宋体）・細ウェイト。
-\item |\setschinesemediumminchofont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setschinesemediumminchofont|\Means
       簡体字中国語・明朝体（宋体）・中ウェイト。
-\item |\setschineseboldminchofont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setschineseboldminchofont|\Means
       簡体字中国語・明朝体（宋体）・太ウェイト。
-\item |\setschinesemediumgothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setschinesemediumgothicfont|\Means
       簡体字中国語・ゴシック体（黒体）・中ウェイト。
-\item |\setschineseboldgothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setschineseboldgothicfont|\Means
       簡体字中国語・ゴシック体（黒体）・太ウェイト。
-\item |\setschinesexboldgothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setschinesexboldgothicfont|\Means
       簡体字中国語・ゴシック体（黒体）・極太ウェイト。
-\item |\setschinesegothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\setschinesegothicfont|\Means
       簡体字中国語・丸ゴシック体。
 
-\item |\settchineseminchofont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
-      繁体字中国語・明朝体（明体）・単ウェイト。
-\item |\settchinesegothicfont[|\Meta{番号}|]{|\Meta{フォントファイル名}|}|\Means
-      繁体字中国語・ゴシック体（黒体）・単ウェイト。
-\item |\settchineselightminchofont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\settchineselightminchofont|\Means
       繁体字中国語・明朝体（明体）・細ウェイト。
-\item |\settchineseboldminchofont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\settchineseboldminchofont|\Means
       繁体字中国語・明朝体（明体）・中ウェイト。
-\item |\settchinesexboldminchofont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\settchinesexboldminchofont|\Means
       繁体字中国語・明朝体（明体）・太ウェイト。
-\item |\settchinesemediumgothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\settchinesemediumgothicfont|\Means
       繁体字中国語・ゴシック体（黒体）・中ウェイト。
-\item |\settchineseboldgothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\settchineseboldgothicfont|\Means
       繁体字中国語・ゴシック体（黒体）・太ウェイト。
-\item |\settchinesexboldgothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\settchinesexboldgothicfont|\Means
       繁体字中国語・ゴシック体（黒体）・極太ウェイト。
-\item |\settchinesegothicfont[|\Meta{番号}|]{|%
-      \Meta{フォントファイル名}|}|\Means
+\item |\settchinesegothicfont|\Means
       繁体字中国語・丸ゴシック体。
 \end{itemize}
 
-注意事項。
+%-------------------
+\subsection{注意事項}
 
 \begin{itemize}
 \item プリセット指定は中国語・韓国語のフォントについては何も指定しない。
 従って、上記の命令を用いない場合は、これらのフォントのマップ再設定が
 行われることはない。
+\item マップファイル読込機能（\ref{sec:MapFileLoad}節参照）
+を利用してマップファイルを読み込むことで、
+中国語・韓国語フォントのマップを設定することも可能である。
+\Note 「ファイルプリセット機能」の方はプリセット設定の一種であるため、
+日本語用のフォントについて用いられることが想定されている。
 \item 「Unicode直接指定オプション」は中国語・韓国語のフォントに対しても
 有効である。
 |directunicode| の場合は「\Pkg{japanese-otf}パッケージのUnicode入力命令」
