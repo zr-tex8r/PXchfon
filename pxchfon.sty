@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2021/05/30 v1.9]
+\ProvidesPackage{pxchfon}[2021/05/30 v2.0-dev]
 \def\pxcz@pkgname{pxchfon}
 
 %--------------------------------------- general
@@ -73,13 +73,10 @@
 %--------------------------------------- environment check
 
 %% check for 'pxjafont' package
-% if old version of pxjafont is loaded (probably this package is
-% required from pxjafont), then I abort here with an error message.
 \@ifpackageloaded{pxjafont}{%
-  \ifx\pxAliasedPxjafont\@undefined
-    \PackageError\pxcz@pkgname
-     {FATAL: Old 'pxjafont' is loaded}{\@ehc}
-  \expandafter\@@end\fi}{}
+  \PackageError\pxcz@pkgname
+   {Old 'pxjafont' is loaded}{\@ehc}
+  \endinput}{}
 
 %% \ifpxcz@uptex
 \newif\ifpxcz@uptex \pxcz@uptexfalse
@@ -93,7 +90,6 @@
 %% \ifpxcz@otf@deluxe
 \newif\ifpxcz@otf@deluxe \pxcz@otf@deluxefalse
 \@ifpackagewith{otf}{deluxe}{\pxcz@otf@deluxetrue}{}
-\@ifpackagewith{pxotf}{deluxe}{\pxcz@otf@deluxetrue}{}
 
 %% \ifpxcz@otf@multi
 \newif\ifpxcz@otf@multi \pxcz@otf@multifalse
@@ -1694,7 +1690,6 @@
         \pxcz@Entry{gtr}{r-cfjas-r-@PXcjk0@}{unicode}{HWid}}%
   \fi\fi
   \@ifpackagewith{otf}{deluxe}{\pxcz@err@dxotf{otf}}{}%
-  \@ifpackagewith{pxotf}{deluxe}{\pxcz@err@dxotf{pxotf}}{}%
 }
 \fi                 %---- </otfdx>
 \fi                 %---- </alphabet>
@@ -1837,10 +1832,6 @@
   \ifx t\pxcz@expert \pxcz@addtospec{EXPERT}%
   \fi
   \ifpxcz@utf \pxcz@addtospec{UTF}%
-  \fi
-  \@ifpackageloaded{pxotf}{\pxcz@oktrue}{\pxcz@okfalse}%
-  \@ifpackageloaded{pxfontenc}{\pxcz@oktrue}{}%
-  \ifpxcz@ok \pxcz@addtospec{PXOTF}%
   \fi
   % warn if some weights are not substituted, and if necessaty
   \ifpxcz@warn@unless@all@defined
