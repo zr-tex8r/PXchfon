@@ -83,8 +83,14 @@
 
 %% \ifpxcz@uptex
 \newif\ifpxcz@uptex \pxcz@uptexfalse
-\edef\pxcz@tmpa{\string\ucs}\edef\pxcz@tmpb{\meaning\ucs}
-\ifx\pxcz@tmpa\pxcz@tmpb \pxcz@uptextrue \fi
+\def\pxcz@do#1#2{%
+  \edef\pxcz@tmpa{\string#1}\edef\pxcz@tmpb{\meaning#1}%
+  \ifx\pxcz@tmpa\pxcz@tmpb #2\fi}
+\pxcz@do\ucs{%
+  \pxcz@do\ptexversion{\pxcz@uptextrue}
+  \pxcz@do\kchardef{\pxcz@uptextrue}
+  % only upTeX in Unicode is seen as upTeX
+  \ifnum\ucs"3000="3000 \else \pxcz@uptexfalse \fi}
 
 %% \pxcz@JYn
 \edef\pxcz@JYn{%
