@@ -1,7 +1,7 @@
 %%
 %% This is file 'pxchfon.sty'.
 %%
-%% Copyright (c) 2009-2021 Takayuki YATO (aka. "ZR")
+%% Copyright (c) 2009-2023 Takayuki YATO (aka. "ZR")
 %%   GitHub:   https://github.com/zr-tex8r
 %%   Twitter:  @zr_tex8r
 %%
@@ -10,7 +10,7 @@
 
 %% package declaration
 \NeedsTeXFormat{pLaTeX2e}
-\ProvidesPackage{pxchfon}[2021/05/30 v1.9]
+\ProvidesPackage{pxchfon}[2023/02/22 v1.9a]
 \def\pxcz@pkgname{pxchfon}
 
 %--------------------------------------- general
@@ -550,7 +550,7 @@
   \fi
 \fi
 
-%% 'replace-lecacycode' requires the 'pxufont' package
+%% 'replace-legacycode' requires the 'pxufont' package
 \ifnum\pxcz@legacycode=\pxcz@legacycode@replace
   \ifnum\pxcz@pxufont@avail<1
     \PackageError\pxcz@pkgname
@@ -1425,7 +1425,7 @@
   }{%else
     \ifnum\pxcz@directunicode<\pxcz@directunicode@all\else
       \pxcz@diruni@oktrue % directunicode* does not need otf
-      \AtBeginDocument{% to laod otf later causes inconsistency
+      \AtBeginDocument{% loading otf later causes inconsistency
         \@ifpackageloaded{otf}{\pxcz@diruni@okfalse}{}}%
     \fi
   }
