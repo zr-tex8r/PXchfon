@@ -186,7 +186,6 @@
 \newif\ifpxcz@mmivjis
 \newif\ifpxcz@everypage
 \newif\ifpxcz@oneweight
-\newif\ifpxcz@uniquify
 \newif\ifpxcz@fullwidth
 \let\pxcz@directunicode\relax
 \let\pxcz@main@preset\relax
@@ -197,7 +196,6 @@
 \newif\ifpxcz@dumpmap
 \newif\ifpxcz@dumpmap@tl
 \newif\ifpxcz@switch@font \pxcz@switch@fonttrue
-\newif\ifpxcz@switch@font@xwid
 \newif\ifpxcz@switch@font@xjis
 \let\pxcz@strict@csi\relax
 \newif\ifpxcz@directunicode@default
@@ -283,16 +281,16 @@
   ms-hg,ipa-hg,ipaex-hg,moga-mobo,moga-mobo-ex,moga-maruberi,ume,%
   kozuka-pro,kozuka-pr6,kozuka-pr6n,hiragino-pro,hiragino-pron,%
   hiragino-elcapitan-pro,hiragino-elcapitan-pron,%
-  morisawa-pro,morisawa-pr6n,yu-win,yu-win10,yu-win10+,yu-osx,%
+  morisawa-pro,morisawa-pr6n,yu-win,yu-win10,yu-osx,%
   sourcehan-otc,sourcehan,sourcehan-jp,noto-otc,noto,noto-jp,%
   haranoaji,%
-  sourcehan-otc+,sourcehan+,noto-otc+,noto+,%
   sourcehan-otc!,sourcehan!,sourcehan-jp!,noto-otc!,noto!,noto-jp!,%
   noto-otf!,%
   %(alias)
   hiragino,noto-otf,%
   noEmbed,kozuka,hiragino-elcapitan,morisawa}
 \pxcz@onlypreamble@def\pxcz@all@abolished@preset{%
+  sourcehan+,sourcehan-otc+,noto+,noto-otc+,yu-win10+,
   ipa-otf,ipa-otf-dx,kozuka4,kozuka6,kozuka6n,
   ms-dx,ipa-ttf,ipa-ttf-dx,ipav2,ipav2-dx,ipa-dx,hiragino-dx}
 \def\pxcz@do#1{\DeclareOption{#1}{\def\pxcz@main@preset{#1}}}
@@ -306,20 +304,24 @@
 %% 'local-only' constant options
 % The 'unicode' option means a Unicode-oriented mapping, and requires
 % dvipdfmx of version 20170918 or later. The 'unicode-fwid' is a variant.
-% The 'unicode*(-fwid)' option is a transitional (deteriorated) version
-% of 'unicode(-fwid)' and can work with dvipdfmx of version 20170318.
-% NOTE: 'unicode*(-fwid)' is DEPRECATED and will be abolished in v2.0.
+% The 'unicode*(-fwid)' option is ABOLISHED.
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode}{%
   \let\pxcz@directunicode\pxcz@directunicode@full}
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode*}{%
-  \pxcz@uniquifytrue
-  \let\pxcz@directunicode\pxcz@directunicode@full}
+  \pxcz@err@ustar@gone{}}
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode-fwid}{%
   \pxcz@fullwidthtrue
   \let\pxcz@directunicode\pxcz@directunicode@full}
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode*-fwid}{%
-  \pxcz@fullwidthtrue \pxcz@uniquifytrue
-  \let\pxcz@directunicode\pxcz@directunicode@full}
+  \pxcz@err@ustar@gone{-fwid}}
+\pxcz@onlypreamble@def\pxcz@err@ustar@gone#1{%
+  \PackageError\pxcz@pkgname
+   {Option 'unicode*#1' is ABOLISHED!\MessageBreak
+    You should update to TL2018 or later and use\MessageBreak
+    option 'unicode#1' instead}%
+   {This option was to invoke a transitional setting\MessageBreak
+    that was specially tailored for TL2017.\MessageBreak
+    \@ehc}}
 % general option handler
 \DeclareOption*{%
   \pxcz@csuse@or{pxcz@POPT/\CurrentOption}{%
@@ -366,18 +368,6 @@
 
 %% dispatch
 \ProcessOptions*
-
-%% 'unicode*' and 'unicode*-fwid' are DEPRECATED
-\ifpxcz@uniquify
-  \PackageWarningNoLine\pxcz@pkgname
-   {IMPORTANT: Option 'unicode*\ifpxcz@fullwidth -fwid\fi'
-    is DEPRECATED!\MessageBreak
-    This option invokes a transitional setting that\MessageBreak
-    is specially tailored for TL2017, and will be\MessageBreak
-    abolished in v2.0 (soon to be released).\MessageBreak
-    You should update to TL2018 or later and use\MessageBreak
-    option 'unicode\ifpxcz@fullwidth -fwid\fi' instead}
-\fi
 
 %% 'everypage' needs 'atbegshi' package
 \ifpxcz@everypage \ifpxcz@old@hook@system
@@ -457,7 +447,6 @@
 \ifpxcz@switch@font
   \pxcz@switch@font@xjistrue
 \else
-  \let\pxcz@switch@font@xwidtrue\pxcz@switch@font@xwidfalse
   \let\pxcz@switch@font@xjistrue\pxcz@switch@font@xjisfalse
 \fi
 
@@ -494,22 +483,6 @@
   \ifpxcz@directunicode@default %  default -> unicode
     \pxcz@warn@unicode
     \let\pxcz@directunicode\pxcz@directunicode@full
-    \pxcz@uniquifyfalse
-  \else\ifnum\pxcz@directunicode=\pxcz@directunicode@full
-    \ifpxcz@uniquify % unicode* -> 'unicode+'
-      \pxcz@switch@font@xwidtrue \pxcz@uniquifyfalse
-    \fi % unicode -> (unchanged)
-  \else \pxcz@uniquifyfalse % otherwise, enable switch-font
-  \fi\fi}
-%% \pxcz@apply@opt@unicodeP
-% Forces the 'unicode+' setup, which is a 'unicode' with switch-font
-% enabled on the width features.
-\pxcz@onlypreamble@def\pxcz@apply@opt@unicodeP{%
-  \pxcz@uniquifyfalse
-  \pxcz@switch@font@xwidtrue % 'unicode+'
-  \ifnum\pxcz@directunicode=\pxcz@directunicode@full\else
-    \pxcz@warn@unicode
-    \let\pxcz@directunicode\pxcz@directunicode@full
   \fi}
 %% \pxcz@warn@unicode
 \pxcz@onlypreamble@def\pxcz@warn@unicode{%
@@ -522,7 +495,6 @@
   \edef\pxcz@tmpa{#1}%
   \pxcz@cond\ifx\pxcz@main@preset\pxcz@tmpa\fi
       {\@firstofone}{\@gobble}}
-% A 'XXXX+' preset forces 'unicode+' setting.
 % 'sourcehan(-otc)' and 'noto(-otc)' force 'unicode' setting.
 \pxcz@do{sourcehan}{\pxcz@apply@opt@unicode}
 \pxcz@do{sourcehan-otc}{\pxcz@apply@opt@unicode}
@@ -531,11 +503,6 @@
 \pxcz@do{noto-otf}{\pxcz@apply@opt@unicode}
 \pxcz@do{noto-otc}{\pxcz@apply@opt@unicode}
 \pxcz@do{noto-jp}{\pxcz@apply@opt@unicode}
-\pxcz@do{sourcehan+}{\pxcz@apply@opt@unicodeP}
-\pxcz@do{sourcehan-otc+}{\pxcz@apply@opt@unicodeP}
-\pxcz@do{noto+}{\pxcz@apply@opt@unicodeP}
-\pxcz@do{noto-otc+}{\pxcz@apply@opt@unicodeP}
-\pxcz@do{yu-win10+}{\pxcz@apply@opt@unicodeP}
 \pxcz@custom@apply@opt@unicode
 % No-embed is not supported under the 'unicode' setup
 \ifnum\pxcz@directunicode=\pxcz@directunicode@full
@@ -582,8 +549,6 @@
 \pxcz@oktrue
 \ifnum\pxcz@legacycode=\pxcz@legacycode@replace\else \pxcz@okfalse \fi
 \ifnum\pxcz@directunicode=\pxcz@directunicode@full\else \pxcz@okfalse \fi
-\ifpxcz@uniquify \pxcz@okfalse \fi % no 'unicode*'
-\ifpxcz@switch@font@xwid \pxcz@okfalse \fi % no 'unicode+'
 \ifnum\pxcz@pxufont@avail<2 \pxcz@okfalse \fi
 \ifpxcz@ok\else
   \if t\pxcz@expert % explicitly given
@@ -813,15 +778,6 @@
 \pxcz@onlypreamble@def\pxcz@add@lopt#1{%
   \edef\pxcz@lopts{%
     \ifx\pxcz@lopts\@empty\else \pxcz@lopts:\fi#1}}
-%% \pxcz@uniquify@lopts
-\pxcz@onlypreamble@def\pxcz@uniquify@lopts#1#2{%
-  \pxcz@oktrue
-  \def\pxcz@tmpb{jp90}\ifx\pxcz@tmpb\pxcz@lopts\pxcz@okfalse\fi
-  \def\pxcz@tmpb{jp04}\ifx\pxcz@tmpb\pxcz@lopts\pxcz@okfalse\fi
-  \ifx\@empty\pxcz@lopts\if t#1\pxcz@okfalse\fi\fi
-  \ifpxcz@ok
-    \edef\pxcz@lopts{#2}%
-  \fi}
 
 %% \pxcz@is@jis@cmap
 \pxcz@onlypreamble@def\pxcz@is@jis@cmap{%
@@ -885,28 +841,6 @@
     \edef\pxcz@font{\expandafter\pxcz@tmpb\pxcz@font}%
   \fi}
 % entries
-\ifpxcz@switch@font@xwid
-  \def\pxcz@switch@font@@sourcehanC@fwid#1:0:{:2:}
-  \def\pxcz@switch@font@@sourcehanC@hwid#1:0:{:1:}
-  \def\pxcz@switch@font@@sourcehan@fwid#1-{#1SC-}
-  \def\pxcz@switch@font@@sourcehan@hwid#1-{#1K-}
-  \def\pxcz@switch@font@@notoC@fwid#1:0:{:2:}
-  \def\pxcz@switch@font@@notoC@hwid#1:0:{:1:}
-  \def\pxcz@switch@font@@noto@fwid#1jp{#1sc}
-  \def\pxcz@switch@font@@noto@hwid#1jp{#1kr}
-  \def\pxcz@switch@font@@yugoth@fwid#1:0:{:1:}
-  \def\pxcz@switch@font@@yumin@fwid#1.ttf{%
-    \@nameuse{pxcz@SFYM/#1.ttf}}
-  \def\pxcz@switch@font@@yuminU@fwid#1.TTF{%
-    \@nameuse{pxcz@SFYM/#1.TTF}}
-  \def\pxcz@do#1{\@namedef{pxcz@SFYM/#1}}
-  \pxcz@do{yuminl.ttf}{:1:YuGothL.ttc}
-  \pxcz@do{yumin.ttf}{:1:YuGothR.ttc}
-  \pxcz@do{yumindb.ttf}{:1:YuGothM.ttc}
-  \pxcz@do{YUMINL.TTF}{:1:YUGOTHL.TTC}
-  \pxcz@do{YUMIN.TTF}{:1:YUGOTHR.TTC}
-  \pxcz@do{YUMINDB.TTF}{:1:YUGOTHM.TTC}
-\fi
 \ifpxcz@switch@font@xjis
   \@namedef{pxcz@switch@font@@mogamobo@jp90}#1.ttc{%
     \pxcz@csuse@or{pxcz@SFMG/#1.ttc}{#1.ttc}}
@@ -1046,18 +980,11 @@
   % apply layout options when using 'unicode'
   \ifnum\pxcz@directunicode<\pxcz@directunicode@full\else
     \ifx\pxcz@cmap\pxcz@cmap@directuni
-      \ifpxcz@uniquify
-        \pxcz@uniquify@lopts{t}{\pxcz@@jpXX}%
-        \ifpxcz@fullwidth
-          \pxcz@add@lopt{fwid}%
-        \fi
-      \else
         \ifpxcz@fullwidth
           \pxcz@split{wid}\pxcz@lopts\ifx\pxcz@pre\relax
             \pxcz@add@lopt{fwid}%
           \fi
         \fi
-      \fi
       \ifx\pxcz@lopts\@empty\else
         \edef\pxcz@mopts{\pxcz@mopts\space -l \pxcz@lopts}%
       \fi
@@ -2290,12 +2217,6 @@
 \pxcz@declare@preset@alias{hiragino-elcapitan}{hiragino-elcapitan-pro}
 \pxcz@declare@preset@alias{morisawa}{morisawa-pro}
 \pxcz@declare@preset@alias{noto-otf}{noto}
-%(plus-variants)
-\pxcz@declare@preset@alias{sourcehan+}{sourcehan}
-\pxcz@declare@preset@alias{sourcehan-otc+}{sourcehan-otc}
-\pxcz@declare@preset@alias{noto+}{noto}
-\pxcz@declare@preset@alias{noto-otc+}{noto-otc}
-\pxcz@declare@preset@alias{yu-win10+}{yu-win10}
 %(bang-variants)
 \pxcz@declare@preset@alias{sourcehan!}{sourcehan}
 \pxcz@declare@preset@alias{sourcehan-otc!}{sourcehan-otc}
