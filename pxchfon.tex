@@ -16,8 +16,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.9a}
-\newcommand{\PkgDate}{2023/02/22}
+\newcommand{\PkgVersion}{1.9b}
+\newcommand{\PkgDate}{2023/08/18}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -41,7 +41,9 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 使用するフォントを{\LaTeX}文書中で指定するので、
 一度パッケージをインストールするだけで、
 任意の日本語フォント（ただし等幅に限る）を使うことができる。
-欧文部分を同じ日本語フォントで置き換えることも可能である。
+欧文部分を同じ日本語フォントで置き換えることも可能
+（ただしこれも半角幅の文字に限られる）
+である。
 \Pkg{japanese-otf}パッケージ%
 \footnote{\Pkg{japanese-otf}パッケージ\Means
   https://www.ctan.org/pkg/japanese-otf}%
@@ -58,6 +60,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item {\TeX}フォーマット\Means {\LaTeX}
 \item {\TeX}エンジン\Means {\pTeX}／{\upTeX}
 \item DVIウェア\Means dvipdfmx
+  （詳細は\ref{sec:Loading}節参照）
 \item 前提パッケージ\Means
   \begin{itemize}
   \item \Pkg{atbegshi}パッケージ（|everypage| オプション使用時）
@@ -83,7 +86,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   が指定できる。
   ただし、本パッケージの主要機能である
   「フォントマップの文書内での指定」
-  がサポートされるのはdvipdfmxのみである。
+  がサポートされるのは\Strong{dvipdfmxのみ}である。
   \footnote{現状では、|dvipdfmx| 以外のドライバ指定は
     全て |nodvidriver| と等価である。}%
   他のDVIウェアにおける動作については
@@ -98,7 +101,8 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   \Note 詳細については\ref{sec:CustomPreset}節を参照。
 \item \Strong{ファイルプリセット指定オプション}%
   （|tl:|\Meta{名前} または |file:|\Meta{名前}%
-  \footnote{旧形式は |+|\Zk\textgt{名前} および |*|\Zk\textgt{名前}}）
+  \footnote{以前の版では |+|\Zk\textgt{名前} %
+  および |*|\Zk\textgt{名前} という形式であった。}）
   名前に対応するファイルプリセット指定を有効にする。
   \Note 詳細については\ref{sec:FilePreset}節を参照。
 \item |use=|\Meta{名前}\Means
@@ -133,7 +137,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item |nootf|\Means
   |otf| の否定。
   \Pkg{japanese-otf}パッケージのフォントは置き換えない。
-  \Note これを指定してかつ\Pkg{japanese-otf}パッケージを
+  \Note |nootf| を指定してかつ\Pkg{japanese-otf}パッケージを
   用いる場合は、\Pkg{japanese-otf}で |noreplace| を
   指定しない限り、標準の和文フォントは変化しない。
 \item |jis2004|／|prefer2004jis|\Means
@@ -144,15 +148,19 @@ OpenTypeフォントをユーザが指定する機能を提供する。
     指定を行う仕様になっている。
     そのため、本パッケージの |jis2004| の対象にはならない。
     ところが0.7h版以前の本パッケージでは、
-    {\upTeX}上の\Pkg{japanese-otf}の和文フォントにも |prefer2004jis| を
+    {\upTeX}上の\Pkg{japanese-otf}の和文フォントにも |jis2004| を
     適用していた。
     これは、昔の\Pkg{japanese-otf}が{\upTeX}上では |jis2004| オプションに
     未対応であったためであり、非公式の暫定仕様であった。
-    現在では、この暫定仕様は廃止されている。}
-  \Note グローバルオプションに |jis2004| を指定すると、
+    現在では、この暫定仕様は廃止されている。
+    特定のフォントが本パッケージと\Pkg{japanese-otf}の
+    どちらの |jis2004| の設定対象であるかを判断するは難しいので、
+    |jis2004| をグローバルオプションに指定することを推奨する。}
+  \Note グローバルオプション（|\documentclass| のオプション）
+  に |jis2004| を指定すると、
   \Pkg{japanese-otf}と\Pkg{pxchfon}の両方に適用される。
 \item |nojis2004|／|noprefer2004jis|（既定）\Means
-  |prefer2004jis| の否定。
+  |jis2004| の否定。
 \item |oneweight|\Means
   \Pkg{japanese-otf}パッケージを単ウェイトで使用する場合に、
   プリセット設定で使われるフォントの集合を{\pTeX}標準と同一にする。
@@ -191,12 +199,15 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item \Strong{Unicode直接指定オプション}\Means
   一部または全部のフォントについて、エンコーディング指定方式を
   “CMap指定”から“Unicode直接指定”に変更する。
-  |nounicode|（既定：CMap設定のまま）、
+  |nodirectunicode|（既定：CMap設定のまま）、
   |directunicode|、|directunicode*|、
   |unicode*|、|unicode| の5種類の指定がある。
   \Note 詳細については\ref{sec:DirectUnicode}節を参照。
   \Note 一部のプリセット指定（|sourcehan|等）は
   Unicode直接指定の既定値を変更する。
+  \Note Unicode直接指定を有効にするオプションを指定しても、
+    置換されて\Strong{いない}ウェイトはUnicode直接指定にならない。
+    （詳しくは\ref{ssec:DirectUnicodeNotice}節の注意を参照。）
 %\item |directunicode|\Means
 %  \Pkg{japanese-otf}パッケージのUnicode出力用フォント（|\UTF{}| の出力）
 %  について、Unicodeを用いてフォントのグリフにアクセスするように
@@ -246,7 +257,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item |nodumpmap|（既定）\Means
   |dumpmap| の否定。
 \item |dumpmaptl|\Means
-  「{\TeX} Liveマップファイルダンプ出力」を有効にする。
+  「{\TeX}~Liveマップファイルダンプ出力」を有効にする。
   すなわち、本パッケージによる設定を再現する
   kanji-config-updmap用のマップファイルのセット
   （|ptex-NAME.map|、|otf-NAME.map|、|uptex-NAME.map|、
@@ -256,10 +267,10 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   \Pkg{japanese-otf}パッケージ用のマップ行は適用されない。
   そのため、通常ダンプ出力はそのようなマップ行は書き出されない。
   これに対して、
-  {\TeX} Live用ダンプ出力は「実際に適用されるか」は無関係で
+  {\TeX}\ Live用ダンプ出力は「実際に適用されるか」は無関係で
   kanji-config-updmapの規則に従うため、
   \Pkg{japanese-otf}パッケージ用のマップが |otf-*.map| に書き出される。
-  \Note |dumpmap| と |dumpmaptl| は排他ではない。
+  \Note |dumpmap| と |dumpmaptl| は排他では\Strong{ない}。
 \item |nodumpmaptl|（既定）\Means
   |dumpmaptl| の否定。
 \item |strictcsi|\Means
@@ -278,9 +289,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
     避けたいので、|dumpmap(tl)| が指定された場合は、
     既定が |strictcsi| に変更される。
 \item |expert|（既定）\Means
-  Unicode直接指定の適用時
-  \footnote{置換されていないウェイトはUnicode直接指定にならない。
-    （\ref{ssec:DirectUnicodeNotice}節の注意を参照。）}%
+  Unicode直接指定が有効な場合
   に\Pkg{japanese-otf}の |expert| オプション
   の機能を（可能な範囲で）エミュレートする。
   \Note \Pkg{japanese-otf}の |expert| が指定されない場合は無意味。
@@ -289,9 +298,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   Unicode直接指定時には\Pkg{japanese-otf}の |expert| は無効になる。
 \item |glyphid|\Means
   GID指定入力（|\gid| 命令）の機能を有効にする。
-  \Note エンジンが{\upTeX}でかつUnicode直接指定
-  \footnote{置換されていないウェイトはUnicode直接指定にならない。
-    （\ref{ssec:DirectUnicodeNotice}節の注意を参照。）}%
+  \Note エンジンが{\upLaTeX}でかつUnicode直接指定
   が有効の場合にのみ利用できる。
 \item |noglyphid|（既定）\Means
   |glyphid| の否定。
@@ -393,7 +400,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \end{verbatim}\end{quote}
 とする使い方が考えられる。
 特に、欧文フォントも置き換えたい場合は3ウェイトが
-全て指定されていないと有効にならないので、
+全て置換されていないと有効にならないので、
 \begin{quote}\small\begin{verbatim}
 \setmediumminchofont{minchoW3.otf}
 \setboldminchofont{minchoW6.otf}
@@ -413,28 +420,28 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item |\setnewglyphcmapprefix{|\Meta{文字列}|}|\Means
   2004JIS用のJISコード系のCMapの名前の接頭辞を指定する。
   そのようなCMapは、{\pTeX}の標準和文フォントについて2004JIS字形を
-  選択（|prefer2004jis| 指定）した時に必要となるが、
+  選択（|jis2004| 指定）した時に必要となるが、
   Adobeが配布しているCMapファイルには該当するものがないので、
   それを適宜用意してそのファイル名をこの命令で指定する必要がある。
   引数に与えるのは最後の1文字（書字方向の「|H|」「|V|」）を除いた
-  部分の文字列である。\par
-  CMap名接頭辞の既定値は「|2004-|」で、これは最近の{\TeX} Liveに
+  部分の文字列である。
+  \Note CMap名接頭辞の既定値は「|2004-|」で、これは最近の{\TeX}~Liveに
   含まれている「|2004-H|」等のCMapファイルを用いることを意味する。%
   \footnote{%
     引数に \texttt{*} を与えた場合は \texttt{JISX0213-2004-} が
     指定されたと見なされる（歴史的理由から）。}
 \item |\usefontmapfile{|\Meta{マップファイル名}|}|\Means
   指定のdvipdfmx用のマップファイルの読込を指示する。
-  pdf{\TeX}の |\pdfmapfile| に相当する機能。
+  \Note pdf{\TeX}の |\pdfmapfile| に相当する機能。
 \item |\usefontmapline{|\Meta{マップ行}|}|\Means
   dvipdfmxのマップ行を直接指定して、その読込を指示する。
-  pdf{\TeX}の |\pdfmapline| に相当する機能。
+  \Note pdf{\TeX}の |\pdfmapline| に相当する機能。
 \item |\diruni|\Means
   現在の和文フォントを“Unicode直接入力”
   （フォントマップを“Unicode直接指定”にした上で
   さらに和文VFをバイパスする）
   の状態に切り替える（宣言型命令）。
-  これにより、実際のフォントがサポートする任意の
+  これにより、実際のフォントに存在する任意の全角幅の
   文字が出力可能となる。
   その代わり、この状態では、約物の周りの空き調整が無効になる。
 %  詳細については\ref{sec:Loading}節の |directunicode| オプションの
@@ -443,8 +450,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   （|unicode|等）が有効であり、
   かつ現在の和文ファミリについてフォントの置き換えが有効に
   なっている必要がある。
-  \Note 全角幅のグリフでないと正常に出力されない。
-  \Note この命令自体は単にシェープを |diruni| という値に変えて
+  \Note この命令自体は単にNFSSのシェープ値を |diruni| という値に変えて
   いるだけであり、このシェープに“Unicode直接入力”のフォントが
   予め設定されているわけである。
 \item |\textdiruni{|\Meta{テキスト}|}|\Means
@@ -469,9 +475,10 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 そこで、{\pTeX}において広く行われている設定をパッケージ内に
 組み込んで、パッケージオプションでそれを呼び出すという機能が
 後になって追加された。
-\footnote{元々は\Pkg{PXjafont}という別のパッケージで
+\footnote{元々は\Pkg{pxjafont}という別のパッケージで
 提供されていた機能であるが、
-0.5版からこのパッケージに組み入れることにした。}
+0.5版からこのパッケージに組み入れることにした。
+詳しくは付録\ref{sec:Pkg-pxjafont}を参照。}
 
 パッケージオプションにプリセット名を指定すると予め決められたフォント
 ファイル名が |\setminchofont| 等の命令で設定される。
@@ -492,7 +499,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 なるので欧文フォントを変更しない場合が多いと考えられるためである。
 
 %-------------------
-\subsection{単ウェイト用の設定}
+\subsection{単ウェイト用のプリセット設定}
 
 後述の「多ウェイト用の設定」で述べられた設定以外で使う場合に使用する。
 
@@ -527,7 +534,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \end{itemize}
 
 %-------------------
-\subsection{多ウェイト用の設定}
+\subsection{多ウェイト用のプリセット設定}
 
 \Pkg{japanese-otf}パッケージの |deluxe| オプション使用時に有効になる。
 明朝3ウェイト、ゴシック3ウェイト、丸ゴシック1ウェイトを設定する。
@@ -671,7 +678,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \end{verbatim}\end{quote}
 
 \item |kozuka-pr6n|\Means
-  小塚フォント（Pr6n版）。
+  小塚フォント（Pr6N版）。
 \begin{quote}\small\begin{verbatim}
 \setminchofont{KozMinPr6N-Regular.otf}      % 小塚明朝 Pr6N R
 \setlightminchofont{KozMinPr6N-Light.otf}   % 小塚明朝 Pr6N L
@@ -767,8 +774,8 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \end{verbatim}\end{quote}
 
 \item |yu-win10|\Means
-  游書体（Windows~10搭載版）。
-  \Note フォントの性質のため、この設定では欧文引用符
+  游書体（Windows~10/11搭載版）。
+  \Note フォントの性質のため、この設定では横組の和文クオート
   “\,”‘\,’の出力が不正になる。
   この不具合は |unicode| オプションを指定する
   ことで解決できる。
@@ -903,7 +910,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \end{itemize}
 
 %-------------------
-\subsection{ptex-fontmaps互換のオプション}
+\subsection{ptex-fontmaps互換のプリセット設定}
 
 \Pkg{ptex-fontmaps}のプリセット名を別名として用意した。
 
@@ -916,11 +923,32 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \end{itemize}
 
 %-------------------
-\subsection{廃止されたオプション}
+\subsection{pxchfon-extrasパッケージ}
+
+本パッケージの方針として、
+「プロプライエタリなフォントを利用するためのプリセット設定」
+は、1.0版以降は追加しないことにしている。
+代わりに、そのようなプリセット設定を提供するために
+別に\Strong{\Pkg{pxchfon-extras}パッケージ}%
+\footnote{\Pkg{pxchfon-extras}パッケージ\Means
+  https://github.com/zr-tex8r/PXchfon-extras}%
+を用意している。
+
+例えば
+「\Pkg{ptex-fontmaps}の |hiragino-highsierra-pron|
+に相当するプリセット」
+は\Pkg{pxchfon-extras}パッケージで提供されているので、
+必要な人は使用を検討してほしい。
+\Note \Pkg{pxchfon-extras}パッケージをインストールするだけで
+\Pkg{pxchfon}で |hiragino-highsierra-pron| 等の追加プリセットが
+使用可能になる。
+
+%-------------------
+\subsection{廃止されたプリセット設定}
 
 以下に挙げるのは、0.5版以降で非推奨となっていたプリセット設定である。
 これらは1.0版において\textgt{廃止}されたため、
-現在は使用するとエラーが発生する。
+現在は指定するとエラーが発生する。
 
 \begin{itemize}
 \item |ipa-otf|\Means
@@ -962,20 +990,20 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 
 \begin{itemize}
 \item |tl:|\Zk\textgt{名前}\Means
-  {\TeX} Live用ファイルプリセット。
+  {\TeX}~Live用ファイルプリセット。
 \item |file:|\Zk\textgt{名前}\Means
   単純ファイルプリセット。
 \end{itemize}
 
 \Note 1.6a版以前では、
-{\TeX} Live用が「|+|\Zk\textgt{名前}」、
+{\TeX}~Live用が「|+|\Zk\textgt{名前}」、
 通常が「|*|\Zk\textgt{名前}」という形式であった。
 これらの古い形式も当面の間はサポートされるが、
 新しい形式の使用を推奨する。
 
-\subsection{{\TeX} Live用ファイルプリセット機能}
+\subsection{{\TeX}~Live用ファイルプリセット機能}
 
-{\TeX} Liveでは{(u)\pLaTeX}のフォントの設定を
+{\TeX}~Liveでは{(u)\pLaTeX}のフォントの設定を
 kanji-config-updmapというユーティリティで行うことができる。
 そこでは、決まった形式のファイル名をもつdvipdfmx用の
 マップファイルを用意していて、ユーザが要求したプリセット名に
@@ -1067,7 +1095,7 @@ kanji-config-updmap用のマップファイルの読込が指示される。
     |NAME.map|を読み込む。
     （単純ファイルプリセットと同じ。）
   \item |tl:NAME| または |tl-ja:NAME|\Means
-    「{\TeX} Live用ファイルプリセット」と同じ規則で決まるファイル群
+    「{\TeX}~Live用ファイルプリセット」と同じ規則で決まるファイル群
     （|ptex-NAME.map|等）を読み込む。
   \item |tl-LL:NAME|（※|LL|は|ko|・|sc|・|tc|の何れか）\Means
     kanji-config-updmap向けの中国語・韓国語用のマップファイルを
@@ -1184,15 +1212,15 @@ Unicode直接指定の有効・無効を切り替えられる。
 \begin{itemize}
 \item |unicode|\Means
   全般的にUnicode直接指定を利用する。
-  最も理想的な設定であるが、\Strong{{\TeX} Live 2018以降のdvipdfmx}%
+  最も理想的な設定であるが、\Strong{{\TeX}~Live 2018以降のdvipdfmx}%
   （20170918版以降）が必要である。
 \item |unicode*|\Means
-  {\TeX} Live 2017のdvipdfmx（20170318版）専用の\Strong{過渡的}な設定。
+  {\TeX}~Live 2017のdvipdfmx（20170318版）専用の\Strong{過渡的}な設定。
   \Note 1.5版以降では\Strong{非推奨}であり、
-  将来的に廃止される予定である。
+  2.0版で\Strong{廃止}される予定である。
 \item |directunicode*|\Means
   全般的にUnicode直接指定を利用するが、
-  古い（{\TeX} Live 2016以前の）dvipdfmxに
+  古い（{\TeX}~Live 2016以前の）dvipdfmxに
   対応するために、OpenType属性の指定を全く行わない。
   つまり、入力のUnicode文字に対する既定のグリフが常に出力され、
   異体字の区別は全て無効になる。
@@ -1210,7 +1238,7 @@ Unicode直接指定の有効・無効を切り替えられる。
 利用するものである。
 そのため、これらのプリセットを指定した場合は、
 自動的に |unicode| が（既定として）指定される%
-\footnote{1.0～1.1b版では{\TeX} Live 2017のための暫定措置として
+\footnote{1.0～1.1b版では{\TeX}~Live 2017のための暫定措置として
 「|+|付の特殊プリセットへの自動振替」が行われていたが、
 1.2版から本来の仕様が適用される。}。
 
@@ -1225,11 +1253,11 @@ Unicode直接指定の有効・無効を切り替えられる。
 
 \paragraph{特殊プリセット指定\<（非推奨）}
 
-以下に挙げるプリセット設定は{\TeX} Live 2017%
+以下に挙げるプリセット設定は{\TeX}~Live 2017%
 （dvipdfmx 20170318版）のために用意された特殊な設定である。
 
 1.5版においてこれらのプリセットは\Strong{非推奨}となった。
-将来的には廃止される予定である。
+2.0版で廃止される予定である。
 そのため、これらのプリセットを利用している場合は、
 \Strong{{\TeX}システムを更新}（dvipdfmxを20170918版以降に）した上で、
 “本来の正しい設定”に移行することを推奨する。
@@ -1313,21 +1341,23 @@ CFJAファミリを和文ファミリの従属欧文フォントに設定する
 現状で、CFJAファミリが対応している欧文エンコーディングは
 OT1、T1、TS1の3つである
 \footnote{1.4版でT1に“暫定対応”し、1.5版でT1とTS1に正式に対応した。}%
-（TS1は事前に\Pkg{textcomp}を読み込んだ場合にのみ有効）。
+。
 このため、欧文フォントの置換
 （\texttt{alphabet}や\texttt{relfont}オプション）
 を利用する文書は、欧文エンコーディングがOT1かT1である必要がある
 \footnote{TS1は記号用のエンコーディングであり、本文の既定の
 エンコーディングとして使うものではない。}。
 
-何れのエンコーディングを用いる場合でも、様々な理由により、利用できる
+様々な理由により、利用できる
 文字の種類が限られている。
+具体的には、以下で挙げられている文字
+（でかつ当該の欧文エンコーディングに含まれるもの）
+が使用可能である。
 \begin{enumerate}
-\item AJ1対応のOpenTypeフォントを指定して、かつ |usecmapforalphabet|
-  オプションを指定した場合、
-  以下の文字（でかつ当該の欧文エンコーディングに含まれるもの）が使える。
+\item 欧文フォント（CFJAファミリ）が“CMap指定”である場合は
+  以下の文字。
   \Note AJ1対応フォント用のプリセット（|kozuka-pr6n| 等）を
-  指定した場合は |usecmapforalphabet| は自動的に有効になる。
+  指定した場合は既定で欧文が“CMap指定”になる。
   \begin{itemize}
   \item[a)] ASCII文字
     \footnote{出力される文字の話であることに注意。
@@ -1342,9 +1372,8 @@ OT1、T1、TS1の3つである
   \item[c)] em-ダッシュ（\textsf{---}）。
     \Note これらはU+2015の全角幅の字形をそのまま全角幅で出力する。
   \end{itemize}
-\item 1以外の場合、
-  以下の文字（でかつ当該の欧文エンコーディングに含まれるもの）が使える。
-  \Note この場合、既定では欧文は |directunicode*| 相当の状態になる。
+\item 欧文フォント（CFJAファミリ）が“Unicode直接指定”である場合は
+  以下の文字。
   \begin{itemize}
   \item 1項のa、b、cの文字はフォントが正しい幅
     （aは\Strong{半角}、bとcは\Strong{全角}）の字形を持っていれば使える。
@@ -1425,7 +1454,7 @@ DVIウェアで処理することができない。
 しかし、「独自部分の欧文フォントを常に特定の代替フォントで表示させる」
 ということは、sfd対応のDVIウェアであれば可能である。
 
-以下に、ttf2pkについて、「常にIPAフォントで代替する」
+以下に、ttf2pkについて、「常にMSフォントで代替する」
 ための設定を掲げておく。
 この記述をttf2pkのマップファイル（ttfonts.map）に加えると、
 例えば、dvioutで本パッケージ使用のDVIファイルを閲覧できるようになる。
@@ -1442,12 +1471,13 @@ r-cfjam-r-@PXcjk0@     msgothic.ttc FontIndex=0
 
 %===========================================================
 \section{pxjafontパッケージ}
+\label{sec:Pkg-pxjafont}
 
 現在の版の\Pkg{pxchfon}パッケージは旧来の\Pkg{pxjafont}の機能を
 取り込んでいるため、\Pkg{pxjafont}は不要である。
 古い環境との互換性のため\Pkg{pxjafont}を残していたが、
-1.0版において\Pkg{pxjafont}の使用を非推奨の扱いとした。
-（2.0版においてに廃止予定。）
+1.0版において\Pkg{pxjafont}の使用を\Strong{非推奨}の扱いとした。
+（2.0版においてに\Strong{廃止}予定。）
 
 \Pkg{pxjafont}を利用しているユーザは、
 \ref{sec:Preset}節を参照して現在の\Pkg{pxchfon}用の

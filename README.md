@@ -39,6 +39,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 1.9b ‹2023/08/18›
+      - (Experimental) Add “jfmsync” feature.
   * Version 1.9a ‹2023/02/22›
       - Bug fix.
   * Version 1.9  ‹2021/05/30›
