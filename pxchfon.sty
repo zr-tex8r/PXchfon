@@ -208,6 +208,7 @@
 \let\pxcz@legacycode\relax
 \let\pxcz@expert\relax
 \newif\ifpxcz@glyphid
+\newif\ifpxcz@autojfmsync
 
 %% process options
 % drivers
@@ -274,6 +275,9 @@
 % (no)glyphid
 \DeclareOption{glyphid}{\pxcz@glyphidtrue}
 \DeclareOption{noglyphid}{\pxcz@glyphidfalse}
+% (no)autojfmsync
+\DeclareOption{autojfmsync}{\pxcz@autojfmsynctrue}
+\DeclareOption{noautojfmsync}{\pxcz@autojfmsyncfalse}
 % preset spec options
 \pxcz@onlypreamble@def\pxcz@all@main@preset{%
   noembed,%
@@ -1557,8 +1561,9 @@
 \DeclareRobustCommand*{\gid}[1]{%
   \begingroup
     \kanjishape{dirgid}\selectfont
-    \kchar#1\relax
+    \kchar#1\pxcz@gid@jfm@sync
   \endgroup}
+\let\pxcz@gid@jfm@sync\relax
 \def\pxcz@hy@gid#1{?}
 \g@addto@macro\pdfstringdefPreHook{%
   \let\gid\pxcz@hy@gid
@@ -2073,6 +2078,39 @@
   \pxcz@dump@spec@to{#2.map}}
 
 \fi
+%--------------------------------------- JFM sync
+
+%%<+> \jfmsync
+\DeclareRobustCommand*{\jfmsync}{%
+  \pxcz@jfm@sync}
+%% \pxcz@jfm@sync
+\let\pxcz@jfm@sync\relax
+
+%%<+> \jfmsyncbox{<width>}{<text>}
+\DeclareRobustCommand*{\jfmsyncbox}[2]{%
+  \makebox[#1][l]{#2\jfmsync}}
+\g@addto@macro\pdfstringdefPreHook{%
+  \let\jfmsyncbox\@secondoftwo}
+
+\ifpxcz@enabled     %---- when using dvipdfmx
+
+\def\pxcz@jfm@sync{%
+  % force to break text stream
+  \special{ps:}}
+
+\ifpxcz@autojfmsync %---- <*autojfmsync>
+% Makes \git/\CID/\UTF do automatically jfmsync
+\let\pxcz@gid@jfm@sync\pxcz@jfm@sync
+\AtBeginDocument{%
+  \ifx\put@character\@undefined\else
+    \g@addto@macro\put@character{\pxcz@jfm@sync}%
+  \fi
+  \ifx\put@character@\@undefined\else
+    \g@addto@macro\put@character@{\pxcz@jfm@sync}%
+  \fi}
+\fi                 %---- </autojfmsync>
+\fi                 %----
+
 %--------------------------------------- preset japanese font mappings
 
 %% \pxcz@declare@preset{<name>}{<text>}
