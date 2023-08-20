@@ -39,6 +39,21 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 2.0  ‹2023/08/28›
+      - Use keyval package.
+      - Now options on direct-Unicode settings are provided as a single
+        key-value option `unicode`. (The old options are also supported.)
+      - New option `(no)fullwidth`.
+        (Experimental option `unicode(*)-fwid` is removed.)
+      - New options `legacycode` and `legacycode-replace`.
+        (Old experimental options on “legacycode” are removed.)
+      - Warn if `(no)alphabet` is omitted without using a preset.
+      - Warn if user commands on multi-weight are used without employing
+        `deluxe` option of japanese-otf package.
+      - New option `maybe-multiweight`.
+      - Abolish command `\asUTF`.
+      - Abolish option `unicode*`.
+      - Abolish pxjafont package.
   * Version 1.9b ‹2023/08/18›
       - (Experimental) Add “jfmsync” feature.
   * Version 1.9a ‹2023/02/22›
