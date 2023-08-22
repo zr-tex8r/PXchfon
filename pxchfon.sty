@@ -311,6 +311,8 @@
 % (no)autojfmsync
 \DeclareOption{autojfmsync}{\pxcz@autojfmsynctrue}
 \DeclareOption{noautojfmsync}{\pxcz@autojfmsyncfalse}
+% maybe-multiweight
+\DeclareOption{maybe-multiweight}{\let\pxchfonMaybeMultiweight=t}
 % use=<spec>
 \define@key{pxchfon}{use}{%
   \pxcz@okfalse
@@ -630,6 +632,9 @@
 
 %--------------------------------------- user interface
 
+%% variables
+\newif\ifpxcz@deluxe@used
+
 %% \pxcz@sym@list
 \def\pxcz@sym@list{%
   mnl,mnr,mnb,gtr,gtb,gtx,gtu,mgr,%
@@ -640,50 +645,52 @@
 %%<*> \setminchofont/\setgothicfont/etc.
 \newcommand*\setminchofont{\pxcz@setfont{mnl,mnr,mnb}}
 \newcommand*\setgothicfont{\pxcz@setfont{gtr,gtb,gtx,gtu}}
-\newcommand*\setlightminchofont{\pxcz@setfont{mnl}}
-\newcommand*\setmediumminchofont{\pxcz@setfont{mnr}}
-\newcommand*\setboldminchofont{\pxcz@setfont{mnb}}
-\newcommand*\setmediumgothicfont{\pxcz@setfont{gtr}}
-\newcommand*\setboldgothicfont{\pxcz@setfont{gtb}}
-\newcommand*\setxboldgothicfont{\pxcz@setfont{gtx}}
-\newcommand*\setoneweightgothicfont{\pxcz@setfont{gtu}}
-\newcommand*\setmarugothicfont{\pxcz@setfont{mgr}}
+\newcommand*\setlightminchofont{\pxcz@setfont@dx{mnl}}
+\newcommand*\setmediumminchofont{\pxcz@setfont@dx{mnr}}
+\newcommand*\setboldminchofont{\pxcz@setfont@dx{mnb}}
+\newcommand*\setmediumgothicfont{\pxcz@setfont@dx{gtr}}
+\newcommand*\setboldgothicfont{\pxcz@setfont@dx{gtb}}
+\newcommand*\setxboldgothicfont{\pxcz@setfont@dx{gtx}}
+\newcommand*\setoneweightgothicfont{\pxcz@setfont@dx{gtu}}
+\newcommand*\setmarugothicfont{\pxcz@setfont@dx{mgr}}
 
 \newcommand*\setkoreanminchofont{\pxcz@setfont{koml,komr,komb}}
 \newcommand*\setkoreangothicfont{\pxcz@setfont{kogr,kogb,kogx,kogu,komgr}}
-\newcommand*\setkoreanlightminchofont{\pxcz@setfont{koml}}
-\newcommand*\setkoreanmediumminchofont{\pxcz@setfont{komr}}
-\newcommand*\setkoreanboldminchofont{\pxcz@setfont{komb}}
-\newcommand*\setkoreanmediumgothicfont{\pxcz@setfont{kogr}}
-\newcommand*\setkoreanboldgothicfont{\pxcz@setfont{kogb}}
-\newcommand*\setkoreanxboldgothicfont{\pxcz@setfont{kogx}}
-\newcommand*\setkoreanoneweightgothicfont{\pxcz@setfont{kogu}}
-\newcommand*\setkoreanmarugothicfont{\pxcz@setfont{komgr}}
+\newcommand*\setkoreanlightminchofont{\pxcz@setfont@dx{koml}}
+\newcommand*\setkoreanmediumminchofont{\pxcz@setfont@dx{komr}}
+\newcommand*\setkoreanboldminchofont{\pxcz@setfont@dx{komb}}
+\newcommand*\setkoreanmediumgothicfont{\pxcz@setfont@dx{kogr}}
+\newcommand*\setkoreanboldgothicfont{\pxcz@setfont@dx{kogb}}
+\newcommand*\setkoreanxboldgothicfont{\pxcz@setfont@dx{kogx}}
+\newcommand*\setkoreanoneweightgothicfont{\pxcz@setfont@dx{kogu}}
+\newcommand*\setkoreanmarugothicfont{\pxcz@setfont@dx{komgr}}
 
 \newcommand*\setschineseminchofont{\pxcz@setfont{scml,scmr,scmb}}
 \newcommand*\setschinesegothicfont{\pxcz@setfont{scgr,scgb,scgx,scgu,scmgr}}
-\newcommand*\setschineselightminchofont{\pxcz@setfont{scml}}
-\newcommand*\setschinesemediumminchofont{\pxcz@setfont{scmr}}
-\newcommand*\setschineseboldminchofont{\pxcz@setfont{scmb}}
-\newcommand*\setschinesemediumgothicfont{\pxcz@setfont{scgr}}
-\newcommand*\setschineseboldgothicfont{\pxcz@setfont{scgb}}
-\newcommand*\setschinesexboldgothicfont{\pxcz@setfont{scgx}}
-\newcommand*\setschineseoneweightgothicfont{\pxcz@setfont{scgu}}
-\newcommand*\setschinesemarugothicfont{\pxcz@setfont{scmgr}}
+\newcommand*\setschineselightminchofont{\pxcz@setfont@dx{scml}}
+\newcommand*\setschinesemediumminchofont{\pxcz@setfont@dx{scmr}}
+\newcommand*\setschineseboldminchofont{\pxcz@setfont@dx{scmb}}
+\newcommand*\setschinesemediumgothicfont{\pxcz@setfont@dx{scgr}}
+\newcommand*\setschineseboldgothicfont{\pxcz@setfont@dx{scgb}}
+\newcommand*\setschinesexboldgothicfont{\pxcz@setfont@dx{scgx}}
+\newcommand*\setschineseoneweightgothicfont{\pxcz@setfont@dx{scgu}}
+\newcommand*\setschinesemarugothicfont{\pxcz@setfont@dx{scmgr}}
 
 \newcommand*\settchineseminchofont{\pxcz@setfont{tcml,tcmr,tcmb}}
 \newcommand*\settchinesegothicfont{\pxcz@setfont{tcgr,tcgb,tcgx,tcgu,tcmgr}}
-\newcommand*\settchineselightminchofont{\pxcz@setfont{tcml}}
-\newcommand*\settchinesemediumminchofont{\pxcz@setfont{tcmr}}
-\newcommand*\settchineseboldminchofont{\pxcz@setfont{tcmb}}
-\newcommand*\settchinesemediumgothicfont{\pxcz@setfont{tcgr}}
-\newcommand*\settchineseboldgothicfont{\pxcz@setfont{tcgb}}
-\newcommand*\settchinesexboldgothicfont{\pxcz@setfont{tcgx}}
-\newcommand*\settchineseoneweightgothicfont{\pxcz@setfont{tcgu}}
-\newcommand*\settchinesemarugothicfont{\pxcz@setfont{tcmgr}}
+\newcommand*\settchineselightminchofont{\pxcz@setfont@dx{tcml}}
+\newcommand*\settchinesemediumminchofont{\pxcz@setfont@dx{tcmr}}
+\newcommand*\settchineseboldminchofont{\pxcz@setfont@dx{tcmb}}
+\newcommand*\settchinesemediumgothicfont{\pxcz@setfont@dx{tcgr}}
+\newcommand*\settchineseboldgothicfont{\pxcz@setfont@dx{tcgb}}
+\newcommand*\settchinesexboldgothicfont{\pxcz@setfont@dx{tcgx}}
+\newcommand*\settchineseoneweightgothicfont{\pxcz@setfont@dx{tcgu}}
+\newcommand*\settchinesemarugothicfont{\pxcz@setfont@dx{tcmgr}}
 
 \pxcz@onlypreamble@def\pxcz@setfont#1{\@ifnextchar[%]
   {\pxcz@setfont@a{#1}}{\pxcz@setfont@a{#1}[0]}}
+\pxcz@onlypreamble@def\pxcz@setfont@dx{%
+  \pxcz@deluxe@usedtrue\pxcz@setfont}
 \pxcz@onlypreamble@def\pxcz@setfont@a#1[#2]#3{%
   \edef\pxcz@tmpa{#3}\pxcz@lower\pxcz@tmpa
   \pxcz@split{?:}{?\pxcz@tmpa}%
@@ -699,6 +706,23 @@
     \@namedef{pxcz@FS/\pxcz@tmpx}{#2}}}
 \@for\pxcz@x:=\pxcz@sym@list\do{%
   \@namedef{pxcz@FS/\pxcz@x}{}}
+
+%%<*> \maybemultiweight
+\newcommand*\maybemultiweight{%
+  \let\pxchfonMaybeMultiweight=t}
+
+% check for usage of multi-weight commands
+\ifx t\pxchfonMaybeMultiweight\else
+  \AtBeginDocument{%
+    \ifpxcz@deluxe@used\ifpxcz@otf@deluxe\else
+      \PackageWarningNoLine\pxcz@pkgname
+       {Setting for multi-weight usage of japanese-otf\MessageBreak
+        font set is employed, but 'deluxe' option\MessageBreak
+        of japanese-otf is not enabled!\MessageBreak
+        You should specify 'maybe-multiweight' option\MessageBreak
+        if you really intend the present setting}
+    \fi\fi}
+\fi
 
 %--------------------------------------- fontmap internals
 
@@ -2254,6 +2278,7 @@
 %% ... and invokes the specified one!
 \if\pxcz@main@preset\relax\else
 \pxcz@use@preset{\pxcz@main@preset}
+\pxcz@deluxe@usedfalse
 \fi
 
 %% load pxufont
