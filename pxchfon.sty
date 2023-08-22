@@ -242,6 +242,9 @@
 \DeclareOption{directunicode*}{\let\pxcz@directunicode\pxcz@directunicode@all}
 \DeclareOption{directunicode}{\let\pxcz@directunicode\pxcz@directunicode@otf}
 \DeclareOption{nodirectunicode}{\let\pxcz@directunicode\pxcz@directunicode@none}
+% (no)fullwidth
+\DeclareOption{fullwidth}{\pxcz@fullwidthtrue}
+\DeclareOption{nofullwidth}{\pxcz@fullwidthfalse}
 % (no)dumpmap
 \DeclareOption{dumpmap}{\pxcz@dumpmaptrue}
 \DeclareOption{nodumpmap}{\pxcz@dumpmapfalse}
@@ -308,17 +311,10 @@
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode}{%
   \let\pxcz@directunicode\pxcz@directunicode@full}
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode*}{%
-  \pxcz@err@ustar@gone{}}
-\pxcz@onlypreamble@csdef{pxcz@POPT/unicode-fwid}{%
-  \pxcz@fullwidthtrue
-  \let\pxcz@directunicode\pxcz@directunicode@full}
-\pxcz@onlypreamble@csdef{pxcz@POPT/unicode*-fwid}{%
-  \pxcz@err@ustar@gone{-fwid}}
-\pxcz@onlypreamble@def\pxcz@err@ustar@gone#1{%
   \PackageError\pxcz@pkgname
-   {Option 'unicode*#1' is ABOLISHED!\MessageBreak
+   {Option 'unicode*' is ABOLISHED!\MessageBreak
     You should update to TL2018 or later and use\MessageBreak
-    option 'unicode#1' instead}%
+    option 'unicode' instead}%
    {This option was to invoke a transitional setting\MessageBreak
     that was specially tailored for TL2017.\MessageBreak
     \@ehc}}
