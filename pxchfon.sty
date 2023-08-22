@@ -187,7 +187,7 @@
 \newif\ifpxcz@everypage
 \newif\ifpxcz@oneweight
 \newif\ifpxcz@fullwidth
-\let\pxcz@directunicode\relax
+\let\pxcz@unicode\relax
 \let\pxcz@main@preset\relax
 \let\pxcz@file@preset\relax
 \newif\ifpxcz@file@preset@tl
@@ -235,13 +235,13 @@
 \DeclareOption{oneweight}{\pxcz@oneweighttrue}
 \DeclareOption{nooneweight}{\pxcz@oneweightfalse}
 % (no)directunicode / directunicode*
-\chardef\pxcz@directunicode@none=0
-\chardef\pxcz@directunicode@otf=1
-\chardef\pxcz@directunicode@all=2
-\chardef\pxcz@directunicode@full=3
-\DeclareOption{directunicode*}{\let\pxcz@directunicode\pxcz@directunicode@all}
-\DeclareOption{directunicode}{\let\pxcz@directunicode\pxcz@directunicode@otf}
-\DeclareOption{nodirectunicode}{\let\pxcz@directunicode\pxcz@directunicode@none}
+\chardef\pxcz@unicode@@false=0
+\chardef\pxcz@unicode@@UTF=1
+\chardef\pxcz@unicode@@simple=2
+\chardef\pxcz@unicode@@full=3
+\DeclareOption{directunicode*}{\let\pxcz@unicode\pxcz@unicode@@simple}
+\DeclareOption{directunicode}{\let\pxcz@unicode\pxcz@unicode@@UTF}
+\DeclareOption{nodirectunicode}{\let\pxcz@unicode\pxcz@unicode@@false}
 % (no)fullwidth
 \DeclareOption{fullwidth}{\pxcz@fullwidthtrue}
 \DeclareOption{nofullwidth}{\pxcz@fullwidthfalse}
@@ -258,14 +258,14 @@
 \DeclareOption{strictcsi}{\let\pxcz@strict@csi=t}
 \DeclareOption{nostrictcsi}{\let\pxcz@strict@csi=f}
 % XXXXX-legacycode
-\chardef\pxcz@legacycode@apply=0
-\chardef\pxcz@legacycode@ignore=1
-\chardef\pxcz@legacycode@suppress=2
-\chardef\pxcz@legacycode@replace=3
-\DeclareOption{apply-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@apply}
-\DeclareOption{ignore-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@ignore}
-\DeclareOption{suppress-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@suppress}
-\DeclareOption{replace-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@replace}
+\chardef\pxcz@legacycode@@apply=0
+\chardef\pxcz@legacycode@@ignore=1
+\chardef\pxcz@legacycode@@suppress=2
+\chardef\pxcz@legacycode@@replace=3
+\DeclareOption{apply-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@@apply}
+\DeclareOption{ignore-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@@ignore}
+\DeclareOption{suppress-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@@suppress}
+\DeclareOption{replace-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@@replace}
 % (no)expert
 \DeclareOption{expert}{\let\pxcz@expert=t}
 \DeclareOption{noexpert}{\let\pxcz@expert=f}
@@ -309,7 +309,7 @@
 % dvipdfmx of version 20170918 or later. The 'unicode-fwid' is a variant.
 % The 'unicode*(-fwid)' option is ABOLISHED.
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode}{%
-  \let\pxcz@directunicode\pxcz@directunicode@full}
+  \let\pxcz@unicode\pxcz@unicode@@full}
 \pxcz@onlypreamble@csdef{pxcz@POPT/unicode*}{%
   \PackageError\pxcz@pkgname
    {Option 'unicode*' is ABOLISHED!\MessageBreak
@@ -370,14 +370,14 @@
 \RequirePackage{atbegshi}
 \fi\fi
 
-%% apply default value for \pxcz@directunicode
-\ifx\pxcz@directunicode\relax
-  \let\pxcz@directunicode\pxcz@directunicode@none
+%% apply default value for \pxcz@unicode
+\ifx\pxcz@unicode\relax
+  \let\pxcz@unicode\pxcz@unicode@@false
   \ifnum\pxcz@pxufont@loaded>0
     \PackageWarningNoLine\pxcz@pkgname
      {Option 'unicode' is enabled, since the package\MessageBreak
       'pxufont' is already loaded}
-    \let\pxcz@directunicode\pxcz@directunicode@full
+    \let\pxcz@unicode\pxcz@unicode@@full
   \fi
   \pxcz@directunicode@defaulttrue
 \fi
@@ -453,7 +453,7 @@
 \endgroup
 \AtBeginDocument{%
   \@tempswatrue
-  \ifnum\pxcz@directunicode<\pxcz@directunicode@full\else
+  \ifnum\pxcz@unicode<\pxcz@unicode@@full\else
     \pxcz@get@dvipdfmx@version
     \ifx\pxcz@dvipdfmx@version\@undefined\else
       \ifnum\pxcz@dvipdfmx@version<20170918
@@ -478,7 +478,7 @@
 \pxcz@onlypreamble@def\pxcz@apply@opt@unicode{%
   \ifpxcz@directunicode@default %  default -> unicode
     \pxcz@warn@unicode
-    \let\pxcz@directunicode\pxcz@directunicode@full
+    \let\pxcz@unicode\pxcz@unicode@@full
   \fi}
 %% \pxcz@warn@unicode
 \pxcz@onlypreamble@def\pxcz@warn@unicode{%
@@ -501,34 +501,34 @@
 \pxcz@do{noto-jp}{\pxcz@apply@opt@unicode}
 \pxcz@custom@apply@opt@unicode
 % No-embed is not supported under the 'unicode' setup
-\ifnum\pxcz@directunicode=\pxcz@directunicode@full
+\ifnum\pxcz@unicode=\pxcz@unicode@@full
   \pxcz@warn@unless@all@embeddedtrue
 \fi
 
 %% apply default for \pxcz@legacycode
 \ifx\pxcz@legacycode\relax
-  \ifnum\pxcz@directunicode=\pxcz@directunicode@full
-    \let\pxcz@legacycode\pxcz@legacycode@replace
-  \else \let\pxcz@legacycode\pxcz@legacycode@apply
+  \ifnum\pxcz@unicode=\pxcz@unicode@@full
+    \let\pxcz@legacycode\pxcz@legacycode@@replace
+  \else \let\pxcz@legacycode\pxcz@legacycode@@apply
   \fi
 \fi
 
 %% 'replace-legacycode' requires the 'pxufont' package
-\ifnum\pxcz@legacycode=\pxcz@legacycode@replace
+\ifnum\pxcz@legacycode=\pxcz@legacycode@@replace
   \ifnum\pxcz@pxufont@avail<1
     \PackageError\pxcz@pkgname
      {The option 'replace-lecacycode' requires the 'pxufont'\MessageBreak
        package, but it is not installed}%
      {The option 'suprress-lecacycode' is applied as fallback.\MessageBreak
       \@ehc}
-    \let\pxcz@legacycode\pxcz@legacycode@suppress
+    \let\pxcz@legacycode\pxcz@legacycode@@suppress
   \fi
 \fi
 
 %% check requirements for 'glyphid'
 \ifpxcz@glyphid
   \pxcz@oktrue
-  \ifnum\pxcz@legacycode=\pxcz@legacycode@replace\else \pxcz@okfalse \fi
+  \ifnum\pxcz@legacycode=\pxcz@legacycode@@replace\else \pxcz@okfalse \fi
   \ifpxcz@uptex\else \pxcz@okfalse \fi
   \ifnum\pxcz@pxufont@avail<2 \pxcz@okfalse \fi
   \ifpxcz@ok\else
@@ -543,8 +543,8 @@
 
 %% check requirements for 'expert'
 \pxcz@oktrue
-\ifnum\pxcz@legacycode=\pxcz@legacycode@replace\else \pxcz@okfalse \fi
-\ifnum\pxcz@directunicode=\pxcz@directunicode@full\else \pxcz@okfalse \fi
+\ifnum\pxcz@legacycode=\pxcz@legacycode@@replace\else \pxcz@okfalse \fi
+\ifnum\pxcz@unicode=\pxcz@unicode@@full\else \pxcz@okfalse \fi
 \ifnum\pxcz@pxufont@avail<2 \pxcz@okfalse \fi
 \ifpxcz@ok\else
   \if t\pxcz@expert % explicitly given
@@ -837,14 +837,14 @@
 %% entry modifiers
 % Uni: Changes cmap to 'unicode' if directunicode.
 \pxcz@declare@entry@modifier{Uni}{%
-  \ifnum\pxcz@directunicode<\pxcz@directunicode@otf\else
+  \ifnum\pxcz@unicode<\pxcz@unicode@@UTF\else
     \ifx\pxcz@font\pxcz@noembed\else
       \let\pxcz@cmap\pxcz@cmap@directuni
     \fi
   \fi}
 % Uni*: Changes cmap to 'unicode' if directunicode*.
 \pxcz@declare@entry@modifier{Uni*}{%
-  \ifnum\pxcz@directunicode<\pxcz@directunicode@all\else
+  \ifnum\pxcz@unicode<\pxcz@unicode@@simple\else
     \ifx\pxcz@font\pxcz@noembed\else
       \let\pxcz@cmap\pxcz@cmap@directuni
     \fi
@@ -867,7 +867,7 @@
 % HWid
 \pxcz@declare@entry@modifier{HWid}{%
   \ifx\pxcz@font\pxcz@noembed \pxcz@okfalse
-  \else\ifnum\pxcz@directunicode=\pxcz@directunicode@full \pxcz@oktrue
+  \else\ifnum\pxcz@unicode=\pxcz@unicode@@full \pxcz@oktrue
   \else\ifpxcz@cmap@alpha \pxcz@okfalse
   \else \pxcz@oktrue
   \fi\fi\fi
@@ -949,7 +949,7 @@
     \global\pxcz@noembed@usedtrue
   \fi
   % apply layout options when using 'unicode'
-  \ifnum\pxcz@directunicode<\pxcz@directunicode@full\else
+  \ifnum\pxcz@unicode<\pxcz@unicode@@full\else
     \ifx\pxcz@cmap\pxcz@cmap@directuni
         \ifpxcz@fullwidth
           \pxcz@split{wid}\pxcz@lopts\ifx\pxcz@pre\relax
@@ -963,8 +963,8 @@
   \fi
   % suppress legacy-code mappings unless 'apply-legacycode'
   \ifx\pxcz@cmap\pxcz@cmap@directuni\else \ifpxcz@retain\else
-    \ifnum\pxcz@legacycode=\pxcz@legacycode@apply % no-op
-    \else\ifnum\pxcz@legacycode=\pxcz@legacycode@ignore
+    \ifnum\pxcz@legacycode=\pxcz@legacycode@@apply % no-op
+    \else\ifnum\pxcz@legacycode=\pxcz@legacycode@@ignore
       \let\pxcz@font\@empty % skip
     \else\ifx\pxcz@font\@empty\else
       \let\pxcz@font\pxcz@kill@mapping % kill
@@ -1319,9 +1319,9 @@
 %% check if \diruni is available
 \ifpxcz@uptex
   \@ifpackageloaded{otf}{% directunicode needs otf
-    \ifnum\pxcz@directunicode>\z@ \pxcz@diruni@oktrue \fi
+    \ifnum\pxcz@unicode>\z@ \pxcz@diruni@oktrue \fi
   }{%else
-    \ifnum\pxcz@directunicode<\pxcz@directunicode@all\else
+    \ifnum\pxcz@unicode<\pxcz@unicode@@simple\else
       \pxcz@diruni@oktrue % directunicode* does not need otf
       \AtBeginDocument{% loading otf later causes inconsistency
         \@ifpackageloaded{otf}{\pxcz@diruni@okfalse}{}}%
@@ -1418,7 +1418,7 @@
 \pxcz@du@decl@shape{hgt}{m}t{otf-ujgr}{n}%
 \pxcz@du@decl@shape{hgt}{bx}f{ssub*hgt/m/diruni}{}%
 \else                 % noreplace
-\ifnum\pxcz@directunicode>\@ne % (directunicode*)
+\ifnum\pxcz@unicode>\@ne % (directunicode*)
 \pxcz@du@decl@shape{mc}{m}t{uprml}{}%
 \pxcz@du@decl@shape{mc}{bx}f{ssub*gt/m/diruni}{}%
 \pxcz@du@decl@shape{gt}{m}t{upgbm}{}%
@@ -1504,7 +1504,7 @@
 \fi                 %---- </diruni-ok>
 
 %% \pxcz@err@diruni
-\ifcase\pxcz@directunicode
+\ifcase\pxcz@unicode
   \def\pxcz@errhelp@diruni{%
     You must use upLaTeX and load pxchfon with 'directunicode(*)' option.}
 \else
@@ -1725,12 +1725,12 @@
   \ifpxcz@uptex\else
     \pxcz@addtospec{STD}%
   \fi
-  \ifnum0\ifnum\pxcz@legacycode=\pxcz@legacycode@replace 1\fi
+  \ifnum0\ifnum\pxcz@legacycode=\pxcz@legacycode@@replace 1\fi
          \ifpxcz@uptex 1\fi >\z@
     \pxcz@addtospec{UPSTD}%
   \fi
   \ifpxcz@otf
-    \ifnum0\ifnum\pxcz@legacycode=\pxcz@legacycode@replace 1\fi
+    \ifnum0\ifnum\pxcz@legacycode=\pxcz@legacycode@@replace 1\fi
            \ifpxcz@uptex 1\fi >\z@
       \pxcz@addtospec{UPOTF}%
     \fi
@@ -2205,7 +2205,7 @@
 %% load pxufont
 \ifx t\pxcz@expert
   \RequirePackage{pxufont-ruby}[]
-\else\ifnum\pxcz@legacycode=\pxcz@legacycode@replace
+\else\ifnum\pxcz@legacycode=\pxcz@legacycode@@replace
   \RequirePackage{pxufont}[]
 \fi\fi
 
