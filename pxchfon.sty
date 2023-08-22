@@ -15,9 +15,13 @@
 
 %--------------------------------------- general
 
+%% packages
+\RequirePackage{keyval}
+
 %% variables
 \newif\ifpxcz@ok
 \newif\ifpxcz@utf
+\let\pxcz@value\relax
 \let\pxcz@pre\relax
 \let\pxcz@post\relax
 
@@ -54,6 +58,29 @@
   \expandafter\pxcz@lower@a#1\pxcz@end#1}
 \def\pxcz@lower@a#1\pxcz@end#2{%
   \lowercase{\def#2{#1}}}
+
+%% \pxcz@setkeys{<text>}{<error>}
+\pxcz@onlypreamble@def\pxcz@setkeys#1#2{%
+  \def\KV@errx##1{#2}%
+  \edef\pxcz@do{\noexpand\setkeys{pxchfon}{#1}}\pxcz@do
+  \let\KV@errx\pxcz@org@KV@errx}
+\let\pxcz@org@KV@errx\KV@errx
+
+%% \pxcz@handle@kvopt{<key>}{<cs-key>}{<value>}{<code>}
+%% \pxcz@handle@bool@kvopt{<key>}{<cs-key>}{<value>}
+\pxcz@onlypreamble@def\pxcz@handle@kvopt{%
+  \pxcz@handle@kvopt@a{@@}}
+\pxcz@onlypreamble@def\pxcz@handle@bool@kvopt#1#2#3{%
+  \pxcz@handle@kvopt@a{}{#1}{#2}{#3}{\pxcz@value}}
+\pxcz@onlypreamble@def\pxcz@handle@kvopt@a#1#2#3#4{%
+  \@nameuse{pxcz@#3@giventrue}%
+  \pxcz@csletcs{pxcz@value}{pxcz@#3#1#4}%
+  \ifx\pxcz@value\relax
+    \PackageError\pxcz@pkgname
+     {Invalid value for option key '#2'\MessageBreak (#4)}%
+    \expandafter\@gobble
+  \else \expandafter\@firstofone
+  \fi}
 
 %% \pxcz@split{<at>}{<target>}
 \def\pxcz@split#1#2{%
@@ -198,8 +225,10 @@
 \newif\ifpxcz@switch@font \pxcz@switch@fonttrue
 \newif\ifpxcz@switch@font@xjis
 \let\pxcz@strict@csi\relax
-\newif\ifpxcz@directunicode@default
+\newif\ifpxcz@unicode@given
 \let\pxcz@legacycode\relax
+\newif\ifpxcz@legacycode@replace
+\newif\ifpxcz@legacycode@replace@given
 \let\pxcz@expert\relax
 \newif\ifpxcz@glyphid
 \newif\ifpxcz@autojfmsync
@@ -234,14 +263,20 @@
 % (no)oneweight
 \DeclareOption{oneweight}{\pxcz@oneweighttrue}
 \DeclareOption{nooneweight}{\pxcz@oneweightfalse}
-% (no)directunicode / directunicode*
+% unicode=<name>
 \chardef\pxcz@unicode@@false=0
 \chardef\pxcz@unicode@@UTF=1
 \chardef\pxcz@unicode@@simple=2
 \chardef\pxcz@unicode@@full=3
-\DeclareOption{directunicode*}{\let\pxcz@unicode\pxcz@unicode@@simple}
-\DeclareOption{directunicode}{\let\pxcz@unicode\pxcz@unicode@@UTF}
-\DeclareOption{nodirectunicode}{\let\pxcz@unicode\pxcz@unicode@@false}
+\chardef\pxcz@unicode@@true=\pxcz@unicode@@full
+\define@key{pxchfon}{unicode}[true]{%
+  \pxcz@handle@kvopt{unicode}{unicode}{#1}{%
+    \let\pxcz@unicode\pxcz@value}}
+\DeclareOption{nounicode}{\setkeys{pxchfon}{unicode=false}}
+% (old options)
+\DeclareOption{directunicode*}{\setkeys{pxchfon}{unicode=simple}}
+\DeclareOption{directunicode}{\setkeys{pxchfon}{unicode=UTF}}
+\DeclareOption{nodirectunicode}{\setkeys{pxchfon}{unicode=false}}
 % (no)fullwidth
 \DeclareOption{fullwidth}{\pxcz@fullwidthtrue}
 \DeclareOption{nofullwidth}{\pxcz@fullwidthfalse}
@@ -257,15 +292,16 @@
 % (no)strictcsi
 \DeclareOption{strictcsi}{\let\pxcz@strict@csi=t}
 \DeclareOption{nostrictcsi}{\let\pxcz@strict@csi=f}
-% XXXXX-legacycode
+% legacycode=<name>
 \chardef\pxcz@legacycode@@apply=0
 \chardef\pxcz@legacycode@@ignore=1
 \chardef\pxcz@legacycode@@suppress=2
-\chardef\pxcz@legacycode@@replace=3
-\DeclareOption{apply-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@@apply}
-\DeclareOption{ignore-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@@ignore}
-\DeclareOption{suppress-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@@suppress}
-\DeclareOption{replace-legacycode}{\let\pxcz@legacycode\pxcz@legacycode@@replace}
+\define@key{pxchfon}{legacycode}{%
+  \pxcz@handle@kvopt{legacycode}{legacycode}{#1}{%
+    \let\pxcz@legacycode\pxcz@value}}
+% legacycode-replace=<bool>
+\define@key{pxchfon}{legacycode-replace}[true]{%
+  \pxcz@handle@bool@kvopt{legacycode-replace}{legacycode@replace}{#1}}
 % (no)expert
 \DeclareOption{expert}{\let\pxcz@expert=t}
 \DeclareOption{noexpert}{\let\pxcz@expert=f}
@@ -275,6 +311,34 @@
 % (no)autojfmsync
 \DeclareOption{autojfmsync}{\pxcz@autojfmsynctrue}
 \DeclareOption{noautojfmsync}{\pxcz@autojfmsyncfalse}
+% use=<spec>
+\define@key{pxchfon}{use}{%
+  \pxcz@okfalse
+  \pxcz@split{:}{#1}\ifx\pxcz@pre\relax
+    \pxcz@handle@use@b{file}{#1}%
+  \else
+    \pxcz@handle@use@a{file}{file}%
+    \pxcz@handle@use@a{tl-ja}{ja}%
+    \pxcz@handle@use@a{tl-ko}{ko}%
+    \pxcz@handle@use@a{tl-sc}{sc}%
+    \pxcz@handle@use@a{tl-tc}{tc}%
+    \pxcz@handle@use@a{tl}{ja}%
+  \fi
+  \ifpxcz@ok\else
+    \PackageError\pxcz@pkgname
+     {The value for option 'use' has an invalid prefix:\MessageBreak
+      ('\pxcz@pre:')}%
+     {\@ehc}%
+  \fi}
+\pxcz@onlypreamble@def\pxcz@handle@use@a#1#2{%
+  \ifpxcz@ok\else
+    \def\pxcz@tmpb{#1}\ifx\pxcz@pre\pxcz@tmpb
+      \pxcz@handle@use@b{#2}{\pxcz@post}%
+  \fi\fi}
+\pxcz@onlypreamble@def\pxcz@handle@use@b#1#2{%
+  \edef\pxcz@use@list{\pxcz@use@list\pxcz@use@do{#1}{#2}}%
+  \pxcz@oktrue}
+
 % preset spec options
 \pxcz@onlypreamble@def\pxcz@all@main@preset{%
   noembed,%
@@ -308,9 +372,7 @@
 % The 'unicode' option means a Unicode-oriented mapping, and requires
 % dvipdfmx of version 20170918 or later. The 'unicode-fwid' is a variant.
 % The 'unicode*(-fwid)' option is ABOLISHED.
-\pxcz@onlypreamble@csdef{pxcz@POPT/unicode}{%
-  \let\pxcz@unicode\pxcz@unicode@@full}
-\pxcz@onlypreamble@csdef{pxcz@POPT/unicode*}{%
+\define@key{pxchfon}{unicode*}[]{%
   \PackageError\pxcz@pkgname
    {Option 'unicode*' is ABOLISHED!\MessageBreak
     You should update to TL2018 or later and use\MessageBreak
@@ -320,9 +382,10 @@
     \@ehc}}
 % general option handler
 \DeclareOption*{%
-  \pxcz@csuse@or{pxcz@POPT/\CurrentOption}{%
-    \pxcz@parse@opt\CurrentOption
-    \ifpxcz@ok\else \@unknownoptionerror \fi}}
+  \pxcz@parse@opt\CurrentOption
+  \ifpxcz@ok\else
+    \pxcz@setkeys{\CurrentOption}{\@unknownoptionerror}%
+  \fi}
 
 %% \pxcz@use@list
 \pxcz@onlypreamble@let\pxcz@use@list\@empty
@@ -331,13 +394,6 @@
 %% \pxcz@parse@opt{<option>}
 \pxcz@onlypreamble@def\pxcz@parse@opt#1{%
   \pxcz@okfalse
-  \pxcz@parse@opt@b{use=file:}{#1}{file}%
-  \pxcz@parse@opt@b{use=tl-ja:}{#1}{ja}%
-  \pxcz@parse@opt@b{use=tl-ko:}{#1}{ko}%
-  \pxcz@parse@opt@b{use=tl-sc:}{#1}{sc}%
-  \pxcz@parse@opt@b{use=tl-tc:}{#1}{tc}%
-  \pxcz@parse@opt@b{use=tl:}{#1}{ja}%
-  \pxcz@parse@opt@b{use=}{#1}{file}%
   \pxcz@parse@opt@a{+}{#1}{\pxcz@file@preset@tltrue}%
   \pxcz@parse@opt@a{*}{#1}{\pxcz@file@preset@tlfalse}%
   \pxcz@parse@opt@a{tl:}{#1}{\pxcz@file@preset@tltrue}%
@@ -348,17 +404,10 @@
       #3\let\pxcz@file@preset\pxcz@post \pxcz@oktrue
     \fi
   \fi}
-\pxcz@onlypreamble@def\pxcz@parse@opt@a#1#2#3{% for file preloads
+\pxcz@onlypreamble@def\pxcz@parse@opt@a#1#2#3{%
   \ifpxcz@ok\else
     \pxcz@split{#1}{#2}\ifx\pxcz@pre\@empty
       #3\let\pxcz@file@preset\pxcz@post \pxcz@oktrue
-    \fi
-  \fi}
-\pxcz@onlypreamble@def\pxcz@parse@opt@b#1#2#3{% for file presets
-  \ifpxcz@ok\else
-    \pxcz@split{#1}{#2}\ifx\pxcz@pre\@empty
-      \edef\pxcz@use@list{\pxcz@use@list\pxcz@use@do{#3}{\pxcz@post}}%
-      \pxcz@oktrue
     \fi
   \fi}
 
@@ -371,7 +420,7 @@
 \fi\fi
 
 %% apply default value for \pxcz@unicode
-\ifx\pxcz@unicode\relax
+\ifpxcz@unicode@given\else
   \let\pxcz@unicode\pxcz@unicode@@false
   \ifnum\pxcz@pxufont@loaded>0
     \PackageWarningNoLine\pxcz@pkgname
@@ -379,7 +428,6 @@
       'pxufont' is already loaded}
     \let\pxcz@unicode\pxcz@unicode@@full
   \fi
-  \pxcz@directunicode@defaulttrue
 \fi
 
 %% set 'pxcz@alpha'
@@ -476,7 +524,7 @@
 %% \pxcz@apply@opt@unicode
 % Forces the 'unicode' setup (unless a directunicode option was given).
 \pxcz@onlypreamble@def\pxcz@apply@opt@unicode{%
-  \ifpxcz@directunicode@default %  default -> unicode
+  \ifpxcz@unicode@given\else % default -> unicode
     \pxcz@warn@unicode
     \let\pxcz@unicode\pxcz@unicode@@full
   \fi}
@@ -505,30 +553,36 @@
   \pxcz@warn@unless@all@embeddedtrue
 \fi
 
+%% apply default for pxcz@legacycode@replace
+\ifpxcz@legacycode@replace@given\else
+  \ifnum\pxcz@unicode=\pxcz@unicode@@full
+    \pxcz@legacycode@replacetrue
+  \fi
+\fi
+
 %% apply default for \pxcz@legacycode
 \ifx\pxcz@legacycode\relax
-  \ifnum\pxcz@unicode=\pxcz@unicode@@full
-    \let\pxcz@legacycode\pxcz@legacycode@@replace
+  \ifpxcz@legacycode@replace
+    \let\pxcz@legacycode\pxcz@legacycode@@suppress
   \else \let\pxcz@legacycode\pxcz@legacycode@@apply
   \fi
 \fi
 
-%% 'replace-legacycode' requires the 'pxufont' package
-\ifnum\pxcz@legacycode=\pxcz@legacycode@@replace
+%% 'lecacycode=replace' requires the 'pxufont' package
+\ifpxcz@legacycode@replace
   \ifnum\pxcz@pxufont@avail<1
     \PackageError\pxcz@pkgname
-     {The option 'replace-lecacycode' requires the 'pxufont'\MessageBreak
+     {The option 'lecacycode-replace' requires the 'pxufont'\MessageBreak
        package, but it is not installed}%
-     {The option 'suprress-lecacycode' is applied as fallback.\MessageBreak
-      \@ehc}
-    \let\pxcz@legacycode\pxcz@legacycode@@suppress
+     {\@ehc}
+    \pxcz@legacycode@replacefalse
   \fi
 \fi
 
 %% check requirements for 'glyphid'
 \ifpxcz@glyphid
   \pxcz@oktrue
-  \ifnum\pxcz@legacycode=\pxcz@legacycode@@replace\else \pxcz@okfalse \fi
+  \ifpxcz@legacycode@replace\else \pxcz@okfalse \fi
   \ifpxcz@uptex\else \pxcz@okfalse \fi
   \ifnum\pxcz@pxufont@avail<2 \pxcz@okfalse \fi
   \ifpxcz@ok\else
@@ -543,7 +597,7 @@
 
 %% check requirements for 'expert'
 \pxcz@oktrue
-\ifnum\pxcz@legacycode=\pxcz@legacycode@@replace\else \pxcz@okfalse \fi
+\ifpxcz@legacycode@replace\else \pxcz@okfalse \fi
 \ifnum\pxcz@unicode=\pxcz@unicode@@full\else \pxcz@okfalse \fi
 \ifnum\pxcz@pxufont@avail<2 \pxcz@okfalse \fi
 \ifpxcz@ok\else
@@ -1725,12 +1779,12 @@
   \ifpxcz@uptex\else
     \pxcz@addtospec{STD}%
   \fi
-  \ifnum0\ifnum\pxcz@legacycode=\pxcz@legacycode@@replace 1\fi
+  \ifnum0\ifpxcz@legacycode@replace 1\fi
          \ifpxcz@uptex 1\fi >\z@
     \pxcz@addtospec{UPSTD}%
   \fi
   \ifpxcz@otf
-    \ifnum0\ifnum\pxcz@legacycode=\pxcz@legacycode@@replace 1\fi
+    \ifnum0\ifpxcz@legacycode@replace 1\fi
            \ifpxcz@uptex 1\fi >\z@
       \pxcz@addtospec{UPOTF}%
     \fi
@@ -2205,7 +2259,7 @@
 %% load pxufont
 \ifx t\pxcz@expert
   \RequirePackage{pxufont-ruby}[]
-\else\ifnum\pxcz@legacycode=\pxcz@legacycode@@replace
+\else\ifpxcz@legacycode@replace
   \RequirePackage{pxufont}[]
 \fi\fi
 
