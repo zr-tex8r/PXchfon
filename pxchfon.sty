@@ -457,6 +457,15 @@
 %% dispatch
 \ProcessOptions*
 
+%% adjust \pxcz@pxufont@avail
+\ifpxcz@enabled\else
+  % pxufont-ruby (virtually) requires dvipdfmx.
+  % (But if it is already loaded, it cannot be helped.)
+  \ifnum\pxcz@pxufont@avail=2 \ifnum\pxcz@pxufont@loaded<2
+    \chardef\pxcz@pxufont@avail=1
+  \fi\fi
+\fi
+
 %% 'everypage' needs 'atbegshi' package
 \ifpxcz@everypage \ifpxcz@old@hook@system
 \RequirePackage{atbegshi}
@@ -609,6 +618,7 @@
 %% check requirements for 'glyphid'
 \ifnum\pxcz@glyphid>0
   \pxcz@oktrue
+  \ifpxcz@enabled\else \pxcz@okfalse \fi
   \ifpxcz@legacycode@replace\else \pxcz@okfalse \fi
   \ifnum\pxcz@unicode<\pxcz@unicode@@simple \pxcz@okfalse \fi
   \ifpxcz@uptex\else \pxcz@okfalse \fi
