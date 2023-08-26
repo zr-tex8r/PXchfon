@@ -127,9 +127,25 @@
    {Working in Lite mode\@gobble}%
   \pxcz@lite@modetrue}
 
+%% \ifpxcz@otf@loaded
 %% \ifpxcz@otf@deluxe
+%% \pxcz@otf@weight: otf weight mode
+\newif\ifpxcz@otf@loaded \pxcz@otf@loadedtrue
 \newif\ifpxcz@otf@deluxe \pxcz@otf@deluxefalse
-\@ifpackagewith{otf}{deluxe}{\pxcz@otf@deluxetrue}{}
+% watch out for priority...
+\@ifpackagewith{otf}{deluxe}{%
+  \pxcz@otf@deluxetrue \let\pxcz@otf@weight=d
+}{\@ifpackagewith{otf}{bold}{%
+  \let\pxcz@otf@weight=b
+}{\@ifpackagewith{otf}{expert}{%
+  \let\pxcz@otf@weight=r % 'expert' cancels 'noreplace'
+}{\@ifpackagewith{otf}{noreplace}{%
+  \let\pxcz@otf@weight=n
+}{\@ifpackageloaded{otf}{%
+  \let\pxcz@otf@weight=r
+}{%else
+  \pxcz@otf@loadedfalse \let\pxcz@otf@weight=n
+}}}}}
 
 %% \ifpxcz@otf@multi
 \newif\ifpxcz@otf@multi \pxcz@otf@multifalse
@@ -138,6 +154,21 @@
 %% \ifpxcz@otf@expert
 \newif\ifpxcz@otf@expert \pxcz@otf@expertfalse
 \@ifpackagewith{otf}{expert}{\pxcz@otf@experttrue}{}
+
+%% \ifpxcz@otf@mmivjis: 'jis2004' of otf is used?
+\newif\ifpxcz@otf@mmivjis \pxcz@otf@mmivjisfalse
+\@ifpackagewith{otf}{jis2004}{\pxcz@otf@mmivjistrue}{}
+
+%% \pxcz@jascale
+\ifpxcz@uptex % do not consider JFM scale
+  \let\pxcz@jascale\utf@sc@le
+  \ifx\pxcz@jascale\@undefined
+    \let\pxcz@jascale\Cjascale
+  \fi
+  \ifx\pxcz@jascale\@undefined
+    \edef\pxcz@jascale{\ifx\jsc@JYn\@undefined 0.962216\else 0.924715\fi}%
+  \fi
+\fi
 
 %% \pxcz@pxufont@avail
 \IfFileExists{pxufont-ruby.sty}{\chardef\pxcz@pxufont@avail=2 }{%
@@ -156,6 +187,11 @@
 %% \ifpxcz@old@hook@system
 \newif\ifpxcz@old@hook@system
 \@ifl@t@r\fmtversion{2020/10/01}{}{\pxcz@old@hook@systemtrue}
+
+%% \pxcz@hy@disable@commands{<code>}
+\pxcz@onlypreamble@def\pxcz@hy@disable@commands{%
+  \providecommand*\pdfstringdefPreHook{}%
+  \g@addto@macro\pdfstringdefPreHook}
 
 %--------------------------------------- custom presets
 
@@ -1381,35 +1417,34 @@
 
 %% variables
 \newif\ifpxcz@diruni@ok
-\let\pxcz@otf@weight\relax
 
 %% check if \diruni is available
 \ifpxcz@uptex
-  \@ifpackageloaded{otf}{% directunicode needs otf
+  \ifpxcz@otf@loaded % direct Unicode needs otf
     \ifnum\pxcz@unicode>\z@ \pxcz@diruni@oktrue \fi
-  }{%else
+  \else
     \ifnum\pxcz@unicode<\pxcz@unicode@@simple\else
-      \pxcz@diruni@oktrue % directunicode* does not need otf
+      \pxcz@diruni@oktrue % 'unicode=UTF' does not need otf
       \AtBeginDocument{% loading otf later causes inconsistency
         \@ifpackageloaded{otf}{\pxcz@diruni@okfalse}{}}%
     \fi
-  }
+  \fi
 \fi
 
 %%<*> \diruni
-\@ifdefinable{\diruni}{%
-  \DeclareRobustCommand*{\diruni}{%
+\newcommand*{\diruni}{\pxcz@diruni}
+\DeclareRobustCommand*{\pxcz@diruni}{%
     \not@math@alphabet\diruni\relax
     \ifx\cy@encoding\pxcz@JYn % if in standard Japanese encoding
       \expandafter\let\csname UTF \endcsname\pxcz@du@UTF
       \kanjishape{diruni}\selectfont
     \fi
-  }}
+}
 
 %%<*> \textdiruni{<text>}
 \@ifdefinable{\textdiruni}{%
   \DeclareRobustCommand*{\textdiruni}[1]{%
-    \relax\ifmmode\hbox\fi{\diruni#1}%
+    \relax\ifmmode\hbox\fi{\pxcz@diruni#1}%
   }}
 
 %% \pxcz@du@UTF
@@ -1417,43 +1452,26 @@
   \kchar"#1\relax}
 
 %% redefinition in PDF-strings
-\providecommand*\pdfstringdefPreHook{}
-\g@addto@macro\pdfstringdefPreHook{%
-  \let\diruni\@empty
+\pxcz@hy@disable@commands{%
+  \let\pxcz@diruni\@empty
   \let\textdiruni\@firstofone
 }
 
-\ifpxcz@diruni@ok   %---- <*diruni-ok>
+%% \pxcz@err@diruni
+\def\pxcz@err@diruni{%
+  \global\let\pxcz@diruni\relax
+  \PackageError\pxcz@pkgname
+   {Command '\string\(text)diruni' not available}%
+   {You must use upLaTeX and load pxchfon
+    \ifcase\pxcz@unicode with 'unicode' option%
+    \else pxchfon after 'otf' package%
+    \fi .\MessageBreak\@ehc}}
+\AtBeginDocument{%
+  \ifpxcz@diruni@ok \let\pxcz@err@diruni\relax
+  \else \let\pxcz@diruni\pxcz@err@diruni
+  \fi}
 
-%% \pxcz@otf@weight: otf weight mode
-% watch out for priority...
-\@ifpackagewith{otf}{deluxe}{%
-  \let\pxcz@otf@weight=d
-}{\@ifpackagewith{otf}{bold}{%
-  \let\pxcz@otf@weight=b
-}{\@ifpackagewith{otf}{expert}{%
-  \let\pxcz@otf@weight=r % 'expert' cancels 'noreplace'
-}{\@ifpackagewith{otf}{noreplace}{%
-  \let\pxcz@otf@weight=n
-}{\@ifpackageloaded{otf}{%
-  \let\pxcz@otf@weight=r
-}{%else
-  \let\pxcz@otf@weight=n
-}}}}}
-%% \pxcz@otf@mmivjis: otf jis2004
-\@ifpackagewith{otf}{jis2004}{%
-  \let\pxcz@otf@mmivjis=t%
-}{%else
-  \let\pxcz@otf@mmivjis=f%
-}
-%% \pxcz@du@scale
-\let\pxcz@du@scale\utf@sc@le
-\ifx\pxcz@du@scale\@undefined
-  \let\pxcz@du@scale\Cjascale
-\fi
-\ifx\pxcz@du@scale\@undefined
-  \edef\pxcz@du@scale{\ifx\jsc@JYn\@undefined 0.962216\else 0.924715\fi}%
-\fi
+\ifpxcz@diruni@ok   %---- <*diruni-ok>
 
 %% \pxcz@du@decl@shape{<fam>}{<ser>}<sw>{<tfmname>}{<suffix>}
 \pxcz@onlypreamble@def\pxcz@du@decl@shape#1#2#3#4#5{%
@@ -1463,7 +1481,7 @@
     \pxcz@du@shape@spec{#3}{#4}{#5}{v}}{}}
 \pxcz@onlypreamble@def\pxcz@du@shape@spec#1#2#3#4{%
   \if#1t%
-    s*[\pxcz@du@scale]#2\if t\pxcz@otf@mmivjis#3\fi-#4%
+    s*[\pxcz@jascale]#2\ifpxcz@otf@mmivjis#3\fi-#4%
   \else#2\fi}
 
 \if d\pxcz@otf@weight % deluxe
@@ -1526,7 +1544,7 @@
   \endgroup}
 \let\pxcz@gid@jfm@sync\relax
 \def\pxcz@hy@gid#1{?}
-\g@addto@macro\pdfstringdefPreHook{%
+\pxcz@hy@disable@commands{%
   \let\gid\pxcz@hy@gid
 }
 
@@ -1538,7 +1556,7 @@
     \pxcz@dg@shape@spec{#3}{#4}{v}}{}}
 \pxcz@onlypreamble@def\pxcz@dg@shape@spec#1#2#3{%
   \if#1t%
-    s*[\pxcz@du@scale]#2-#3%
+    s*[\pxcz@jascale]#2-#3%
   \else#2\fi}
 
 \if d\pxcz@otf@weight % deluxe
@@ -1569,27 +1587,6 @@
 \fi                 %---- </glyphid>
 
 \fi                 %---- </diruni-ok>
-
-%% \pxcz@err@diruni
-\ifcase\pxcz@unicode
-  \def\pxcz@errhelp@diruni{%
-    You must use upLaTeX and load pxchfon with 'directunicode(*)' option.}
-\else
-  \def\pxcz@errhelp@diruni{%
-    You must use upLaTeX and load pxchfon after 'otf' package.}
-\fi
-\def\pxcz@err@diruni{%
-  \PackageError\pxcz@pkgname
-   {Command '\string\diruni' not available}%
-   {\pxcz@errhelp@diruni\MessageBreak\@ehc}%
-  \global\let\pxcz@err@diruni\relax}
-\AtBeginDocument{%
-  \ifpxcz@diruni@ok
-    \let\pxcz@err@diruni\relax
-    \let\pxcz@errhelp@diruni\relax
-  \else
-    \let\diruni\pxcz@err@diruni
-  \fi}
 
 %--------------------------------------- 'alphabet' option
 
@@ -2045,7 +2042,7 @@
 %%<+> \jfmsyncbox{<width>}{<text>}
 \DeclareRobustCommand*{\jfmsyncbox}[2]{%
   \makebox[#1][l]{#2\jfmsync}}
-\g@addto@macro\pdfstringdefPreHook{%
+\pxcz@hy@disable@commands{%
   \let\jfmsyncbox\@secondoftwo}
 
 \ifpxcz@enabled     %---- when using dvipdfmx
