@@ -271,7 +271,7 @@
 \newif\ifpxcz@legacycode@replace
 \newif\ifpxcz@legacycode@replace@given
 \let\pxcz@expert\relax
-\newif\ifpxcz@glyphid
+\chardef\pxcz@glyphid\z@
 \newif\ifpxcz@autojfmsync
 
 %% process options
@@ -347,8 +347,8 @@
 \DeclareOption{expert}{\let\pxcz@expert=t}
 \DeclareOption{noexpert}{\let\pxcz@expert=f}
 % (no)glyphid
-\DeclareOption{glyphid}{\pxcz@glyphidtrue}
-\DeclareOption{noglyphid}{\pxcz@glyphidfalse}
+\DeclareOption{glyphid}{\chardef\pxcz@glyphid=2 }
+\DeclareOption{noglyphid}{\chardef\pxcz@glyphid=0 }
 % (no)autojfmsync
 \DeclareOption{autojfmsync}{\pxcz@autojfmsynctrue}
 \DeclareOption{noautojfmsync}{\pxcz@autojfmsyncfalse}
@@ -607,18 +607,18 @@
 \fi
 
 %% check requirements for 'glyphid'
-\ifpxcz@glyphid
+\ifnum\pxcz@glyphid>0
   \pxcz@oktrue
   \ifpxcz@legacycode@replace\else \pxcz@okfalse \fi
+  \ifnum\pxcz@unicode<\pxcz@unicode@@simple \pxcz@okfalse \fi
   \ifpxcz@uptex\else \pxcz@okfalse \fi
   \ifnum\pxcz@pxufont@avail<2 \pxcz@okfalse \fi
   \ifpxcz@ok\else
-    \PackageError\pxcz@pkgname
-     {The option 'glyphid' cannot be used here. You must\MessageBreak
+    \PackageWarningNoLine\pxcz@pkgname
+     {The option 'glyphid' will not work. You must\MessageBreak
       use upLaTeX and the 'unicode' option, and package\MessageBreak
       'pxufont' of v0.5 or later must be installed}
-     {\@ehc}
-    \pxcz@glyphidfalse
+    \chardef\pxcz@glyphid=1 % fallback mode
   \fi
 \fi
 
@@ -1534,19 +1534,33 @@
   \endgroup
 }
 
-\ifpxcz@glyphid     %---- <*glyphid>
+\fi                 %---- </diruni-ok>
+
+%--------------------------------------- 'glyphid'
+
+%% \pxcz@geta
+\chardef\pxcz@geta=\jis"222E\relax
+
+\ifnum\pxcz@glyphid=2 %---- <*glyphid>
+
+%% check integrity
+\ifpxcz@otf@loaded\else
+  \AtBeginDocument{% loading otf later causes inconsistency
+    \@ifpackageloaded{otf}{%
+      \PackageWarningNoLine\pxcz@pkgname
+       {The option 'glyphid' will not work. You must\MessageBreak
+        load pxchfon after 'otf' package}%
+    \def\gid{\pxcz@gid@fb}}{}}
+\fi
 
 %%<*> \gid{<number>}
-\DeclareRobustCommand*{\gid}[1]{%
+\newcommand*{\gid}{\pxcz@gid}
+\DeclareRobustCommand*{\pxcz@gid}[1]{%
   \begingroup
     \kanjishape{dirgid}\selectfont
     \kchar#1\pxcz@gid@jfm@sync
   \endgroup}
 \let\pxcz@gid@jfm@sync\relax
-\def\pxcz@hy@gid#1{?}
-\pxcz@hy@disable@commands{%
-  \let\gid\pxcz@hy@gid
-}
 
 %% \pxcz@dg@decl@shape{<fam>}{<ser>}<sw>{<tfmname>}
 \pxcz@onlypreamble@def\pxcz@dg@decl@shape#1#2#3#4{%
@@ -1586,7 +1600,19 @@
 
 \fi                 %---- </glyphid>
 
-\fi                 %---- </diruni-ok>
+\ifnum\pxcz@glyphid>0
+  %% \pxcz@gid@fb
+  \providecommand*{\gid}{\pxcz@gid@fb}
+  \DeclareRobustCommand*{\pxcz@gid@fb}[1]{%
+    \begingroup \kchar\pxcz@geta \endgroup}
+
+  % redefinition in PDF-strings
+  \begingroup \kansujichar1=\pxcz@geta \kcatcode\pxcz@geta=18
+    \xdef\pxcz@hy@gid#1{\kansuji1}
+  \endgroup
+  \pxcz@hy@disable@commands{%
+    \let\gid\pxcz@hy@gid}
+\fi
 
 %--------------------------------------- 'alphabet' option
 
@@ -1800,7 +1826,7 @@
     \fi
     \pxcz@addtospec{OTF}%
   \fi
-  \ifpxcz@glyphid \pxcz@addtospec{GID}%
+  \ifnum\pxcz@glyphid=2 \pxcz@addtospec{GID}%
   \fi
   \ifx t\pxcz@expert \pxcz@addtospec{EXPERT}%
   \fi
