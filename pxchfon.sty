@@ -120,6 +120,13 @@
 \edef\pxcz@JYn{%
   \ifpxcz@uptex JY2\else JY1\fi}
 
+%% \ifpxcz@lite@mode
+\newif\ifpxcz@lite@mode
+\IfFileExists{pxchfon0.def}{}{%else
+  \PackageInfo\pxcz@pkgname
+   {Working in Lite mode\@gobble}%
+  \pxcz@lite@modetrue}
+
 %% \ifpxcz@otf@deluxe
 \newif\ifpxcz@otf@deluxe \pxcz@otf@deluxefalse
 \@ifpackagewith{otf}{deluxe}{\pxcz@otf@deluxetrue}{}
@@ -207,7 +214,7 @@
 
 %% variables
 \newif\ifpxcz@enabled \pxcz@enabledtrue
-\let\pxcz@alphabet=n
+\let\pxcz@alphabet\relax
 \newif\ifpxcz@otf \pxcz@otftrue
 \newif\ifpxcz@cmap@alpha
 \newif\ifpxcz@mmivjis
@@ -218,8 +225,6 @@
 \let\pxcz@main@preset\relax
 \let\pxcz@file@preset\relax
 \newif\ifpxcz@file@preset@tl
-\newif\ifpxcz@alpha
-\newif\ifpxcz@rel
 \newif\ifpxcz@dumpmap
 \newif\ifpxcz@dumpmap@tl
 \newif\ifpxcz@switch@font \pxcz@switch@fonttrue
@@ -433,43 +438,27 @@
 \fi
 
 %% set 'pxcz@alpha'
-\@tempswafalse
-\if\pxcz@main@preset\relax
-  \if\pxcz@file@preset\relax \@tempswatrue \fi
-\fi
-\if      t\pxcz@alphabet \pxcz@alphatrue
-\else\if f\pxcz@alphabet \pxcz@alphafalse
-\else\if r\pxcz@alphabet \pxcz@alphafalse
-\else\if@tempswa \pxcz@alphatrue
-\else  \pxcz@alphafalse
-\fi\fi\fi\fi
-\ifpxcz@alpha
-  \IfFileExists{pxchfon0.def}{}{%else
-    \PackageError\pxcz@pkgname
-     {Option 'alphabet' not available in Lite edition}%
-     {You must install full edition of PXchfon bundle, or specify
-      'noalphabet'\MessageBreak as package option.}%
-  \pxcz@alphafalse}
-\fi
-
-%% set 'pxcz@rel'
-\if r\pxcz@alphabet \pxcz@reltrue
-\else \pxcz@relfalse
-\fi
-\ifpxcz@rel
-  \IfFileExists{pxchfon0.def}{}{%else
-    \PackageError\pxcz@pkgname
-     {Option 'relfont' not available in Lite edition}%
-     {You must install full edition of PXchfon bundle.}%
-  \pxcz@relfalse}
+%% apply default value for \pxcz@alphabet
+\if\pxcz@alphabet\relax
+  \ifx\pxcz@main@preset\relax \ifx\pxcz@file@preset\relax
+    % TODO: warn
+    \let\pxcz@alphabet=t
+  \fi\fi
+  \if\pxcz@alphabet\relax
+    \let\pxcz@alphabet=f
+  \fi
 \fi
 
 %% \ifpxcz@alphafont
 % Whether or not alphabet fonts are used.
 \newif\ifpxcz@alphafont
-\ifpxcz@alpha \pxcz@alphafonttrue
-\else\ifpxcz@rel \pxcz@alphafonttrue
-\else \pxcz@alphafontfalse
+\if f\pxcz@alphabet \else \pxcz@alphafonttrue \fi
+\ifpxcz@alphafont\ifpxcz@lite@mode
+  \PackageError\pxcz@pkgname
+   {Font settings for alphabetic logical fonts\MessageBreak
+    are not supported in Lite edition}%
+   {You must install full edition of PXchfon bundle.}%
+  \pxcz@alphafontfalse \let\pxcz@alphabet=f
 \fi\fi
 
 %% apply default for \pxcz@strict@csi
@@ -1759,7 +1748,7 @@
   \ifx t\pxcz@strict@csi
     \pxcz@inspect@flavor@all
   \fi
-  \ifpxcz@alpha % 'alphabet'
+  \if t\pxcz@alphabet % 'alphabet'
     \pxcz@check@alldefined{mnl,mnr,mnb}\ifpxcz@ok
       \renewcommand\rmdefault{cfjar}%
       \pxcz@set@bfdefault@to@bx{rm}%
@@ -1787,7 +1776,7 @@
     \normalfont
     \pxcz@addtospec{ALPHA}%
   \fi
-  \ifpxcz@rel % 'relfont'
+  \if r\pxcz@alphabet % 'relfont'
     \edef\pxcz@afont@enc{\encodingdefault}%
     \pxcz@check@afont@enc
     \pxcz@check@alldefined{mnl,mnr,mnb}%
