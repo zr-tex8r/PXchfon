@@ -1,4 +1,14 @@
-% pxchfon0.def
+%%
+%% This is file 'pxchfon0.def'.
+%%
+%% Copyright (c) 2009-2024 Takayuki YATO (aka. "ZR")
+%%   GitHub:   https://github.com/zr-tex8r
+%%   Twitter:  @zr_tex8r
+%%
+%% This package is distributed under the MIT License.
+%%
+
 % This file does nothing; it exists for check for full installation.
 \relax
-% EOF
+
+%% EOF

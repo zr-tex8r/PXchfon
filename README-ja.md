@@ -57,6 +57,16 @@ MITライセンスの下で配布される。
 更新履歴
 --------
 
+  * Version 2.1  ‹2023/08/11›
+      - `\pxchfonsetup` 命令を追加。
+      - `maybe-multiweight` 指定時は japanese-otf 用のマップ行を必ず
+        出力する。
+      - 開発者用フラグ `\pxchfonNoCheckMultiweight` を追加。  
+        ※試験的機能の `\pxchfonMaybeMultiweight` は非推奨。
+      - オプション `nocheck-expert` を追加。
+      - オプション `resetdvidriver` を追加。
+      - プリセット非指定時の `(no)alphabet` の省略に対して警告を出す。
+      - エラー・警告メッセージの改善。
   * Version 2.0  ‹2023/08/28›
       - keyval パッケージを使用する。
       - Unicode 直接指定のオプションを key-value 形式の `unicode` キーに

@@ -1,6 +1,7 @@
-% 文字コードはUTF-8 (platex -kanji=utf8)
+% pLaTeX文書; UTF-8 (platex -kanji=utf8)
+% This file is in public domain.
 \documentclass[a4paper]{jsarticle}
-\usepackage{pxchfon}
+\usepackage[alphabet]{pxchfon}% 欧文にも適用
 \setminchofont[0]{hgrgy.ttc}  % HG行書体
 \setgothicfont[0]{hgrpp1.ttc} % HG創英角ポップ体
 \usepackage{otf}
@@ -12,7 +13,7 @@
 \begin{document}
 \title{pxchfon パッケージ}
 \author{ZR}
-\date{2009 年 3 月 29 日}
+\date{2024 年 8 月 8 日}
 \maketitle
 
 \section{はじめに}
@@ -36,20 +37,18 @@
 \item 一度インストールすると、それだけで任意の日本語フォントに
   適用できる。
   \begin{enumerate}
-  \item しかも和文のみを置き換える場合なら、インストールも簡単。
   \item 置き換えるフォントは、{\LaTeX} 文書内でファイル名で
     指定する。
+  \item とても簡単。
   \end{enumerate}
 \item ただし、等幅のフォントしか利用できない。
   \begin{enumerate}
   \item 欧文も等幅（半角）になってしまう。
-  \item しかもアクセント付文字・非英語文字（
-    {\fontfamily{cmr}\selectfont \'e, \ss} 等）が使えない。
-  \item 残念。
+  \item とても残念。
   \end{enumerate}
 \item dvipdfmx 専用。
   \begin{enumerate}
-  \item 非常に残念。
+  \item チョット残念。
   \end{enumerate}
 \end{enumerate}
 

@@ -16,8 +16,8 @@
 \bxtexlogoimport{*,logo-e}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.0}
-\newcommand{\PkgDate}{2023/08/28}
+\newcommand{\PkgVersion}{2.1}
+\newcommand{\PkgDate}{2024/08/11}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -88,9 +88,10 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 
 \begin{itemize}
 \item \Strong{ドライバオプション}\Means
-  |dvipdfmx|、|dvips|、|dviout|、|xdvi| および |nodvidriver|%
-  （ドライバ依存動作の無効化を明示的に指示）
+  |dvipdfmx|、|dvips|、|dviout|、|xdvi| %
   が指定できる。
+  \footnote{「上級者向け」の一覧にある |nodvidriver|
+    と |resetdvidriver| もドライバオプションの一種である。}%
   ただし、本パッケージの主要機能である
   「フォントマップの文書内での指定」
   がサポートされるのは\Strong{dvipdfmxのみ}である。
@@ -144,7 +145,8 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   今でもこの動作は維持されているが、
   2.0版以降はこの既定設定を利用することは\Strong{非推奨}%
   \footnote{プリセット指定オプションの有無により既定が変わる仕様は
-    好ましくないため。}%
+    好ましくないため。
+    2.1版以降では警告が出る。}%
   となり、プリセット不使用の場合は
   3つのオプションの何れかを指定することが推奨される。
 \item |otf|（既定）\Means
@@ -194,6 +196,12 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 
 \paragraph{上級者向けオプション}
 \begin{itemize}
+\item |nodvidriver|\Means
+  特殊なドライバオプションで、
+  ドライバ依存動作の無効化を明示的に指示する。
+\item |resetdvidriver|\Means
+  |nodvidriver| の否定。
+  \Note ドライバ指定は既定値である |dvipdfmx| に戻る。
 \item |relfont|\Means
   指定された和文フォントの英数字部分を（{\pLaTeX}の標準機能である）
   \Strong{従属欧文フォント}として設定する。
@@ -281,7 +289,7 @@ OpenTypeフォントをユーザが指定する機能を提供する。
   Unicode直接指定が有効である場合に、
   全角幅のグリフを優先させる。
   \Note 全角幅想定の文字が使える可能性が増えるという利点がある一方で、
-  半角幅想定の文字が使える可能性が減るという欠点もある。
+  半角幅想定の文字が使えなくなるという欠点もある。
 \item |nofullwidth|（既定）\Means
   |fullwidth| の否定。
 \item |legacycode=|\Meta{値}\Means
@@ -325,12 +333,12 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item |maybe-multiweight|\Means
   「|deluxe| オプション付きの\Pkg{japanese-otf}パッケージが読み込まれて
   いないにもかかわらず多ウェイト用のフォント設定命令が使われた」
-  際に出る警告を抑止する。%
-  \footnote{例えば
-    「単ウェイト・多ウェイト兼用を意図したフォント設定命令を
-    テンプレートに記述している」
-    「\Pkg{japanese-otf}以外でその和文TFMを流用している」
-    などの状況を想定している。}
+  場合に出る警告を抑止する。
+\item |nocheck-expert|\Means
+  「Unicode 直接指定と |expert| オプションが有効で、
+  かつ置換されていないウェイトが存在する」
+  場合に出る警告を抑止する。
+  \Note 警告抑止オプションについては\ref{sec:Suppress-Warnings}を参照。
 \end{itemize}
 
 %===========================================================
@@ -442,6 +450,17 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 
 \paragraph{上級者向け機能}
 \begin{itemize}
+\item |\pxchfonsetup{|\Meta{設定}|,…}|\Means
+  設定を変更する。
+  設定可能なパラメタは以下の通り。
+  \Note 真偽値をとるパラメタでは、値を省略した場合は |true|
+  と等価となる。
+  \Note 残念ながら、実装の都合のためパッケージ読込後に変更可能な
+  設定項目はかなり少ない。
+  \begin{itemize}
+  \item |jis2004|[|=|\Meta{真偽値}]\Means
+    オプションの (|no|)|jis2004| と同じ。
+  \end{itemize}
 \item |\usecmapforalphabet|\Means
   |usecmapforalphabet| オプションの設定に切り替える。
   （\ref{sec:Loading}節を参照。）
@@ -1633,6 +1652,68 @@ r-cfjam-r-@PXcjk0@     msgothic.ttc FontIndex=0
 （|\UTFK|、|\UTFM|、等）が対象となり、
 それ以外はこれに加えて{\upTeX}標準のフォントも
 対象になる。
+\end{itemize}
+
+%===========================================================
+\section{警告抑止用のオプション・開発者用フラグ}
+\label{sec:Suppress-Warnings}
+
+本パッケージのオプション設定は極めて複雑なため、使用法によっては
+「動作が極めて解りにくい状態」
+や
+「ユーザ命令の範囲ではサポートされない状態」
+といった“奇妙な”状態に移行していまうことがある。
+一方で
+「そういう“奇妙な”設定を解った上で敢えて利用している」
+「本パッケージ以外の手段で生成したフォントマップ行を併用している」
+などの理由で、“奇妙な”設定が正当である可能性もある。
+このため、現状の方針としては
+「“奇妙な”状態になった場合は（エラーでなく
+\footnote{将来的に、警告抑止の手段が十分に周知された段階で、
+  エラーに移行することも考えられる。}）
+\Strong{警告を出す}」
+ことにしている。
+
+しかし、正当に利用している人にとってはこの警告は煩わしいはずなので、
+特定の警告を抑止するための手段を用意する。
+警告抑止の方法は「オプション」と「開発者用フラグ」
+の2種類がある。
+
+\paragraph{開発者用フラグ}
+開発者用フラグ
+\footnote{開発者用の機能であるため、ここでは{\TeX}言語の知識を仮定する。}
+とは、例えば |\pxchfonNoCheckMultiweight| のように、
+本パッケージが指定する特定の制御綴のことである。
+制御綴が\Strong{定義済である}場合にフラグが有効であると判断する。
+従って、本パッケージの機能と連携するパッケージの開発者は、
+\begin{quote}\small\begin{verbatim}
+\let\pxchfonNoCheckMultiweight=t
+\end{verbatim}\end{quote}
+のようなコードを実行することで、不要な警告を抑止できる。
+\Note 定義済であれば意味は何でもよいが、上記コードのように
+「文字トークンの|t|」を使うことを推奨する。
+
+\paragraph{オプション・開発者用フラグの一覧}
+以下のものが用意されている。
+
+\begin{itemize}
+\item |maybe-multiweight| オプション／%
+  |\pxchfonNoCheckMultiweight| フラグ\Means
+  「|deluxe| オプション付きの\Pkg{japanese-otf}パッケージが読み込まれて
+  いないにもかかわらず多ウェイト用のフォント設定命令が使われた」
+  場合に出る警告を抑止する。
+  \Note 例えば
+  「単ウェイト・多ウェイト兼用を意図したフォント設定命令を
+  テンプレートに記述している」
+  「\Pkg{japanese-otf}以外でその和文TFMを流用している」
+  などの状況を想定している。
+  \Note 有効化した場合、たとえ\Pkg{japanese-otf}が読み込まれていなくても
+  \Pkg{japanese-otf}用のフォントマップ行を書き込む。
+\item |nocheck-expert| オプション／%
+  |\pxchfonNoCheckExpert| フラグ\Means
+  「Unicode 直接指定と |expert| オプションが有効で、
+  かつ置換されていないウェイトが存在する」
+  場合に出る警告を抑止する。
 \end{itemize}
 
 %===========================================================

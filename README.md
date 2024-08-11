@@ -39,6 +39,15 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 2.1  ‹2023/08/11›
+      - New command `\pxchfonsetup`.
+      - `maybe-multiweight` forces to output map lines for japanese-otf.
+      - Add flag `\pxchfonNoCheckMultiweight`.  
+        (Old experimental `\pxchfonMaybeMultiweight` is deprecated.)
+      - New option `nocheck-expert`.
+      - New option `resetdvidriver`.
+      - Warn if `(no)alphabet` is omitted without using a preset.
+      - Improve error/warning messages.
   * Version 2.0  ‹2023/08/28›
       - Use keyval package.
       - Now options on direct-Unicode settings are provided as a single
@@ -47,7 +56,7 @@ Revision History
         (Experimental option `unicode(*)-fwid` is removed.)
       - New options `legacycode` and `legacycode-replace`.
         (Old experimental options on “legacycode” are removed.)
-      - Warn if `(no)alphabet` is omitted without using a preset.
+      - Deprecate ommision of  `(no)alphabet` without using a preset.
       - Warn if user commands on multi-weight are used without employing
         `deluxe` option of japanese-otf package.
       - New option `maybe-multiweight`.
