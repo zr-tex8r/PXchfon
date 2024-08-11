@@ -1818,6 +1818,9 @@
   \ifpxcz@otf
     \@ifpackageloaded{otf}{\pxcz@otftrue}{\pxcz@otffalse}%
     \@ifpackageloaded{utf}{\pxcz@utftrue}{\pxcz@utffalse}%
+    \ifx\pxchfonNoCheckMultiweight\@undefined\else
+      \pxcz@otftrue
+    \fi
   \fi
   \pxcz@user@hook
   \let\pxcz@use@do\pxcz@use@mapfile
