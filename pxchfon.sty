@@ -505,7 +505,7 @@
 \ifpxcz@unicode@given\else
   \let\pxcz@unicode\pxcz@unicode@@false
   \ifnum\pxcz@pxufont@loaded>0
-    \PackageWarningNoLine\pxcz@pkgname
+    \pxcz@PackageNoteNoLine\pxcz@pkgname
      {Option 'unicode' is enabled, since the package\MessageBreak
       'pxufont' is already loaded}
     \let\pxcz@unicode\pxcz@unicode@@full
@@ -575,7 +575,7 @@
   \fi}
 %% \pxcz@warn@unicode
 \pxcz@onlypreamble@def\pxcz@warn@unicode{%
-  \PackageWarningNoLine\pxcz@pkgname
+  \pxcz@PackageNoteNoLine\pxcz@pkgname
    {The option 'unicode' is enforced, because the\MessageBreak
     preset '\pxcz@main@preset' is selected.}}
 
@@ -1856,15 +1856,16 @@
     \else \pxcz@check@alldefined{mnr,mnb,gtr,gtb}%
     \fi
     \ifpxcz@ok\else
-      \PackageWarningNoLine\pxcz@pkgname
-       {Some font weights are not substituted.\MessageBreak
-        So some features of pxchfon might not work\MessageBreak
+      \pxcz@PackageNoteNoLine\pxcz@pkgname
+       {There are some weights that font files are\MessageBreak
+        not specified for. It is generally okay,\MessageBreak
+        but some features of pxchfon might not work\MessageBreak
         properly when applied to such weights}%
     \fi
   \fi
   % warn if some weights are not embedded, and if necessaty
   \ifpxcz@warn@unless@all@embedded \ifpxcz@noembed@used
-    \PackageWarningNoLine\pxcz@pkgname
+    \pxcz@PackageNoteNoLine\pxcz@pkgname
      {Some font weights have no-embed setting.\MessageBreak
       So some features of pxchfon might not work\MessageBreak
       properly when applied to such weights}%
@@ -1875,7 +1876,7 @@
   \ifpxcz@enabled
     \pxcz@set@page@hook{\pxcz@spec}%
   \else\ifx\pxcz@spec\@empty\else
-    \PackageWarningNoLine\pxcz@pkgname
+    \pxcz@PackageNoteNoLine\pxcz@pkgname
      {Font mapping is disabled, since the driver in use\MessageBreak
       is not dvipdfmx}%
   \fi\fi
