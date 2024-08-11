@@ -144,6 +144,11 @@
 % without loading japanese-otf package with 'deluxe'.
 %(keep unchanged)
 
+%%<+> \pxchfonNoCheckExpert
+% If defined, skips the check for using expert settings without
+% substituting all weights.
+%(keep unchanged)
+
 %% check for 'pxjafont' package
 \@ifpackageloaded{pxjafont}{%
   \PackageError\pxcz@pkgname
@@ -403,6 +408,8 @@
 \DeclareOption{noautojfmsync}{\pxcz@autojfmsyncfalse}
 % maybe-multiweight
 \DeclareOption{maybe-multiweight}{\let\pxchfonNoCheckMultiweight=t}
+% nocheck-expert
+\DeclareOption{nocheck-expert}{\let\pxchfonNoCheckExpert=t}
 % use=<spec>
 \define@key{pxchfon}{use}{%
   \pxcz@okfalse
@@ -689,9 +696,9 @@
   \fi
   \let\pxcz@expert=f
 \fi
-\if t\pxcz@expert
+\if t\pxcz@expert \ifx\pxchfonNoCheckExpert\@undefined
   \pxcz@warn@unless@all@definedtrue
-\fi
+\fi\fi
 
 %--------------------------------------- '\pxchfonsetup'
 
@@ -708,6 +715,10 @@
 \define@key{pxchfonS}{maybe-multiweight}[]{%
   \pxcz@handle@mt@kvopt{maybe-multiweight}{#1}{%
     \global\let\pxchfonNoCheckMultiweight=t}}
+%% 'nocheck-expert'
+\define@key{pxchfonS}{nocheck-expert}[]{%
+  \pxcz@handle@mt@kvopt{nocheck-expert}{#1}{%
+    \global\let\pxchfonNoCheckExpert=t}}
 
 %%<*> \pxchfonsetup{<text>}
 \@onlypreamble\pxchfonsetup
