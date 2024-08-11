@@ -139,6 +139,11 @@
 
 %--------------------------------------- environment check
 
+%%<+> \pxchfonNoCheckMultiweight
+% If defined, skips the check for using multi-weight settings
+% without loading japanese-otf package with 'deluxe'.
+%(keep unchanged)
+
 %% check for 'pxjafont' package
 \@ifpackageloaded{pxjafont}{%
   \PackageError\pxcz@pkgname
@@ -397,7 +402,7 @@
 \DeclareOption{autojfmsync}{\pxcz@autojfmsynctrue}
 \DeclareOption{noautojfmsync}{\pxcz@autojfmsyncfalse}
 % maybe-multiweight
-\DeclareOption{maybe-multiweight}{\let\pxchfonMaybeMultiweight=t}
+\DeclareOption{maybe-multiweight}{\let\pxchfonNoCheckMultiweight=t}
 % use=<spec>
 \define@key{pxchfon}{use}{%
   \pxcz@okfalse
@@ -699,6 +704,10 @@
 %% 'jis2004=<bool>'
 \define@key{pxchfonS}{jis2004}[true]{%
   \pxcz@handle@bool@kvopt{jis2004}{mmivjis}{#1}}
+%% 'maybe-multiweight'
+\define@key{pxchfonS}{maybe-multiweight}[]{%
+  \pxcz@handle@mt@kvopt{maybe-multiweight}{#1}{%
+    \global\let\pxchfonNoCheckMultiweight=t}}
 
 %%<*> \pxchfonsetup{<text>}
 \@onlypreamble\pxchfonsetup
@@ -783,13 +792,12 @@
 \@for\pxcz@x:=\pxcz@sym@list\do{%
   \@namedef{pxcz@FS/\pxcz@x}{}}
 
-%%<*> \maybemultiweight
-\newcommand*\maybemultiweight{%
-  \let\pxchfonMaybeMultiweight=t}
-
 % check for usage of multi-weight commands
-\ifx t\pxchfonMaybeMultiweight\else
-  \AtBeginDocument{%
+\AtBeginDocument{%
+  \ifx t\pxchfonMaybeMultiweight % for compatibility
+    \let\pxchfonNoCheckMultiweight=t%
+  \fi
+  \ifx\pxchfonNoCheckMultiweight\@undefined
     \ifpxcz@deluxe@used\ifpxcz@otf@deluxe\else
       \PackageWarningNoLine\pxcz@pkgname
        {Setting for multi-weight usage of japanese-otf\MessageBreak
@@ -797,8 +805,8 @@
         of japanese-otf is not enabled!\MessageBreak
         You should specify 'maybe-multiweight' option\MessageBreak
         if you really intend the present setting}
-    \fi\fi}
-\fi
+    \fi\fi
+  \fi}
 
 %--------------------------------------- fontmap internals
 
