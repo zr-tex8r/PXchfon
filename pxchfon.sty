@@ -28,7 +28,11 @@
 %% unique tokens
 \def\pxcz@end{\pxcz@end@}
 \def\pxcz@mt{\pxcz@mt@}
+\toksdef\pxcz@mk=9 % unexpandable
 
+%% \pxcz@letcs\CSa{<cs2>}
+\def\pxcz@letcs#1#2{%
+  \expandafter\let\expandafter#1\csname#2\endcsname}
 %% \pxcz@csletcs{<cs1>}{<cs2>}
 \def\pxcz@csletcs#1#2{%
   \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
@@ -46,6 +50,14 @@
 %% \pxcz@onlypreamble@let\CS
 \def\pxcz@onlypreamble@let#1{%
   \@onlypreamble#1\let#1}
+
+%% \pxcz@new@gbool{<name>}
+\pxcz@onlypreamble@def\pxcz@new@gbool#1{%
+  \expandafter\pxcz@new@gbool@a\csname if#1\endcsname{#1}}
+\pxcz@onlypreamble@def\pxcz@new@gbool@a#1#2{%
+  \@namedef{#2true}{\global\let#1\iftrue}%
+  \@namedef{#2false}{\global\let#1\iffalse}%
+  \@nameuse{#2false}}\@gobbletwo\fi\fi
 
 %% \pxcz@csuse@or{<csname>}{<default>}
 \def\pxcz@csuse@or#1#2{%
@@ -74,7 +86,7 @@
   \pxcz@handle@kvopt@a{}{#1}{#2}{#3}{\pxcz@value}}
 \pxcz@onlypreamble@def\pxcz@handle@kvopt@a#1#2#3#4{%
   \@nameuse{pxcz@#3@giventrue}%
-  \pxcz@csletcs{pxcz@value}{pxcz@#3#1#4}%
+  \pxcz@letcs\pxcz@value{pxcz@#3#1#4}%
   \ifx\pxcz@value\relax
     \PackageError\pxcz@pkgname
      {Invalid value for option key '#2'\MessageBreak (#4)}%
@@ -96,6 +108,24 @@
   \fi}
 \def\pxcz@split@c#1\pxcz@mt#2\pxcz@end#3{%
   \def\pxcz@pre{#3}\def\pxcz@post{#1}}
+
+%% \pxcz@let@jchar@token\CS{<code>}
+\pxcz@onlypreamble@def\pxcz@let@jchar@token#1#2{%
+  \begingroup
+    \kansujichar1=#2\relax \kcatcode#2=18\relax
+    \xdef\pxcz@g@tmpa{\kansuji1}%
+  \endgroup
+  \let#1=\pxcz@g@tmpa}
+
+%% \pxcz@geta
+\pxcz@let@jchar@token\pxcz@geta{\jis"222E}
+
+%% \pxcz@PackageNoteNoLine
+\ifx\PackageNoteNoLine\@undefined
+  \let\pxcz@PackageNoteNoLine\PackageWarningNoLine
+\else
+  \let\pxcz@PackageNoteNoLine\PackageNoteNoLine
+\fi
 
 %--------------------------------------- environment check
 
@@ -530,27 +560,6 @@
   \let\pxcz@switch@font@xjistrue\pxcz@switch@font@xjisfalse
 \fi
 
-\begingroup \lccode`\@=`\_ \lowercase{%
-  \xdef\pxcz@get@dvipdfmx@version{%
-    \let\noexpand\pxcz@dvipdfmx@version\expandafter\noexpand
-    \csname c@@Kernel@sys@dvipdfmx@version@int\endcsname}}
-\endgroup
-\AtBeginDocument{%
-  \@tempswatrue
-  \ifnum\pxcz@unicode<\pxcz@unicode@@full\else
-    \pxcz@get@dvipdfmx@version
-    \ifx\pxcz@dvipdfmx@version\@undefined\else
-      \ifnum\pxcz@dvipdfmx@version<20170918
-        \@tempswafalse \fi\fi
-  \fi
-  \if@tempswa\else
-    \PackageError\pxcz@pkgname
-     {Option 'unicode' is not available, since\MessageBreak
-      your dvipdfmx is too old (v.\number\pxcz@dvipdfmx@version)}
-     {The option requires dvipdfmx version 20170918 or later.%
-      \MessageBreak\@ehc}
-  \fi}
-
 %--------------------------------------- preset-dependent setup
 
 %% variables
@@ -919,7 +928,7 @@
 %% \pxcz@switch@font@for{<feature>}
 % Modifies \pxcz@font, assuming \pxcz@font@tribe is properly set.
 \pxcz@onlypreamble@def\pxcz@switch@font@for#1{%
-  \pxcz@csletcs{pxcz@tmpb}{pxcz@switch@font@@\pxcz@font@tribe @#1}%
+  \pxcz@letcs\pxcz@tmpb{pxcz@switch@font@@\pxcz@font@tribe @#1}%
   \ifx\pxcz@tmpb\relax\else
 %\typeout{#1:\pxcz@font-->\expandafter\pxcz@tmpb\pxcz@font}%
     \edef\pxcz@font{\expandafter\pxcz@tmpb\pxcz@font}%
@@ -1547,11 +1556,9 @@
 \fi                 %---- </diruni-ok>
 
 %--------------------------------------- 'glyphid'
+\ifnum\pxcz@glyphid>0 %---- <*glyphid>
 
-%% \pxcz@geta
-\chardef\pxcz@geta=\jis"222E\relax
-
-\ifnum\pxcz@glyphid=2 %---- <*glyphid>
+\ifnum\pxcz@glyphid=2 %---- <*glyphid-ok>
 
 %% check integrity
 \ifpxcz@otf@loaded\else
@@ -1560,7 +1567,8 @@
       \PackageWarningNoLine\pxcz@pkgname
        {The option 'glyphid' will not work. You must\MessageBreak
         load pxchfon after 'otf' package}%
-    \def\gid{\pxcz@gid@fb}}{}}
+      \def\gid{\pxcz@gid@fb}%
+    }{}}
 \fi
 
 %%<*> \gid{<number>}
@@ -1608,22 +1616,21 @@
 \pxcz@dg@decl@shape{gt}{bx}f{ssub*gt/m/dirgid}{}%
 \fi\fi\fi
 
-\fi                 %---- </glyphid>
+\fi                   %---- </glyphid-ok>
 
-\ifnum\pxcz@glyphid>0
   %% \pxcz@gid@fb
   \providecommand*{\gid}{\pxcz@gid@fb}
   \DeclareRobustCommand*{\pxcz@gid@fb}[1]{%
-    \begingroup \kchar\pxcz@geta \endgroup}
+    \begingroup
+      \pxcz@geta
+    \endgroup}
 
   % redefinition in PDF-strings
-  \begingroup \kansujichar1=\pxcz@geta \kcatcode\pxcz@geta=18
-    \xdef\pxcz@hy@gid#1{\kansuji1}
-  \endgroup
+  \def\pxcz@hy@gid#1{\pxcz@geta}
   \pxcz@hy@disable@commands{%
     \let\gid\pxcz@hy@gid}
-\fi
 
+\fi                   %---- </glyphid>
 %--------------------------------------- 'alphabet' option
 
 %% check for textcomp
