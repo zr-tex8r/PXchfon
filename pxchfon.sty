@@ -543,7 +543,13 @@
 %% apply default value for \pxcz@alphabet
 \if\pxcz@alphabet\relax
   \ifx\pxcz@main@preset\relax \ifx\pxcz@file@preset\relax
-    % TODO: warn
+    \PackageWarningNoLine\pxcz@pkgname
+     {No preset is given and options for alphabetic\MessageBreak
+      fonts ('alphabet'/'noalphabet'/'relfont') are\MessageBreak
+      omitted. Here 'alphabet' will be assumed, but\MessageBreak
+      such omission is now DEPRECATED and the behavior\MessageBreak
+      might be changed in future!!\MessageBreak
+      You must write the option 'alphabet' explicitly}
     \let\pxcz@alphabet=t
   \fi\fi
   \if\pxcz@alphabet\relax
