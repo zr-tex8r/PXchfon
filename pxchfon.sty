@@ -71,12 +71,21 @@
 \def\pxcz@lower@a#1\pxcz@end#2{%
   \lowercase{\def#2{#1}}}
 
-%% \pxcz@setkeys{<text>}{<error>}
-\pxcz@onlypreamble@def\pxcz@setkeys#1#2{%
-  \def\KV@errx##1{#2}%
-  \edef\pxcz@do{\noexpand\setkeys{pxchfon}{#1}}\pxcz@do
+%% \pxcz@setkeys{<kv-family>}{<text>}{<error>}
+\pxcz@onlypreamble@def\pxcz@setkeys#1#2#3{%
+  \let\KV@errx#3%
+  \edef\pxcz@do{\noexpand\setkeys{#1}{#2}}\pxcz@do
   \let\KV@errx\pxcz@org@KV@errx}
 \let\pxcz@org@KV@errx\KV@errx
+
+%% \pxcz@handle@mt@kvopt{<key>}{<value>}{<code>}
+\pxcz@onlypreamble@def\pxcz@handle@mt@kvopt#1#2#3{%
+  \ifx\pxcz@mt#2\pxcz@mt #3%
+  \else
+    \PackageError\pxcz@pkgname
+     {No value allowed for key '#1'}%
+     {\@ehc}%
+  \fi}
 
 %% \pxcz@handle@kvopt{<key>}{<cs-key>}{<value>}{<code>}
 %% \pxcz@handle@bool@kvopt{<key>}{<cs-key>}{<value>}
@@ -89,7 +98,8 @@
   \pxcz@letcs\pxcz@value{pxcz@#3#1#4}%
   \ifx\pxcz@value\relax
     \PackageError\pxcz@pkgname
-     {Invalid value for option key '#2'\MessageBreak (#4)}%
+     {Invalid value for key '#2'\MessageBreak (#4)}%
+     {\@ehc}%
     \expandafter\@gobble
   \else \expandafter\@firstofone
   \fi}
@@ -283,7 +293,7 @@
 \let\pxcz@alphabet\relax
 \newif\ifpxcz@otf \pxcz@otftrue
 \newif\ifpxcz@cmap@alpha
-\newif\ifpxcz@mmivjis
+\pxcz@new@gbool{pxcz@mmivjis}
 \newif\ifpxcz@everypage
 \newif\ifpxcz@oneweight
 \newif\ifpxcz@fullwidth
@@ -303,6 +313,10 @@
 \let\pxcz@expert\relax
 \chardef\pxcz@glyphid\z@
 \newif\ifpxcz@autojfmsync
+
+%% \pxcz@invalid@opt{<key>}
+\pxcz@onlypreamble@def\pxcz@invalid@opt#1{%
+  \@unknownoptionerror}
 
 %% process options
 % drivers
@@ -457,7 +471,7 @@
 \DeclareOption*{%
   \pxcz@parse@opt\CurrentOption
   \ifpxcz@ok\else
-    \pxcz@setkeys{\CurrentOption}{\@unknownoptionerror}%
+    \pxcz@setkeys{pxchfon}{\CurrentOption}\pxcz@invalid@opt
   \fi}
 
 %% \pxcz@use@list
@@ -673,6 +687,24 @@
 \if t\pxcz@expert
   \pxcz@warn@unless@all@definedtrue
 \fi
+
+%--------------------------------------- '\pxchfonsetup'
+
+%% errors
+\pxcz@onlypreamble@def\pxcz@err@ivsky#1{%
+  \PackageError\pxcz@pkgname
+   {Unknown key: #1}%
+   {\@ehc}}
+
+%% 'jis2004=<bool>'
+\define@key{pxchfonS}{jis2004}[true]{%
+  \pxcz@handle@bool@kvopt{jis2004}{mmivjis}{#1}}
+
+%%<*> \pxchfonsetup{<text>}
+\@onlypreamble\pxchfonsetup
+\@ifdefinable\pxchfonsetup{%
+  \DeclareRobustCommand*{\pxchfonsetup}[1]{%
+    \pxcz@setkeys{pxchfonS}{#1}\pxcz@err@ivsky}}
 
 %--------------------------------------- user interface
 
