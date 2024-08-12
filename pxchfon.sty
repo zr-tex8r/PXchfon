@@ -598,9 +598,12 @@
 
 %--------------------------------------- preset-dependent setup
 
-%% variables
-\newif\ifpxcz@warn@unless@all@defined
-\newif\ifpxcz@warn@unless@all@embedded
+%% \pxcz@warn@unless@all@defined@for
+% The \do-list of names of problematic features.
+\pxcz@onlypreamble@let\pxcz@warn@unless@all@defined@for\@empty
+%% \pxcz@warn@unless@all@embedded@for
+% The \do-list of names of problematic features.
+\pxcz@onlypreamble@let\pxcz@warn@unless@all@embedded@for\@empty
 
 %% \pxcz@apply@opt@unicode
 % Forces the 'unicode' setup (unless a directunicode option was given).
@@ -631,7 +634,8 @@
 \pxcz@custom@apply@opt@unicode
 % No-embed is not supported under the 'unicode' setup
 \ifnum\pxcz@unicode=\pxcz@unicode@@full
-  \pxcz@warn@unless@all@embeddedtrue
+  \g@addto@macro\pxcz@warn@unless@all@embedded@for{%
+    \do{Direct Unicode spec ('unicode')}}
 \fi
 
 %% apply default for pxcz@legacycode@replace
@@ -706,9 +710,11 @@
   \fi
   \let\pxcz@expert=f
 \fi
-\if t\pxcz@expert \ifx\pxchfonNoCheckExpert\@undefined
-  \pxcz@warn@unless@all@definedtrue
-\fi\fi
+\g@addto@macro\pxcz@first@doc@hook{%
+  \if t\pxcz@expert \ifx\pxchfonNoCheckExpert\@undefined
+    \g@addto@macro\pxcz@warn@unless@all@defined@for{%
+      \do{Expert glyph shapes ('expert')}}%
+  \fi\fi}
 
 %--------------------------------------- '\pxchfonsetup'
 
@@ -1904,25 +1910,34 @@
   \ifpxcz@utf \pxcz@addtospec{UTF}%
   \fi
   % warn if some weights are not substituted, and if necessaty
-  \ifpxcz@warn@unless@all@defined
+  \ifx\pxcz@warn@unless@all@defined@for\@empty\else
     \if d\pxcz@otf@weight
       \pxcz@check@alldefined{mnl,mnr,mnb,gtr,gtb,gtx,mgr}%
     \else \pxcz@check@alldefined{mnr,mnb,gtr,gtb}%
     \fi
     \ifpxcz@ok\else
-      \pxcz@PackageNoteNoLine\pxcz@pkgname
+      \def\do##1{\MessageBreak - ##1}%
+      \PackageWarningNoLine\pxcz@pkgname
        {There are some weights that font files are\MessageBreak
-        not specified for. It is generally okay,\MessageBreak
-        but some features of pxchfon might not work\MessageBreak
-        properly when applied to such weights}%
+        not specified for. It is possibly okay,\MessageBreak
+        but some features of pxchfon (listed below)\MessageBreak
+        might not work properly when applied to\MessageBreak
+        such weights.%
+        \pxcz@warn@unless@all@defined@for
+        \expandafter\@gobble}% gobble the period
     \fi
   \fi
   % warn if some weights are not embedded, and if necessaty
-  \ifpxcz@warn@unless@all@embedded \ifpxcz@noembed@used
-    \pxcz@PackageNoteNoLine\pxcz@pkgname
+  \ifx\pxcz@warn@unless@all@embedded@for\@empty\else
+      \ifpxcz@noembed@used
+    \def\do##1{\MessageBreak - ##1}%
+    \PackageWarningNoLine\pxcz@pkgname
      {Some font weights have no-embed setting.\MessageBreak
-      So some features of pxchfon might not work\MessageBreak
-      properly when applied to such weights}%
+      So some features of pxchfon (listed below)\MessageBreak
+      might not work properly when applied to\MessageBreak
+      such weights.%
+      \pxcz@warn@unless@all@embedded@for
+      \expandafter\@gobble}% gobble the period
   \fi\fi
   %
   \pxcz@check@extra
