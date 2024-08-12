@@ -51,6 +51,11 @@
 \def\pxcz@onlypreamble@let#1{%
   \@onlypreamble#1\let#1}
 
+%% \pxcz@first@doc@hook
+% Invoked earlier than \pxcz@doc@hook.
+\pxcz@onlypreamble@let\pxcz@first@doc@hook\@empty
+\AtBeginDocument{\pxcz@first@doc@hook}
+
 %% \pxcz@new@gbool{<name>}
 \pxcz@onlypreamble@def\pxcz@new@gbool#1{%
   \expandafter\pxcz@new@gbool@a\csname if#1\endcsname{#1}}
@@ -809,7 +814,7 @@
   \@namedef{pxcz@FS/\pxcz@x}{}}
 
 % check for usage of multi-weight commands
-\AtBeginDocument{%
+\g@addto@macro\pxcz@first@doc@hook{%
   \ifx t\pxchfonMaybeMultiweight % for compatibility
     \let\pxchfonNoCheckMultiweight=t%
   \fi
@@ -1488,7 +1493,8 @@
   \else
     \ifnum\pxcz@unicode<\pxcz@unicode@@simple\else
       \pxcz@diruni@oktrue % 'unicode=UTF' does not need otf
-      \AtBeginDocument{% loading otf later causes inconsistency
+      \g@addto@macro\pxcz@first@doc@hook{%
+        % loading otf later causes inconsistency
         \@ifpackageloaded{otf}{\pxcz@diruni@okfalse}{}}%
     \fi
   \fi
@@ -1529,7 +1535,7 @@
     \ifcase\pxcz@unicode with 'unicode' option%
     \else pxchfon after 'otf' package%
     \fi .\MessageBreak\@ehc}}
-\AtBeginDocument{%
+\g@addto@macro\pxcz@first@doc@hook{%
   \ifpxcz@diruni@ok \let\pxcz@err@diruni\relax
   \else \let\pxcz@diruni\pxcz@err@diruni
   \fi}
@@ -1579,7 +1585,7 @@
 \fi
 \fi\fi\fi
 
-\AtBeginDocument{%
+\g@addto@macro\pxcz@first@doc@hook{%
   \def\pxcz@do#1#2#3{%
     \DeclareFontShape{#1}{#2}{#3}{diruni}{<->ssub*#2/#3/n}{}}%
   \@for\pxcz@tmpa:={\rmdefault,\sfdefault,\ttdefault}\do{%
@@ -1606,7 +1612,8 @@
 
 %% check integrity
 \ifpxcz@otf@loaded\else
-  \AtBeginDocument{% loading otf later causes inconsistency
+  \g@addto@macro\pxcz@first@doc@hook{%
+    % loading otf later causes inconsistency
     \@ifpackageloaded{otf}{%
       \PackageWarningNoLine\pxcz@pkgname
        {The option 'glyphid' will not work. You must\MessageBreak
@@ -2145,7 +2152,7 @@
 \ifpxcz@autojfmsync %---- <*autojfmsync>
 % Makes \git/\CID/\UTF do automatically jfmsync
 \let\pxcz@gid@jfm@sync\pxcz@jfm@sync
-\AtBeginDocument{%
+\g@addto@macro\pxcz@first@doc@hook{%
   \ifx\put@character\@undefined\else
     \g@addto@macro\put@character{\pxcz@jfm@sync}%
   \fi
