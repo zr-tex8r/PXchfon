@@ -39,7 +39,9 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
-  * Version 2.1  ‹2023/08/11›
+  * Version 2.1a ‹2024/08/12›
+      - Improve warning messages.
+  * Version 2.1  ‹2024/08/11›
       - New command `\pxchfonsetup`.
       - `maybe-multiweight` forces to output map lines for japanese-otf.
       - Add flag `\pxchfonNoCheckMultiweight`.  
