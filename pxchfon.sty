@@ -178,13 +178,11 @@
   \pxcz@lite@modetrue}
 
 %% \ifpxcz@otf@loaded
-%% \ifpxcz@otf@deluxe
 %% \pxcz@otf@weight: otf weight mode
 \newif\ifpxcz@otf@loaded \pxcz@otf@loadedtrue
-\newif\ifpxcz@otf@deluxe \pxcz@otf@deluxefalse
 % watch out for priority...
 \@ifpackagewith{otf}{deluxe}{%
-  \pxcz@otf@deluxetrue \let\pxcz@otf@weight=d
+  \let\pxcz@otf@weight=d
 }{\@ifpackagewith{otf}{bold}{%
   \let\pxcz@otf@weight=b
 }{\@ifpackagewith{otf}{expert}{%
@@ -816,7 +814,7 @@
     \let\pxchfonNoCheckMultiweight=t%
   \fi
   \ifx\pxchfonNoCheckMultiweight\@undefined
-    \ifpxcz@deluxe@used\ifpxcz@otf@deluxe\else
+    \ifpxcz@deluxe@used\if d\pxcz@otf@weight\else
       \PackageWarningNoLine\pxcz@pkgname
        {Setting for multi-weight usage of japanese-otf\MessageBreak
         font set is employed, but 'deluxe' option\MessageBreak
@@ -1711,7 +1709,7 @@
     \DeclareFontShape{\pxcz@x}{#1}{#2}{sl}{<->ssub*#1/#2/n}{}}}
 
 \ifpxcz@alphafont   %---- <*alphabet>
-\ifpxcz@otf@deluxe  %---- <*otfdx> : otf with deluxe option
+\if d\pxcz@otf@weight  %---- <*otfdx> : otf with deluxe option
   % define families cfjar & cfjas
 \pxcz@decl@family{cfjar}%
 \pxcz@decl@shape{cfjar}{l}n{cfjar-l}%
@@ -1847,7 +1845,7 @@
       \pxcz@set@bfdefault@to@bx{sf}%
     \fi
     % attach hook to \mgfamily if mgr font is defined
-    \pxcz@check@alldefined{mgr}\ifpxcz@ok\ifpxcz@otf@deluxe
+    \pxcz@check@alldefined{mgr}\ifpxcz@ok\if d\pxcz@otf@weight
       \begingroup
         \def\pxcz@x##1{\toks@\expandafter{##1}%
           \xdef##1{\noexpand\pxcz@mgfamily@hook\the\toks@}%
@@ -1873,7 +1871,7 @@
     \pxcz@check@alldefined{gtr,gtb,gtx}%
     \ifpxcz@ok \pxcz@decl@relfont\gtdefault{cfjas}{m,bx,eb}\fi
     \pxcz@check@alldefined{mgr}%
-    \ifpxcz@ok\ifpxcz@otf@deluxe
+    \ifpxcz@ok\if d\pxcz@otf@weight
       \pxcz@decl@relfont\mgdefault{cfjam}{m}%
     \fi\fi
     \pxcz@addtospec{ALPHA}%
@@ -1900,7 +1898,7 @@
   \fi
   % warn if some weights are not substituted, and if necessaty
   \ifpxcz@warn@unless@all@defined
-    \ifpxcz@otf@deluxe
+    \if d\pxcz@otf@weight
       \pxcz@check@alldefined{mnl,mnr,mnb,gtr,gtb,gtx,mgr}%
     \else \pxcz@check@alldefined{mnr,mnb,gtr,gtb}%
     \fi
