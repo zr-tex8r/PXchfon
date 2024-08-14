@@ -1688,92 +1688,14 @@
     \let\gid\pxcz@hy@gid}
 
 \fi                   %---- </glyphid>
-%--------------------------------------- 'alphabet' option
+%--------------------------------------- 'pxchfon0' submodule
+\ifpxcz@lite@mode\else
 
-%% check for textcomp
-\newif\ifpxcz@textcomp
-\ifx\DeclareEncodingSubset\@undefined\else
-  \expandafter\ifx\csname T@TS1\endcsname\relax\else
-    \pxcz@textcomptrue
-\fi\fi
+%% load the submodule
+\input{pxchfon0.def}
 
-%% \pxcz@afont@enc@list
-\def\pxcz@afont@enc@list{OT1,T1}
-\ifpxcz@textcomp \g@addto@macro\pxcz@afont@enc@list{,TS1}\fi
-%% \pxcz@decl@family{<fam>}
-\pxcz@onlypreamble@def\pxcz@decl@family#1{%
-  \ifpxcz@textcomp \DeclareEncodingSubset{TS1}{#1}{3}\fi
-  \@for\pxcz@x:=\pxcz@afont@enc@list\do{%
-    \DeclareFontFamily{\pxcz@x}{#1}{}}}
-%% \pxcz@decl@shape{<fam>}{<ser>}<sw>{<font>}
-\pxcz@onlypreamble@def\pxcz@decl@shape#1#2#3#4{%
-  \if s#3%
-    \@for\pxcz@x:=\pxcz@afont@enc@list\do{%
-      \DeclareFontShape{\pxcz@x}{#1}{#2}{n}{<->ssub*#4}{}}%
-  \else
-    \DeclareFontShape{OT1}{#1}{#2}{n}{<->#4-l5j}{}%
-    \DeclareFontShape {T1}{#1}{#2}{n}{<->#4-t1}{}%
-    \ifpxcz@textcomp
-      \DeclareFontShape{TS1}{#1}{#2}{n}{<->#4-ts1}{}%
-    \fi
-  \fi
-  \@for\pxcz@x:=\pxcz@afont@enc@list\do{%
-    \DeclareFontShape{\pxcz@x}{#1}{#2}{it}{<->ssub*#1/#2/n}{}%
-    \DeclareFontShape{\pxcz@x}{#1}{#2}{sl}{<->ssub*#1/#2/n}{}}}
-
-\ifpxcz@alphafont   %---- <*alphabet>
-\if d\pxcz@otf@weight  %---- <*otfdx> : otf with deluxe option
-  % define families cfjar & cfjas
-\pxcz@decl@family{cfjar}%
-\pxcz@decl@shape{cfjar}{l}n{cfjar-l}%
-\pxcz@decl@shape{cfjar}{m}n{cfjar-r}%
-\pxcz@decl@shape{cfjar}{bx}n{cfjar-b}%
-\pxcz@decl@family{cfjas}%
-\pxcz@decl@shape{cfjas}{m}n{cfjas-r}%
-\pxcz@decl@shape{cfjas}{bx}n{cfjas-b}%
-\pxcz@decl@shape{cfjas}{eb}n{cfjas-x}%
-\pxcz@decl@family{cfjam}%
-\pxcz@decl@shape{cfjam}{m}n{cfjam-r}%
-  % redefine \ltseries & \ebseries so they affect roman font
-\let\ltseries\relax \let\ebseries\relax
-\DeclareRobustCommand\ltseries{%
-  \not@math@alphabet\ltseries\relax
-  \fontseries\ltdefault\selectfont}%
-\DeclareRobustCommand\ebseries{%
-  \not@math@alphabet\ebseries\relax
-  \fontseries\ebdefault\selectfont}%
-\else               %---- <*!otfdx>
-\pxcz@decl@family{cfjar}%
-\pxcz@decl@shape{cfjar}{m}n{cfjar-r}%
-\pxcz@decl@shape{cfjar}{bx}s{cfjas/m/n}%
-\pxcz@decl@family{cfjas}%
-\pxcz@decl@shape{cfjas}{m}n{cfjas-r}%
-\pxcz@decl@shape{cfjas}{bx}s{cfjas/m/n}%
-\pxcz@onlypreamble@def\pxcz@err@dxotf#1{%
-  \PackageError\pxcz@pkgname
-   {Loaded before '#1' with 'deluxe'}%
-   {This package must be loaded after '#1' with 'deluxe' option
-    when using both.}}
-\g@addto@macro\pxcz@check@extra{%
-  \expandafter\let\expandafter\pxcz@x\csname pxcz@FS/mnr\endcsname
-  \ifx\pxcz@x\@empty\else
-    % if mnr is replaced but gtr is not then ...
-    \expandafter\ifx\csname pxcz@FS/gtr\endcsname\@empty
-      {\expandafter\let\csname pxcz@FS/gtr\endcsname\pxcz@x
-        \pxcz@Entry{gtr}{r-cfjas-r-@PXcjk0@}{unicode}{HWid}}%
-  \fi\fi
-  \@ifpackagewith{otf}{deluxe}{\pxcz@err@dxotf{otf}}{}%
-}
-\fi                 %---- </otfdx>
-\fi                 %---- </alphabet>
-
+\fi
 %--------------------------------------- begin-document hook
-
-%% variables
-\let\pxcz@afont@enc\relax
-
-%% \pxcz@mgfamily@hook
-\def\pxcz@mgfamily@hook{\romanfamily{cfjam}}
 
 %% \pxcz@set@page@hook{<text>}
 \ifpxcz@old@hook@system %----
@@ -1804,32 +1726,6 @@
     \expandafter\ifx\csname pxcz@FS/\pxcz@x\endcsname\@empty
       \pxcz@okfalse \fi}}
 
-%% \pxcz@decl@relfont{<fam>}{<afam>}{<ser>,...}
-\pxcz@onlypreamble@def\pxcz@decl@relfont#1#2#3{%
-  \@for\pxcz@x:={#3}\do{%
-    \expandafter\ifx\csname\k@encoding/#1/\pxcz@x/n\endcsname\relax\else
-      \edef\pxcz@tmpa{\noexpand\DeclareRelationFont
-        {\k@encoding}{#1}{\pxcz@x}{}{\pxcz@afont@enc}{#2}{\pxcz@x}{}%
-      }\pxcz@tmpa
-    \fi}%
-  \PackageInfo\pxcz@pkgname
-   {Relation font set for \k@encoding/#1}}
-
-%% \pxcz@check@afont@enc
-\pxcz@onlypreamble@def\pxcz@check@afont@enc{%
-  \pxcz@oktrue % OT1 is always okay
-  \expandafter\ifx\csname\pxcz@afont@enc+cfjar\endcsname\relax
-    \pxcz@okfalse \fi
-  % if not okay, use OT1 instead
-  \ifpxcz@ok\else \def\pxcz@afont@enc{OT1}\fi}
-
-%% \pxcz@set@bfdefault@to@bx{<doc-ser>}
-\pxcz@onlypreamble@let\pxcz@set@bfdefault@to@bx\@gobble
-\ifx\DeclareFontSeriesDefault\@undefined\else
-  \def\pxcz@set@bfdefault@to@bx#1{%
-    \DeclareFontSeriesDefault[#1]{bf}{bx}}
-\fi
-
 %% the begin-document hook
 \pxcz@onlypreamble@def\pxcz@doc@hook{%
   \ifpxcz@otf
@@ -1849,44 +1745,11 @@
     \pxcz@inspect@flavor@all
   \fi
   \if t\pxcz@alphabet % 'alphabet'
-    \pxcz@check@alldefined{mnl,mnr,mnb}\ifpxcz@ok
-      \renewcommand\rmdefault{cfjar}%
-      \pxcz@set@bfdefault@to@bx{rm}%
-    \fi
-    \pxcz@check@alldefined{gtr,gtb,gtx}\ifpxcz@ok
-      \renewcommand\sfdefault{cfjas}%
-      \pxcz@set@bfdefault@to@bx{sf}%
-    \fi
-    % attach hook to \mgfamily if mgr font is defined
-    \pxcz@check@alldefined{mgr}\ifpxcz@ok\if d\pxcz@otf@weight
-      \begingroup
-        \def\pxcz@x##1{\toks@\expandafter{##1}%
-          \xdef##1{\noexpand\pxcz@mgfamily@hook\the\toks@}%
-        }\expandafter\pxcz@x\csname mgfamily \endcsname
-      \endgroup
-    \fi\fi
-    % decide alphabet font encoding
-    \edef\pxcz@afont@enc{\encodingdefault}%
-    \pxcz@check@afont@enc\ifpxcz@ok\else
-      \PackageWarningNoLine\pxcz@pkgname
-       {Default encoding is changed to 'OT1' because%
-        \MessageBreak'alphabet' option is in effect}%
-      \renewcommand\encodingdefault{OT1}%
-    \fi
-    \normalfont
+    \pxcz@setup@alphabet
     \pxcz@addtospec{ALPHA}%
   \fi
   \if r\pxcz@alphabet % 'relfont'
-    \edef\pxcz@afont@enc{\encodingdefault}%
-    \pxcz@check@afont@enc
-    \pxcz@check@alldefined{mnl,mnr,mnb}%
-    \ifpxcz@ok \pxcz@decl@relfont\mcdefault{cfjar}{m,bx,l}\fi
-    \pxcz@check@alldefined{gtr,gtb,gtx}%
-    \ifpxcz@ok \pxcz@decl@relfont\gtdefault{cfjas}{m,bx,eb}\fi
-    \pxcz@check@alldefined{mgr}%
-    \ifpxcz@ok\if d\pxcz@otf@weight
-      \pxcz@decl@relfont\mgdefault{cfjam}{m}%
-    \fi\fi
+    \pxcz@setup@relfont
     \pxcz@addtospec{ALPHA}%
   \fi
   \ifpxcz@uptex\else
