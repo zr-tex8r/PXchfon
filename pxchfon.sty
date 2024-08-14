@@ -135,6 +135,16 @@
 %% \pxcz@geta
 \pxcz@let@jchar@token\pxcz@geta{\jis"222E}
 
+%% \pxcz@Z\newrobustcmd*\CS...
+% On e-TeX engines, it simply does \newrobustcmd*;
+% otherwise it does \DeclareRobustCommand* with 'new' check.
+\pxcz@onlypreamble@def\pxcz@Z\newrobustcmd*#1{%
+  \pxcz@okfalse
+  \@ifdefinable{#1}{\pxcz@oktrue}%
+  \pxcz@cond\ifpxcz@ok\fi
+    {\DeclareRobustCommand*#1}{\providecommand*\pxcz@mt}%
+}
+
 %% \pxcz@PackageNoteNoLine
 \ifx\PackageNoteNoLine\@undefined
   \let\pxcz@PackageNoteNoLine\PackageWarningNoLine
@@ -170,6 +180,18 @@
   \pxcz@do\kchardef{\pxcz@uptextrue}
   % only upTeX in Unicode is seen as upTeX
   \ifnum\ucs"3000="3000 \else \pxcz@uptexfalse \fi}
+%% \ifpxcz@etex
+\newif\ifpxcz@etex \pxcz@etexfalse
+\pxcz@do\eTeXversion{\pxcz@etextrue}
+%% \ifpxcz@etoolbox
+\newif\ifpxcz@etoolbox
+\ifpxcz@etex
+  \IfFileExists{etoolbox.sty}{%
+    \RequirePackage{etoolbox}[2011/01/03]% v2.1
+    \pxcz@etoolboxtrue
+    \let\pxcz@Z\@empty
+  }{}
+\fi
 
 %% \pxcz@JYn
 \edef\pxcz@JYn{%
@@ -738,9 +760,8 @@
 
 %%<*> \pxchfonsetup{<text>}
 \@onlypreamble\pxchfonsetup
-\@ifdefinable\pxchfonsetup{%
-  \DeclareRobustCommand*{\pxchfonsetup}[1]{%
-    \pxcz@setkeys{pxchfonS}{#1}\pxcz@err@ivsky}}
+\pxcz@Z\newrobustcmd*\pxchfonsetup[1]{%
+  \pxcz@setkeys{pxchfonS}{#1}\pxcz@err@ivsky}
 
 %--------------------------------------- user interface
 
@@ -755,53 +776,60 @@
   tcml,tcmr,tcmb,tcgr,tcgb,tcgx,tcgu,tcmgr}
 
 %%<*> \setminchofont/\setgothicfont/etc.
-\newcommand*\setminchofont{\pxcz@setfont{mnl,mnr,mnb}}
-\newcommand*\setgothicfont{\pxcz@setfont{gtr,gtb,gtx,gtu}}
-\newcommand*\setlightminchofont{\pxcz@setfont@dx{mnl}}
-\newcommand*\setmediumminchofont{\pxcz@setfont@dx{mnr}}
-\newcommand*\setboldminchofont{\pxcz@setfont@dx{mnb}}
-\newcommand*\setmediumgothicfont{\pxcz@setfont@dx{gtr}}
-\newcommand*\setboldgothicfont{\pxcz@setfont@dx{gtb}}
-\newcommand*\setxboldgothicfont{\pxcz@setfont@dx{gtx}}
-\newcommand*\setoneweightgothicfont{\pxcz@setfont@dx{gtu}}
-\newcommand*\setmarugothicfont{\pxcz@setfont@dx{mgr}}
-
-\newcommand*\setkoreanminchofont{\pxcz@setfont{koml,komr,komb}}
-\newcommand*\setkoreangothicfont{\pxcz@setfont{kogr,kogb,kogx,kogu,komgr}}
-\newcommand*\setkoreanlightminchofont{\pxcz@setfont@dx{koml}}
-\newcommand*\setkoreanmediumminchofont{\pxcz@setfont@dx{komr}}
-\newcommand*\setkoreanboldminchofont{\pxcz@setfont@dx{komb}}
-\newcommand*\setkoreanmediumgothicfont{\pxcz@setfont@dx{kogr}}
-\newcommand*\setkoreanboldgothicfont{\pxcz@setfont@dx{kogb}}
-\newcommand*\setkoreanxboldgothicfont{\pxcz@setfont@dx{kogx}}
-\newcommand*\setkoreanoneweightgothicfont{\pxcz@setfont@dx{kogu}}
-\newcommand*\setkoreanmarugothicfont{\pxcz@setfont@dx{komgr}}
-
-\newcommand*\setschineseminchofont{\pxcz@setfont{scml,scmr,scmb}}
-\newcommand*\setschinesegothicfont{\pxcz@setfont{scgr,scgb,scgx,scgu,scmgr}}
-\newcommand*\setschineselightminchofont{\pxcz@setfont@dx{scml}}
-\newcommand*\setschinesemediumminchofont{\pxcz@setfont@dx{scmr}}
-\newcommand*\setschineseboldminchofont{\pxcz@setfont@dx{scmb}}
-\newcommand*\setschinesemediumgothicfont{\pxcz@setfont@dx{scgr}}
-\newcommand*\setschineseboldgothicfont{\pxcz@setfont@dx{scgb}}
-\newcommand*\setschinesexboldgothicfont{\pxcz@setfont@dx{scgx}}
-\newcommand*\setschineseoneweightgothicfont{\pxcz@setfont@dx{scgu}}
-\newcommand*\setschinesemarugothicfont{\pxcz@setfont@dx{scmgr}}
-
-\newcommand*\settchineseminchofont{\pxcz@setfont{tcml,tcmr,tcmb}}
-\newcommand*\settchinesegothicfont{\pxcz@setfont{tcgr,tcgb,tcgx,tcgu,tcmgr}}
-\newcommand*\settchineselightminchofont{\pxcz@setfont@dx{tcml}}
-\newcommand*\settchinesemediumminchofont{\pxcz@setfont@dx{tcmr}}
-\newcommand*\settchineseboldminchofont{\pxcz@setfont@dx{tcmb}}
-\newcommand*\settchinesemediumgothicfont{\pxcz@setfont@dx{tcgr}}
-\newcommand*\settchineseboldgothicfont{\pxcz@setfont@dx{tcgb}}
-\newcommand*\settchinesexboldgothicfont{\pxcz@setfont@dx{tcgx}}
-\newcommand*\settchineseoneweightgothicfont{\pxcz@setfont@dx{tcgu}}
-\newcommand*\settchinesemarugothicfont{\pxcz@setfont@dx{tcmgr}}
+% japanese
+\pxcz@Z\newrobustcmd*\setminchofont{\pxcz@setfont{mnl,mnr,mnb}}
+\pxcz@Z\newrobustcmd*\setgothicfont{\pxcz@setfont{gtr,gtb,gtx,gtu}}
+\pxcz@Z\newrobustcmd*\setlightminchofont{\pxcz@setdf{mnl}}
+\pxcz@Z\newrobustcmd*\setmediumminchofont{\pxcz@setdf{mnr}}
+\pxcz@Z\newrobustcmd*\setboldminchofont{\pxcz@setdf{mnb}}
+\pxcz@Z\newrobustcmd*\setmediumgothicfont{\pxcz@setdf{gtr}}
+\pxcz@Z\newrobustcmd*\setboldgothicfont{\pxcz@setdf{gtb}}
+\pxcz@Z\newrobustcmd*\setxboldgothicfont{\pxcz@setdf{gtx}}
+\pxcz@Z\newrobustcmd*\setoneweightgothicfont{\pxcz@setdf{gtu}}
+\pxcz@Z\newrobustcmd*\setmarugothicfont{\pxcz@setdf{mgr}}
+% korean
+\pxcz@Z\newrobustcmd*\setkoreanminchofont{%
+  \pxcz@setfont{koml,komr,komb}}
+\pxcz@Z\newrobustcmd*\setkoreangothicfont{%
+  \pxcz@setfont{kogr,kogb,kogx,kogu,komgr}}
+\pxcz@Z\newrobustcmd*\setkoreanlightminchofont{\pxcz@setdf{koml}}
+\pxcz@Z\newrobustcmd*\setkoreanmediumminchofont{\pxcz@setdf{komr}}
+\pxcz@Z\newrobustcmd*\setkoreanboldminchofont{\pxcz@setdf{komb}}
+\pxcz@Z\newrobustcmd*\setkoreanmediumgothicfont{\pxcz@setdf{kogr}}
+\pxcz@Z\newrobustcmd*\setkoreanboldgothicfont{\pxcz@setdf{kogb}}
+\pxcz@Z\newrobustcmd*\setkoreanxboldgothicfont{\pxcz@setdf{kogx}}
+\pxcz@Z\newrobustcmd*\setkoreanoneweightgothicfont{\pxcz@setdf{kogu}}
+\pxcz@Z\newrobustcmd*\setkoreanmarugothicfont{\pxcz@setdf{komgr}}
+% schinese
+\pxcz@Z\newrobustcmd*\setschineseminchofont{%
+  \pxcz@setfont{scml,scmr,scmb}}
+\pxcz@Z\newrobustcmd*\setschinesegothicfont{%
+  \pxcz@setfont{scgr,scgb,scgx,scgu,scmgr}}
+\pxcz@Z\newrobustcmd*\setschineselightminchofont{\pxcz@setdf{scml}}
+\pxcz@Z\newrobustcmd*\setschinesemediumminchofont{\pxcz@setdf{scmr}}
+\pxcz@Z\newrobustcmd*\setschineseboldminchofont{\pxcz@setdf{scmb}}
+\pxcz@Z\newrobustcmd*\setschinesemediumgothicfont{\pxcz@setdf{scgr}}
+\pxcz@Z\newrobustcmd*\setschineseboldgothicfont{\pxcz@setdf{scgb}}
+\pxcz@Z\newrobustcmd*\setschinesexboldgothicfont{\pxcz@setdf{scgx}}
+\pxcz@Z\newrobustcmd*\setschineseoneweightgothicfont{\pxcz@setdf{scgu}}
+\pxcz@Z\newrobustcmd*\setschinesemarugothicfont{\pxcz@setdf{scmgr}}
+% tchinese
+\pxcz@Z\newrobustcmd*\settchineseminchofont{%
+  \pxcz@setfont{tcml,tcmr,tcmb}}
+\pxcz@Z\newrobustcmd*\settchinesegothicfont{%
+  \pxcz@setfont{tcgr,tcgb,tcgx,tcgu,tcmgr}}
+\pxcz@Z\newrobustcmd*\settchineselightminchofont{\pxcz@setdf{tcml}}
+\pxcz@Z\newrobustcmd*\settchinesemediumminchofont{\pxcz@setdf{tcmr}}
+\pxcz@Z\newrobustcmd*\settchineseboldminchofont{\pxcz@setdf{tcmb}}
+\pxcz@Z\newrobustcmd*\settchinesemediumgothicfont{\pxcz@setdf{tcgr}}
+\pxcz@Z\newrobustcmd*\settchineseboldgothicfont{\pxcz@setdf{tcgb}}
+\pxcz@Z\newrobustcmd*\settchinesexboldgothicfont{\pxcz@setdf{tcgx}}
+\pxcz@Z\newrobustcmd*\settchineseoneweightgothicfont{\pxcz@setdf{tcgu}}
+\pxcz@Z\newrobustcmd*\settchinesemarugothicfont{\pxcz@setdf{tcmgr}}
 
 \pxcz@onlypreamble@def\pxcz@setfont#1{\@ifnextchar[%]
   {\pxcz@setfont@a{#1}}{\pxcz@setfont@a{#1}[0]}}
-\pxcz@onlypreamble@def\pxcz@setfont@dx{%
+\pxcz@onlypreamble@def\pxcz@setdf{%
   \pxcz@deluxe@usedtrue\pxcz@setfont}
 \pxcz@onlypreamble@def\pxcz@setfont@a#1[#2]#3{%
   \edef\pxcz@tmpa{#3}\pxcz@lower\pxcz@tmpa
@@ -853,9 +881,9 @@
 \def\pxcz@cmap@hwuni{UniJIS-UCS2-HW-H}
 
 %%<*> \usecmapforalphabet/\nousecmapforalphabet
-\newcommand*\usecmapforalphabet{%
+\pxcz@Z\newrobustcmd*\usecmapforalphabet{%
   \global\pxcz@cmap@alphatrue}
-\newcommand*\nousecmapforalphabet{%
+\pxcz@Z\newrobustcmd*\nousecmapforalphabet{%
   \global\pxcz@cmap@alphafalse}
 
 %% \pxcz@NEF/<sym>
@@ -876,34 +904,48 @@
 %%<+> \JaFontReplacementFor{<sym>}
 \newcommand*\JaFontReplacementFor[1]{%
   \csname pxcz@FS/#1\endcsname}
+\@namedef{pxcz@FS/*}{\pxcz@empty}
 
 %%<+> \JaFontReplacementHook{<code>}
 \@onlypreamble\JaFontReplacementHook
-\newcommand*\JaFontReplacementHook{%
+\pxcz@Z\newrobustcmd*\JaFontReplacementHook{%
   \g@addto@macro\pxcz@user@hook}
 \let\pxcz@user@hook\@empty
 
 %%<+> \JaFontUserDefinedMap
 \@onlypreamble\JaFontUserDefinedMap
-\newcommand*\JaFontUserDefinedMap{%
+\pxcz@Z\newrobustcmd*\JaFontUserDefinedMap{%
   \g@addto@macro\pxcz@user@map}
-\let\pxcz@user@map\@empty
-\@namedef{pxcz@FS/*}{\pxcz@empty}
-
-%%<+> \usefontmapline{<map-line>}
-\@onlypreamble\usefontmapline
-\newcommand*\usefontmapline[1]{%
-  \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapline{#1}}}
-
-%%<+> \usefontmapfile{<map-file>}
-\@onlypreamble\usefontmapfile
-\newcommand*\usefontmapfile[1]{%
-  \JaFontUserDefinedMap{\pxcz@addtospec@alt\pxcz@mapfile{#1}}}
+\pxcz@onlypreamble@let\pxcz@user@map\@empty
 
 %% \pxcz@check@extra
 % Executed at the begin-document hook.
 \@onlypreamble\pxcz@check@extra
 \let\pxcz@check@extra\@empty
+
+%% \pxcz@addtospec@aux{<name>}{<text>}
+\pxcz@onlypreamble@def\pxcz@addtospec@aux#1#2{%
+  \xdef\pxcz@spec{\pxcz@spec\noexpand\special{pdf:#1 #2}}%
+}
+
+%%<*> \usefontmapline{<map-line>}
+\@onlypreamble\usefontmapline
+\pxcz@Z\newrobustcmd*\usefontmapline[1]{%
+  \JaFontUserDefinedMap{\pxcz@add@mapline{#1}}%
+}
+%%<*> \usefontmapfile{<map-file>}
+\@onlypreamble\usefontmapfile
+\pxcz@Z\newrobustcmd*\usefontmapfile[1]{%
+  \JaFontUserDefinedMap{\pxcz@add@mapfile{#1}}%
+}
+%% \pxcz@add@mapfile{<map-file>}
+\pxcz@onlypreamble@def\pxcz@add@mapfile{%
+  \pxcz@addtospec@aux{mapfile}%
+}
+%% \pxcz@add@mapline{<map-line>}
+\pxcz@onlypreamble@def\pxcz@add@mapline{%
+  \pxcz@addtospec@aux{mapline}%
+}
 
 %--------------------------------------- map entry handling
 
@@ -911,7 +953,7 @@
 \def\pxcz@pfx@jis@dflt{2004-}
 \def\pxcz@pfx@jis@star{JISX0213-2004-}
 \@onlypreamble\setnewglyphcmapprefix
-\newcommand*\setnewglyphcmapprefix{%
+\pxcz@Z\newrobustcmd*\setnewglyphcmapprefix{%
   \@ifstar{\pxcz@set@pfx@jis\pxcz@pfx@jis@star}%
    {\pxcz@set@pfx@jis}}
 \def\pxcz@set@pfx@jis#1{%
@@ -1149,11 +1191,9 @@
   \fi\fi
   % output it
   \ifx\pxcz@font\pxcz@kill@mapping
-    \xdef\pxcz@spec{\pxcz@spec\noexpand\special{%
-      \pxcz@mapline{-#2}}}%
+    \pxcz@add@mapline{-#2}%
   \else\ifx\pxcz@font\@empty\else
-    \xdef\pxcz@spec{\pxcz@spec\noexpand\special{%
-      \pxcz@mapline{#2 \pxcz@cmap\space\pxcz@font\pxcz@mopts}}}%
+    \pxcz@add@mapline{#2 \pxcz@cmap\space\pxcz@font\pxcz@mopts}%
   \fi\fi}
 
 %% \pxcz@do@file@preset
@@ -1180,13 +1220,7 @@
   \ifpxcz@uptex \pxcz@use@mapfile@b{uptex-#1-#2}\fi
   \ifpxcz@otf \pxcz@use@mapfile@b{otf-#1-#2}\fi}
 \pxcz@onlypreamble@def\pxcz@use@mapfile@b#1{%
-  \pxcz@addtospec@alt\pxcz@mapfile{#1.map}}
-
-%% \pxcz@addtospec@alt
-\def\pxcz@addtospec@alt#1#2{%
-  \xdef\pxcz@spec{\pxcz@spec\noexpand\special{#1{#2}}}}
-\def\pxcz@mapfile#1{pdf:mapfile #1}
-\def\pxcz@mapline#1{pdf:mapline #1}
+  \pxcz@add@mapfile{#1.map}}
 
 %--------------------------------------- map entry definitions
 
@@ -1507,8 +1541,7 @@
 \fi
 
 %%<*> \diruni
-\newcommand*{\diruni}{\pxcz@diruni}
-\DeclareRobustCommand*{\pxcz@diruni}{%
+\pxcz@Z\newrobustcmd*\diruni{%
     \not@math@alphabet\diruni\relax
     \ifx\cy@encoding\pxcz@JYn % if in standard Japanese encoding
       \expandafter\let\csname UTF \endcsname\pxcz@du@UTF
@@ -1517,10 +1550,9 @@
 }
 
 %%<*> \textdiruni{<text>}
-\@ifdefinable{\textdiruni}{%
-  \DeclareRobustCommand*{\textdiruni}[1]{%
-    \relax\ifmmode\hbox\fi{\pxcz@diruni#1}%
-  }}
+\pxcz@Z\newrobustcmd*\textdiruni[1]{%
+  \relax\ifmmode\hbox\fi{\diruni#1}%
+}
 
 %% \pxcz@du@UTF
 \def\pxcz@du@UTF#1{%
@@ -1624,13 +1656,13 @@
       \PackageWarningNoLine\pxcz@pkgname
        {The option 'glyphid' will not work. You must\MessageBreak
         load pxchfon after 'otf' package}%
-      \def\gid{\pxcz@gid@fb}%
+      \def\pxcz@gid{\pxcz@gid@fb}%
+      \chardef\pxcz@glyphid=1
     }{}}
 \fi
 
-%%<*> \gid{<number>}
-\newcommand*{\gid}{\pxcz@gid}
-\DeclareRobustCommand*{\pxcz@gid}[1]{%
+%% \pxcz@gid{<number>}
+\def\pxcz@gid#1{%
   \begingroup
     \kanjishape{dirgid}\selectfont
     \kchar#1\pxcz@gid@jfm@sync
@@ -1675,12 +1707,15 @@
 
 \fi                   %---- </glyphid-ok>
 
-  %% \pxcz@gid@fb
-  \providecommand*{\gid}{\pxcz@gid@fb}
-  \DeclareRobustCommand*{\pxcz@gid@fb}[1]{%
+%%<*> \gid{<number>}
+\pxcz@Z\newrobustcmd*\gid{\pxcz@gid}
+
+%% \pxcz@gid@fb
+\def\pxcz@gid@fb#1{%
     \begingroup
       \pxcz@geta
     \endgroup}
+\providecommand*\pxcz@gid{\pxcz@gid@fb}
 
   % redefinition in PDF-strings
   \def\pxcz@hy@gid#1{\pxcz@geta}
