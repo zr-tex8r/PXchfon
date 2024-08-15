@@ -175,6 +175,61 @@
 }
 
 \fi
+%--------------------------------------- 'usefontmaplines'
+
+%%<*> \begin{usefontmaplines}
+% <map-line>
+% ...
+% \end{usefontmaplines}
+\@onlypreamble\usefontmaplines
+\newenvironment{usefontmaplines}{%
+  \catcode`\{=12 \catcode`\}=12 \catcode`\&=12 \catcode`\#=12
+  \catcode`\^=12 \catcode`\~=12 \catcode`\%=12 \catcode13=12
+  \catcode32=10 \endlinechar=13
+  \let\pxcz@tmp@end\end \let\begin\relax \let\end\relax
+  \let\par\@empty \let\ \space \def\pxcz@tmp@end@{\end}%
+  \pxcz@maplines@a
+}{}
+\@onlypreamble\pxcz@maplines@a
+\long\def\pxcz@maplines@a#1{%
+  \def\pxcz@tmpa{#1}\pxcz@cond\ifx\pxcz@tmpa\pxcz@tmp@end@\fi{%
+    \catcode`\{=1 \catcode`\}=2
+    \pxcz@tmp@end
+  }{%else
+    \pxcz@maplines@b#1%
+  }%
+}
+\@onlypreamble\pxcz@maplines@b
+\begingroup \catcode13=12
+\long\gdef\pxcz@maplines@b#1^^M{%
+  \pxcz@maplines@line#1\pxcz@mk%
+  \pxcz@maplines@a%
+}%
+\endgroup
+\@onlypreamble\pxcz@maplines@line
+\long\def\pxcz@maplines@line#1\pxcz@mk{%
+  \edef\pxcz@tmpa{#1}%
+  \pxcz@split{\@percentchar}{\pxcz@tmpa}%
+  \ifx\pxcz@pre\relax\else \let\pxcz@tmpa\pxcz@pre \fi
+  \pxcz@split{\end}{\pxcz@tmpa}%
+  \ifx\pxcz@pre\relax
+    \pxcz@split{\space\pxcz@mk}{\pxcz@tmpa\pxcz@mk}%
+    \ifx\pxcz@pre\relax\else \let\pxcz@tmpa\pxcz@pre \fi
+    \ifx\pxcz@tmpa\@empty\else
+      \expandafter\usefontmapline\expandafter{\pxcz@tmpa}%
+    \fi
+  \else % '\end' found inside the line
+    \pxcz@maplines@err
+  \fi
+}
+\pxcz@onlypreamble@def\pxcz@maplines@err{%
+  \PackageError\pxcz@pkgname
+   {'\string\end{usefontmaplines}' must be put at the top\MessageBreak
+    of a line}%
+   {\@ehc}%
+  \def\pxcz@maplines@a{\pxcz@tmp@end{usefontmaplines}}%
+}
+
 %--------------------------------------- all done
 \endinput
 %% EOF
