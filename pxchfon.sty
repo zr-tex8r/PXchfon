@@ -1717,8 +1717,14 @@
     \endgroup}
 \providecommand*\pxcz@gid{\pxcz@gid@fb}
 
-  % redefinition in PDF-strings
-  \def\pxcz@hy@gid#1{\pxcz@geta}
+% redefinition in PDF-strings
+\def\pxcz@hy@gid#1{%
+  \ifx\pxjahyperBadCharacter\@undefined
+    \pxcz@geta
+  \else
+    \pxjahyperBadCharacter{GID+#1}%
+  \fi
+}
   \pxcz@hy@disable@commands{%
     \let\gid\pxcz@hy@gid}
 
