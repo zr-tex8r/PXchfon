@@ -14,15 +14,17 @@
   pdfauthor={八登崇之}}
 \usepackage{bxtexlogo}
 \bxtexlogoimport{*,logo-e}
-\usepackage{shortvrb}
+\usepackage{shortvrb,alltt}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.1a}
-\newcommand{\PkgDate}{2024/08/12}
+\newcommand{\PkgVersion}{2.2}
+\newcommand{\PkgDate}{2024/08/22}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
+\newcommand{\RMeta}[1]{{\rmfamily\Meta{#1}}}
 \newcommand{\Note}{\par\noindent ※}
 \newcommand{\Means}{：\ }
 \newcommand{\Zk}{\mbox{}}
+\newcommand{\cs}[1]{\symbol{`\\}#1}
 \providecommand{\Strong}[1]{\textsf{#1}}
 %-----------------------------------------------------------
 \begin{document}
@@ -485,6 +487,21 @@ OpenTypeフォントをユーザが指定する機能を提供する。
 \item |\usefontmapline{|\Meta{マップ行}|}|\Means
   dvipdfmxのマップ行を直接指定して、その読込を指示する。
   \Note pdf{\TeX}の |\pdfmapline| に相当する機能。
+\item |usefontmaplines| 環境\Means
+  複数のマップ行を一度に記述できる環境。
+  \footnote{|usefontmaplines| 環境の中では、
+    {\LaTeX}の特殊文字のうち |\| と空白だけが通常のの規則に従う。
+    改行は各マップ行の区切りの意味をもつ。
+    \texttt{\%} は行末までをコメントにするが、改行は維持される。
+    他の文字（|{| |}| も含む）はその文字自体と解釈される。
+    他の注意として、|\end{usefontmaplines}| は行頭に書く必要がある。}
+\begin{quote}\small\begin{alltt}
+\cs{begin}\{usefontmaplines\}
+\RMeta{マップ行}
+\RMeta{マップ行}
+……
+\cs{end}\{usefontmaplines\}
+\end{alltt}\end{quote}
 \item |\diruni|\Means
   現在の和文フォントを“Unicode直接入力”
   （フォントマップをUnicode直接指定にした上で

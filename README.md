@@ -39,6 +39,8 @@ This package is distributed under the MIT License.
 Revision History
 ----------------
 
+  * Version 2.2  ‹2024/08/22›
+      - New environment `usefontmaplines`.
   * Version 2.1a ‹2024/08/12›
       - Improve warning messages.
   * Version 2.1  ‹2024/08/11›
